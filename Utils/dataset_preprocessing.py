@@ -14,9 +14,12 @@ def main() -> None:
     nrows = args.nrows
     output = args.output
 
+    print("Loading data...")
     df: pd.DataFrame = pd.read_csv(filepath)
     # TODO Consider more fancy imputation than "List wise deletion"
+    print("Imputating data...")
     df.dropna()
+    print("Saving data to file...")
     df.head(nrows).to_csv(output)
 
     display_finish()

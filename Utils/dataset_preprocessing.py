@@ -18,9 +18,11 @@ def main() -> None:
 
     print("Loading data...")
     df: pd.DataFrame = pd.read_csv(filepath)
-    # TODO Consider more fancy imputation than "List wise deletion"
+    print("Size of loaded data:", len(df.index))
+    # Consider more fancy imputation than "List wise deletion"
     print("Imputating data...")
     df.dropna()
+    print("Size of data after imputation:", len(df.index))
     print("Saving data to file...")
     df.head(nrows).to_csv(output)
 

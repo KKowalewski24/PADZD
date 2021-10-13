@@ -20,6 +20,8 @@ def main() -> None:
     args = prepare_args()
     logger.info("Start program with args: " + str(vars(args)))
     df = pd.read_csv(DATA_FILEPATH)
+    print(df.describe(include="all"))
+    print(df.head())
 
     display_finish()
 

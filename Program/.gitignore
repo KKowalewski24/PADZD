@@ -142,3 +142,4 @@ cython_debug/
 .idea
 *~
 .mypy_cache
+app.log

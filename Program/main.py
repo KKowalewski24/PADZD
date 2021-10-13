@@ -2,12 +2,16 @@ import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
 
+from module.Logger import Logger
+
 """
 """
 
 
 def main() -> None:
     args = prepare_args()
+    logger = Logger().get_logging_instance()
+    logger.info("Start program")
 
     display_finish()
 

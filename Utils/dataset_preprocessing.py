@@ -5,6 +5,8 @@ from argparse import ArgumentParser, Namespace
 import pandas as pd
 
 """
+How to run:
+    python dataset_preprocessing.py -f ../NYPD_Complaint_Data_Historic.csv -r 1000000 -o ../NYPD_Data_Trimmed.csv
 """
 
 

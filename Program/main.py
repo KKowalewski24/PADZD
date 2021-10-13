@@ -2,16 +2,24 @@ import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
 
+import pandas as pd
 from module.Logger import Logger
 
 """
+    How to run
+        python main.py
+        
+    Remember to place file with data in 'data' directory!
 """
+
+DATA_FILEPATH = "data/NYPD_Data_Trimmed.csv"
 
 
 def main() -> None:
-    args = prepare_args()
     logger = Logger().get_logging_instance()
-    logger.info("Start program")
+    args = prepare_args()
+    logger.info("Start program with args: " + str(vars(args)))
+    df = pd.read_csv(DATA_FILEPATH)
 
     display_finish()
 

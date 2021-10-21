@@ -28,6 +28,18 @@ BAR_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
     (
         LabelNamesMapper.victim_suspect.SUSPECT_RACE,
         LabelNamesMapper.victim_suspect.VICTIM_RACE,
+    ),
+    (
+        LabelNamesMapper.victim_suspect.SUSPECT_SEX,
+        LabelNamesMapper.victim_suspect.VICTIM_SEX,
+    ),
+    (
+        LabelNamesMapper.victim_suspect.SUSPECT_AGE_GROUP,
+        LabelNamesMapper.victim_suspect.VICTIM_AGE_GROUP,
+    ),
+    (
+        LabelNamesMapper.location.PATROL_DISTRICT_NAME,
+        LabelNamesMapper.law_breaking.KEY_CODE
     )
 ]
 
@@ -53,6 +65,10 @@ def draw_plot(dataset: pd.DataFrame, x_axis_col_name: str,
         plt.plot(dataset[x_axis_col_name], dataset[y_axis_col_name])
     elif chart_type == ChartType.BAR:
         plt.bar(dataset[x_axis_col_name], dataset[y_axis_col_name])
+
+    plt.title(f"{x_axis_col_name} to {y_axis_col_name}")
+    plt.xlabel(x_axis_col_name)
+    plt.ylabel(y_axis_col_name)
 
     if save_data:
         plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"))

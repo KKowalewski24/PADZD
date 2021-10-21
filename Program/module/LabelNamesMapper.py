@@ -63,6 +63,12 @@ class LabelNamesMapper:
     def get_non_numeric_column_names() -> List[str]:
         # TODO ADD ALL FIELDS THAT ARE NOT NUMERIC
         return [
+            LabelNamesMapper.law_breaking.LAW_BREAKING_STATUS,
+            LabelNamesMapper.location.PATROL_DISTRICT_NAME,
             LabelNamesMapper.victim_suspect.SUSPECT_AGE_GROUP,
             LabelNamesMapper.victim_suspect.SUSPECT_RACE,
+            LabelNamesMapper.victim_suspect.SUSPECT_SEX,
+            LabelNamesMapper.victim_suspect.VICTIM_AGE_GROUP,
+            LabelNamesMapper.victim_suspect.VICTIM_RACE,
+            LabelNamesMapper.victim_suspect.VICTIM_SEX,
         ]

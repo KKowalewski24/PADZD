@@ -1,9 +1,11 @@
-import subprocess
-import sys
 from argparse import ArgumentParser, Namespace
 
 import pandas as pd
+
 from module.Logger import Logger
+from module.plot import plot_charts
+from module.utils import check_if_exists_in_args, check_types_check_style, compile_to_pyc, \
+    display_finish
 
 """
     How to run
@@ -18,10 +20,12 @@ DATA_FILEPATH = "data/NYPD_Complaint_Data_Historic.csv"
 def main() -> None:
     logger = Logger().get_logging_instance()
     args = prepare_args()
+    save_data = args.save
     logger.info("Start program with args: " + str(vars(args)))
     df = pd.read_csv(DATA_FILEPATH)
     print(df.describe(include="all"))
     print(df.head())
+    plot_charts(df, save_data)
 
     display_finish()
 
@@ -29,26 +33,11 @@ def main() -> None:
 def prepare_args() -> Namespace:
     arg_parser = ArgumentParser()
 
+    arg_parser.add_argument(
+        "-s", "--save", default=False, action="store_true", help="Save generated data"
+    )
+
     return arg_parser.parse_args()
-
-
-def check_types_check_style() -> None:
-    subprocess.call(["mypy", "."])
-    subprocess.call(["flake8", "."])
-
-
-def compile_to_pyc() -> None:
-    subprocess.call(["python", "-m", "compileall", "."])
-
-
-def check_if_exists_in_args(arg: str) -> bool:
-    return arg in sys.argv
-
-
-def display_finish() -> None:
-    print("------------------------------------------------------------------------")
-    print("FINISHED")
-    print("------------------------------------------------------------------------")
 
 
 if __name__ == "__main__":

@@ -1,3 +1,6 @@
+from typing import List
+
+
 class GeneralDataLabels:
     ID = "CMPLNT_NUM"
 
@@ -54,3 +57,12 @@ class LabelNamesMapper:
     law_breaking_labels: LawBreakingLabels = LawBreakingLabels
     location: LocationLabels = LocationLabels
     victim_suspect: VictimSuspectLabels = VictimSuspectLabels
+
+
+    @staticmethod
+    def get_non_numeric_column_names() -> List[str]:
+        # TODO ADD ALL FIELDS THAT ARE NOT NUMERIC
+        return [
+            LabelNamesMapper.victim_suspect.SUSPECT_AGE_GROUP,
+            LabelNamesMapper.victim_suspect.SUSPECT_RACE,
+        ]

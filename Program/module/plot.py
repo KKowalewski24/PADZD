@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
@@ -9,11 +10,25 @@ from module.utils import create_directory, prepare_filename
 
 RESULTS_DIR = "saved_plots/"
 
-PARAMS_SETUP: List[Tuple[str, str]] = [
+
+class ChartType(Enum):
+    BAR = "Bar"
+    LINE = "Line"
+
+
+LINE_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
+
+]
+
+BAR_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
     (
-        LabelNamesMapper.law_breaking.KEY_CODE,
-        LabelNamesMapper.law_breaking.LAW_BREAKING_STATUS
+        LabelNamesMapper.law_breaking.LAW_BREAKING_STATUS,
+        LabelNamesMapper.law_breaking.KEY_CODE
     ),
+    (
+        LabelNamesMapper.victim_suspect.SUSPECT_RACE,
+        LabelNamesMapper.victim_suspect.VICTIM_RACE,
+    )
 ]
 
 
@@ -25,13 +40,20 @@ def plot_charts(dataset: pd.DataFrame, save_data: bool) -> None:
 
     create_directory(RESULTS_DIR)
 
-    for params in PARAMS_SETUP:
-        draw_plot(dataset, params[0], params[1], save_data)
+    for params in LINE_CHART_PARAM_SETUP:
+        draw_plot(dataset, params[0], params[1], ChartType.LINE, save_data)
+
+    for params in BAR_CHART_PARAM_SETUP:
+        draw_plot(dataset, params[0], params[1], ChartType.BAR, save_data)
 
 
 def draw_plot(dataset: pd.DataFrame, x_axis_col_name: str,
-              y_axis_col_name: str, save_data: bool) -> None:
-    plt.plot(dataset[x_axis_col_name], dataset[y_axis_col_name])
+              y_axis_col_name: str, chart_type: ChartType, save_data: bool) -> None:
+    if chart_type == ChartType.LINE:
+        plt.plot(dataset[x_axis_col_name], dataset[y_axis_col_name])
+    elif chart_type == ChartType.BAR:
+        plt.bar(dataset[x_axis_col_name], dataset[y_axis_col_name])
+
     if save_data:
         plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"))
         plt.close()

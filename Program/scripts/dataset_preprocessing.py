@@ -6,7 +6,7 @@ import pandas as pd
 
 """
 How to run:
-    python dataset_preprocessing.py -f ../Program/data/NYPD_Complaint_Data_Historic.csv -r 1000000 -o ../Program/data/NYPD_Data_Trimmed.csv
+    python dataset_preprocessing.py -f ../data/NYPD_Complaint_Data_Historic.csv -r 1000000 -o ../data/NYPD_Data_Trimmed.csv
 """
 
 

@@ -54,7 +54,7 @@ class VictimSuspectLabels:
 class LabelNamesMapper:
     general_data: GeneralDataLabels = GeneralDataLabels
     date_time: DateTimeLabels = DateTimeLabels
-    law_breaking_labels: LawBreakingLabels = LawBreakingLabels
+    law_breaking: LawBreakingLabels = LawBreakingLabels
     location: LocationLabels = LocationLabels
     victim_suspect: VictimSuspectLabels = VictimSuspectLabels
 

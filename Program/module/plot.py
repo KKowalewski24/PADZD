@@ -11,8 +11,8 @@ RESULTS_DIR = "saved_plots/"
 
 PARAMS_SETUP: List[Tuple[str, str]] = [
     (
-        LabelNamesMapper.law_breaking_labels.KEY_CODE,
-        LabelNamesMapper.law_breaking_labels.LAW_BREAKING_STATUS
+        LabelNamesMapper.law_breaking.KEY_CODE,
+        LabelNamesMapper.law_breaking.LAW_BREAKING_STATUS
     ),
 ]
 

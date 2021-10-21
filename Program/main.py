@@ -12,7 +12,7 @@ from module.Logger import Logger
     Remember to place file with data in 'data' directory!
 """
 
-DATA_FILEPATH = "data/NYPD_Data_Trimmed.csv"
+DATA_FILEPATH = "data/NYPD_Complaint_Data_Historic.csv"
 
 
 def main() -> None:

@@ -6,7 +6,7 @@ import pandas as pd
 
 """
 How to run:
-    python dataset_preprocessing.py -f ../NYPD_Complaint_Data_Historic.csv -r 1000000 -o ../NYPD_Data_Trimmed.csv
+    python dataset_preprocessing.py -f ../Program/data/NYPD_Complaint_Data_Historic.csv -r 1000000 -o ../Program/data/NYPD_Data_Trimmed.csv
 """
 
 
@@ -24,7 +24,7 @@ def main() -> None:
     # df = df.dropna()
     # print("Size of data after imputation:", len(df.index))
     print("Saving data to file...")
-    df.head(nrows).to_csv(output)
+    df.head(nrows).to_csv(output, index=False)
 
     display_finish()
 

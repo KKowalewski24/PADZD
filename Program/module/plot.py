@@ -21,26 +21,7 @@ LINE_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
 ]
 
 BAR_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
-    (
-        LabelNamesMapper.law_breaking.LAW_BREAKING_STATUS,
-        LabelNamesMapper.law_breaking.KEY_CODE
-    ),
-    (
-        LabelNamesMapper.victim_suspect.SUSPECT_RACE,
-        LabelNamesMapper.victim_suspect.VICTIM_RACE,
-    ),
-    (
-        LabelNamesMapper.victim_suspect.SUSPECT_SEX,
-        LabelNamesMapper.victim_suspect.VICTIM_SEX,
-    ),
-    (
-        LabelNamesMapper.victim_suspect.SUSPECT_AGE_GROUP,
-        LabelNamesMapper.victim_suspect.VICTIM_AGE_GROUP,
-    ),
-    (
-        LabelNamesMapper.location.PATROL_DISTRICT_NAME,
-        LabelNamesMapper.law_breaking.KEY_CODE
-    )
+
 ]
 
 

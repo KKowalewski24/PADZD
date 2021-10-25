@@ -20,11 +20,13 @@ DATA_FILEPATH = "data/NYPD_Complaint_Data_Historic.csv"
 def main() -> None:
     logger = Logger().get_logging_instance()
     args = prepare_args()
-    save_data = args.save
     logger.info("Start program with args: " + str(vars(args)))
+    save_data = args.save
+
+    logger.info("Loading dataset...")
     df = pd.read_csv(DATA_FILEPATH)
-    print(df.describe(include="all"))
-    print(df.head())
+    logger.info("Loading dataset finished")
+
     plot_charts(df, save_data)
 
     display_finish()

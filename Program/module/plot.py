@@ -150,12 +150,11 @@ def filter_na(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
 def calculate_sizes(original_data_len: int, data_len: int) -> str:
     return (
         f" Number of missing values: {original_data_len - data_len} "
-        f"({((original_data_len - data_len) / original_data_len) * 100}%) "
+        f"({round(((original_data_len - data_len) / original_data_len) * 100, 2)}%) "
     )
 
 
 def set_descriptions(title: str, x_label: str = "", y_label: str = "") -> None:
-    plt.grid(axis='x')
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)

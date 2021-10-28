@@ -49,8 +49,8 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
 
     # Stats between start time of event and end time
     full_time_data = df[
-        df[LabelNamesMapper.date_time_event.EVENT_END_DATE]
-        & df[LabelNamesMapper.date_time_event.EVENT_START_TIME]
+        df[LabelNamesMapper.date_time_event.EVENT_END_DATE].notna()
+        & df[LabelNamesMapper.date_time_event.EVENT_START_TIME].notna()
         ]
 
     begin_datetime = ((full_time_data[LabelNamesMapper.date_time_event.EVENT_START_DATE] +

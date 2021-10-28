@@ -28,9 +28,7 @@ def plot_charts(df: pd.DataFrame, save_data: bool) -> None:
     original_data_len = len(df.index)
 
     draw_hist(
-        ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
-          df[LabelNamesMapper.date_time_event.EVENT_START_TIME])
-         .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce').dt.hour),
+        df[LabelNamesMapper.date_time_event.EVENT_START_TIME].str[:2],
         original_data_len, ("Hours", "", ""), save_data
     )
     draw_hist(

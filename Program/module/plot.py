@@ -33,10 +33,17 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         ).dt.month,
         original_data_len, ("Months", "", ""), save_data
     )
-
     draw_hist(
         filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION),
         original_data_len, ("Place type", "", ""), save_data
+    )
+    draw_hist(
+        df[LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL],
+        original_data_len, ("Law breaking level", "", ""), save_data
+    )
+    draw_hist(
+        df[LabelNamesMapper.event_status.EVENT_STATUS],
+        original_data_len, ("Event status", "", ""), save_data
     )
 
     begin_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
@@ -90,7 +97,7 @@ def draw_hist(data: pd.DataFrame, original_data_len: int,
               description: Tuple[str, str, str], save_data: bool) -> None:
     plt.hist(data)
     set_descriptions(
-        description[0] + calculate_sizes(original_data_len, len(data.index)),
+        description[0] + ", " + calculate_sizes(original_data_len, len(data.index)),
         description[1], description[2]
     )
     show_and_save(description[0], save_data)

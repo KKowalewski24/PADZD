@@ -4,7 +4,7 @@ from typing import List, Tuple
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from module.LabelNamesMapper import LabelNamesMapper, EventLocationLabels, SuspectLabels, VictimLabels, IdentifierLabels
+from module.LabelNamesMapper import LabelNamesMapper
 from module.utils import create_directory, prepare_filename
 
 RESULTS_DIR = "saved_plots/"

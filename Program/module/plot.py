@@ -48,13 +48,23 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
     )
 
     # Stats between start time of event and end time
-    begin_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
-                       df[LabelNamesMapper.date_time_event.EVENT_START_TIME])
+    full_time_data = df[
+        df[LabelNamesMapper.date_time_event.EVENT_END_DATE]
+        & df[LabelNamesMapper.date_time_event.EVENT_START_TIME]
+        ]
+
+    begin_datetime = ((full_time_data[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
+                       full_time_data[LabelNamesMapper.date_time_event.EVENT_START_TIME])
                       .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
-    end_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_END_DATE] +
-                     df[LabelNamesMapper.date_time_event.EVENT_END_TIME])
+    end_datetime = ((full_time_data[LabelNamesMapper.date_time_event.EVENT_END_DATE] +
+                     full_time_data[LabelNamesMapper.date_time_event.EVENT_END_TIME])
                     .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
 
+    print(
+        f"Number of rows with {LabelNamesMapper.date_time_event.EVENT_END_DATE} and "
+        f"{LabelNamesMapper.date_time_event.EVENT_END_TIME}",
+        len(full_time_data.index)
+    )
     print(calculate(
         begin_datetime, end_datetime,
         [
@@ -98,7 +108,7 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
 
 def draw_hist(data: pd.DataFrame, original_data_len: int,
               description: Tuple[str, str, str], save_data: bool) -> None:
-    plt.hist(data)
+    plt.hist(data, bins=(data.nunique() * 2) - 1)
     set_descriptions(
         description[0] + ", " + calculate_sizes(original_data_len, len(data.index)),
         description[1], description[2]

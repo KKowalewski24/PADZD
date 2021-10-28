@@ -3,7 +3,6 @@ from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 
 from module.LabelNamesMapper import LabelNamesMapper, EventLocationLabels, SuspectLabels, VictimLabels, IdentifierLabels
 from module.utils import create_directory, prepare_filename
@@ -16,170 +15,153 @@ class ChartType(Enum):
     LINE = "Line"
 
 
-LINE_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
-
-]
-
-BAR_CHART_PARAM_SETUP: List[Tuple[str, str]] = [
-
-]
+class CalculationType(Enum):
+    MEAN = "Mean"
+    STD = "Std"
 
 
-def plot_charts(dataset: pd.DataFrame, save_data: bool) -> None:
-    # TODO MOVE THIS TO MORE APPROPRIATE PLACE
-    label_encoder = LabelEncoder()
-    for name in LabelNamesMapper.get_non_numeric_column_names():
-        dataset[name] = label_encoder.fit_transform(dataset[name])
-
+def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
     create_directory(RESULTS_DIR)
-    dataset = dataset[dataset["SUSP_AGE_GROUP"].notna()]
-    suspect_age = dataset.groupby([SuspectLabels.SUSPECT_AGE_GROUP])[IdentifierLabels.ID].count()
-    victim_age = dataset.groupby([VictimLabels.VICTIM_AGE_GROUP])[IdentifierLabels.ID].count()
+    original_data_len = len(df.index)
 
-    print("suspect_age: ",suspect_age)
-    print("victim_age: ",victim_age)
-    # draw_histograms_borough(dataset)
-    # draw_histograms_suspect(dataset)
-    # draw_histograms_victim(dataset)
-    # # draw_map(dataset)
-    # draw_pie_plots(dataset)
+    draw_hist(
+        filter_na(df, LabelNamesMapper.date_time_event.EVENT_START_TIME)
+            .astype(str).str[:2].sort_values(),
+        original_data_len, ("Hours", "", ""), save_data
+    )
+    draw_hist(
+        pd.to_datetime(
+            df[LabelNamesMapper.date_time_event.EVENT_START_DATE], format='%m/%d/%Y', errors="coerce"
+        ).dt.month,
+        original_data_len, ("Months", "", ""), save_data
+    )
+    draw_hist(
+        filter_na(df, LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL).astype(str),
+        original_data_len, ("Law breaking level", "", ""), save_data
+    )
+    draw_hist(
+        filter_na(df, LabelNamesMapper.event_status.EVENT_STATUS).astype(str),
+        original_data_len, ("Event status", "", ""), save_data
+    )
+    draw_hist(
+        filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION).astype(str),
+        original_data_len, ("Place type", "", ""), save_data
+    )
 
-    # for params in LINE_CHART_PARAM_SETUP:
-    #     draw_plot(dataset, params[0], params[1], ChartType.LINE, save_data)
-    #
-    # for params in BAR_CHART_PARAM_SETUP:
-    #     draw_plot(dataset, params[0], params[1], ChartType.BAR, save_data)
+    # Stats between start time of event and end time
+    full_time_data = df[
+        df[LabelNamesMapper.date_time_event.EVENT_END_DATE].notna()
+        & df[LabelNamesMapper.date_time_event.EVENT_START_TIME].notna()
+        ]
 
-def draw_pie_plots(dataset: pd.DataFrame) -> None:
-    # print_data_to_race_plots(dataset)
-    # print_data_to_sex_plots(dataset)
-    # WHITE on WHITE  232682
-    # WHITE on BLACK  29744
-    # BLACK on WHITE  114036
-    # BLACK on BLACK  769255
-    # razem=1145717
-    labels_race = 'WHITE on WHITE', 'WHITE on BLACK', 'BLACK on WHITE', 'BLACK on BLACK'
-    races = [232682/1145717, 29744/1145717, 114036/1145717, 769255/1145717]
+    begin_datetime = ((full_time_data[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
+                       full_time_data[LabelNamesMapper.date_time_event.EVENT_START_TIME])
+                      .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
+    end_datetime = ((full_time_data[LabelNamesMapper.date_time_event.EVENT_END_DATE] +
+                     full_time_data[LabelNamesMapper.date_time_event.EVENT_END_TIME])
+                    .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
 
-    plt.pie(races, labels=labels_race, autopct='%1.1f%%',
-            shadow=False, startangle=90)
-    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    print(
+        f"Number of rows with {LabelNamesMapper.date_time_event.EVENT_END_DATE} and "
+        f"{LabelNamesMapper.date_time_event.EVENT_END_TIME}",
+        len(full_time_data.index)
+    )
+    print(calculate(
+        begin_datetime, end_datetime,
+        [
+            LabelNamesMapper.date_time_event.EVENT_START_DATE,
+            LabelNamesMapper.date_time_event.EVENT_START_TIME
+        ],
+        [
+            LabelNamesMapper.date_time_event.EVENT_END_DATE,
+            LabelNamesMapper.date_time_event.EVENT_END_TIME
+        ],
+        CalculationType.MEAN))
+    print(calculate(
+        begin_datetime, end_datetime,
+        [
+            LabelNamesMapper.date_time_event.EVENT_START_DATE,
+            LabelNamesMapper.date_time_event.EVENT_START_TIME
+        ],
+        [
+            LabelNamesMapper.date_time_event.EVENT_END_DATE,
+            LabelNamesMapper.date_time_event.EVENT_END_TIME
+        ],
+        CalculationType.STD))
 
-    plt.title("Race on race")
-    save_plot("Race", "pie chart")
-
-    # FEMALE on FEMALE     438353
-    # FEMALE on MALE       226069
-    # MALE on FEMALE       1140061
-    # MALE on MALE         783518
-    # razem=2588001
-    labels_race = 'FEMALE on FEMALE', 'FEMALE on MALE', 'MALE on FEMALE', 'MALE on MALE'
-    races = [438353/2588001, 226069/2588001, 1140061/2588001, 783518/2588001]
-
-    plt.pie(races, labels=labels_race, autopct='%1.1f%%',
-            shadow=False, startangle=90)
-    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-    plt.title("Sex on Sex")
-    save_plot("Sex", "pie chart")
-
-
-def print_data_to_race_plots(dataset: pd.DataFrame) -> None:
-    dataset = dataset.groupby([SuspectLabels.SUSPECT_RACE, VictimLabels.VICTIM_RACE])[IdentifierLabels.ID].count()
-    print("Race")
-    print(dataset)
-
-
-def print_data_to_sex_plots(dataset: pd.DataFrame) -> None:
-    dataset = dataset.groupby([SuspectLabels.SUSPECT_SEX, VictimLabels.VICTIM_SEX])[IdentifierLabels.ID].count()
-    print("Sex")
-    print(dataset)
-
-
-def draw_map(dataset: pd.DataFrame) -> None:
-    # dataset = dataset[EventLocationLabels.LONGITUDE, EventLocationLabels.LATITUDE]
-    # dataset = dataset[dataset.notna()]
-    dataset = dataset.dropna(subset=[EventLocationLabels.LONGITUDE, EventLocationLabels.LATITUDE])
-    dataset = dataset.astype({EventLocationLabels.LONGITUDE: str, EventLocationLabels.LATITUDE: str})
-    # x = dataset[EventLocationLabels.LONGITUDE]
-    # y = dataset[EventLocationLabels.LATITUDE]
-    plt.scatter(x=dataset[EventLocationLabels.LONGITUDE], y=dataset[EventLocationLabels.LATITUDE], alpha=0.1)
-    plt.title("Crimes in NYC")
-    save_plot("Crimes in NYC", "Crimes in NYC")
-
-def draw_histograms_borough(dataset: pd.DataFrame) -> None:
-    dataset = dataset[dataset[EventLocationLabels.BOROUGH_NAME].notna()]
-    dataset = dataset.astype({EventLocationLabels.BOROUGH_NAME: str})
-    x = dataset[EventLocationLabels.BOROUGH_NAME]
-    plt.hist(x, bins=9)
-    # plt.ylim([float("1e5"), float("1e7")])
-    plt.xlabel("Borough_name")
-    plt.ylabel("Number")
-    plt.title("Crimes in boroughs histogram")
-    save_plot("Borough_name", "Number")
+    # Stats between start time of event and submission to police
+    begin_date = pd.to_datetime(
+        df[LabelNamesMapper.date_time_event.EVENT_START_DATE], format='%m/%d/%Y', errors="coerce"
+    )
+    submission_date = pd.to_datetime(
+        df[LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+        format='%m/%d/%Y', errors="coerce"
+    )
+    print(calculate(begin_date, submission_date,
+                    [LabelNamesMapper.date_time_event.EVENT_START_DATE],
+                    [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+                    CalculationType.MEAN))
+    print(calculate(begin_date, submission_date,
+                    [LabelNamesMapper.date_time_event.EVENT_START_DATE],
+                    [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+                    CalculationType.STD))
 
 
-def draw_histograms_suspect(dataset: pd.DataFrame) -> None:
-    labels = [SuspectLabels.SUSPECT_AGE_GROUP, SuspectLabels.SUSPECT_RACE, SuspectLabels.SUSPECT_SEX]
-    bins = {SuspectLabels.SUSPECT_AGE_GROUP: 50,
-            SuspectLabels.SUSPECT_RACE: 15,
-            SuspectLabels.SUSPECT_SEX: 5}
-    rotations = {SuspectLabels.SUSPECT_AGE_GROUP: 0,
-                SuspectLabels.SUSPECT_RACE: 60,
-                SuspectLabels.SUSPECT_SEX: 0}
-
-    draw_histograms(dataset, labels, bins, rotations)
+def draw_hist(data: pd.DataFrame, original_data_len: int,
+              description: Tuple[str, str, str], save_data: bool) -> None:
+    plt.hist(data, bins=(data.nunique() * 2) - 1)
+    set_descriptions(
+        description[0] + ", " + calculate_sizes(original_data_len, len(data.index)),
+        description[1], description[2]
+    )
+    show_and_save(description[0], save_data)
 
 
-def draw_histograms_victim(dataset: pd.DataFrame) -> None:
-    labels = [VictimLabels.VICTIM_AGE_GROUP, VictimLabels.VICTIM_RACE, VictimLabels.VICTIM_SEX]
-    bins = {VictimLabels.VICTIM_AGE_GROUP: 120,
-            VictimLabels.VICTIM_RACE: 15,
-            VictimLabels.VICTIM_SEX: 9}
-    rotations = {VictimLabels.VICTIM_AGE_GROUP: 0,
-                 VictimLabels.VICTIM_RACE: 60,
-                 VictimLabels.VICTIM_SEX: 0}
-
-    draw_histograms(dataset, labels, bins, rotations)
-
-
-def draw_histograms(dataset: pd.DataFrame, labels: [str], bins: {str: int}, rotation: {str: int}) -> None:
-    plt.figure(figsize=(cm_to_inch(20), cm_to_inch(20)))
-    for label in labels:
-        dataset = dataset[dataset[label].notna()]
-        dataset = dataset.astype({label: str})
-        x = dataset[label]
-        plt.hist(x, bins=bins[label])
-        # plt.ylim([float("1e5"), float("1e7")])
-        plt.xticks(rotation=rotation[label])
-        plt.xlabel(label)
-        plt.ylabel("Number")
-        plt.title(label  + " histogram")
-        save_plot(label, "Number")
-
-
-def cm_to_inch(value):
-    return value/2.54
-
-
-def save_plot(x_axis_col_name: str, y_axis_col_name: str) -> None:
-    plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"), bbox_inches="tight")
-    plt.close()
-    plt.show()
-
-
-def draw_plot(dataset: pd.DataFrame, x_axis_col_name: str,
+def draw_plot(data_x_axis: pd.Series, data_y_axis: pd.Series, x_axis_col_name: str,
               y_axis_col_name: str, chart_type: ChartType, save_data: bool) -> None:
     if chart_type == ChartType.LINE:
-        plt.plot(dataset[x_axis_col_name], dataset[y_axis_col_name])
+        plt.plot(data_x_axis, data_y_axis)
     elif chart_type == ChartType.BAR:
-        plt.bar(dataset[x_axis_col_name], dataset[y_axis_col_name])
+        plt.bar(data_x_axis, data_y_axis)
 
-    plt.title(f"{x_axis_col_name} to {y_axis_col_name}")
-    plt.xlabel(x_axis_col_name)
-    plt.ylabel(y_axis_col_name)
+    set_descriptions(f"{x_axis_col_name} to {y_axis_col_name}", x_axis_col_name, y_axis_col_name)
+    show_and_save(f"{x_axis_col_name}#{y_axis_col_name}", save_data)
 
+
+def calculate(begin_value, end_value, begin_labels: List[str],
+              end_labels: List[str], calculation_type: CalculationType) -> str:
+    title = ""
+    value = 0
+    if CalculationType.MEAN == calculation_type:
+        title = "Mean of"
+        value = (end_value - begin_value).mean()
+    elif CalculationType.STD == calculation_type:
+        title = "Std of"
+        value = (end_value - begin_value).std()
+
+    return (f"{title} {[label + ' ' for label in begin_labels]} "
+            f"and {[label + ' ' for label in end_labels]} {value}")
+
+
+def filter_na(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    return data[data[column_name].notna()][column_name]
+
+
+def calculate_sizes(original_data_len: int, data_len: int) -> str:
+    return (
+        f" Number of missing values: {original_data_len - data_len} "
+        f"({round(((original_data_len - data_len) / original_data_len) * 100, 2)}%) "
+    )
+
+
+def set_descriptions(title: str, x_label: str = "", y_label: str = "") -> None:
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+
+
+def show_and_save(name: str, save_data: bool) -> None:
     if save_data:
-        plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"))
+        plt.savefig(RESULTS_DIR + prepare_filename(name))
         plt.close()
     plt.show()

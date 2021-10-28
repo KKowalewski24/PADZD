@@ -150,4 +150,5 @@ def show_and_save(name: str, save_data: bool) -> None:
     if save_data:
         plt.savefig(RESULTS_DIR + prepare_filename(name))
         plt.close()
+    plt.grid(axis='x')
     plt.show()

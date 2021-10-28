@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from module.LabelNamesMapper import LabelNamesMapper
-from module.utils import prepare_filename
+from module.utils import create_directory, prepare_filename
 
 RESULTS_DIR = "saved_plots/"
 
@@ -21,10 +21,11 @@ class CalculationType(Enum):
 
 
 def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
+    create_directory(RESULTS_DIR)
     original_data_len = len(df.index)
 
     draw_hist(
-        df[LabelNamesMapper.date_time_event.EVENT_START_TIME].str[:2],
+        df[LabelNamesMapper.date_time_event.EVENT_START_TIME].str[:2].sort_values(),
         original_data_len, ("Hours", "", ""), save_data
     )
     draw_hist(
@@ -46,6 +47,7 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         original_data_len, ("Place type", "", ""), save_data
     )
 
+    # Stats between start time of event and end time
     begin_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
                        df[LabelNamesMapper.date_time_event.EVENT_START_TIME])
                       .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
@@ -76,6 +78,7 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         ],
         CalculationType.STD))
 
+    # Stats between start time of event and submission to police
     begin_date = pd.to_datetime(
         df[LabelNamesMapper.date_time_event.EVENT_START_DATE], format='%m/%d/%Y', errors="coerce"
     )
@@ -141,6 +144,7 @@ def calculate_sizes(original_data_len: int, data_len: int) -> str:
 
 
 def set_descriptions(title: str, x_label: str = "", y_label: str = "") -> None:
+    plt.grid(axis='x')
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -150,5 +154,4 @@ def show_and_save(name: str, save_data: bool) -> None:
     if save_data:
         plt.savefig(RESULTS_DIR + prepare_filename(name))
         plt.close()
-    plt.grid(axis='x')
     plt.show()

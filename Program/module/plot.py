@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Tuple
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -15,16 +15,12 @@ class ChartType(Enum):
     LINE = "Line"
 
 
-def plot_charts(df: pd.DataFrame, save_data: bool) -> None:
-    # begin_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
-    #                    df[LabelNamesMapper.date_time_event.EVENT_START_TIME])
-    #                   .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
-    # end_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_END_DATE] +
-    #                  df[LabelNamesMapper.date_time_event.EVENT_END_TIME])
-    #                 .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
-    # print((end_datetime - begin_datetime).mean())
-    # print((end_datetime - begin_datetime).std())
-    # draw_hist(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION, save_data)
+class CalculationType(Enum):
+    MEAN = "Mean"
+    STD = "Std"
+
+
+def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
     original_data_len = len(df.index)
 
     draw_hist(
@@ -43,6 +39,52 @@ def plot_charts(df: pd.DataFrame, save_data: bool) -> None:
         original_data_len, ("Place type", "", ""), save_data
     )
 
+    begin_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
+                       df[LabelNamesMapper.date_time_event.EVENT_START_TIME])
+                      .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
+    end_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_END_DATE] +
+                     df[LabelNamesMapper.date_time_event.EVENT_END_TIME])
+                    .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce'))
+
+    print(calculate(
+        begin_datetime, end_datetime,
+        [
+            LabelNamesMapper.date_time_event.EVENT_START_DATE,
+            LabelNamesMapper.date_time_event.EVENT_START_TIME
+        ],
+        [
+            LabelNamesMapper.date_time_event.EVENT_END_DATE,
+            LabelNamesMapper.date_time_event.EVENT_END_TIME
+        ],
+        CalculationType.MEAN))
+    print(calculate(
+        begin_datetime, end_datetime,
+        [
+            LabelNamesMapper.date_time_event.EVENT_START_DATE,
+            LabelNamesMapper.date_time_event.EVENT_START_TIME
+        ],
+        [
+            LabelNamesMapper.date_time_event.EVENT_END_DATE,
+            LabelNamesMapper.date_time_event.EVENT_END_TIME
+        ],
+        CalculationType.STD))
+
+    begin_date = pd.to_datetime(
+        df[LabelNamesMapper.date_time_event.EVENT_START_DATE], format='%m/%d/%Y', errors="coerce"
+    )
+    submission_date = pd.to_datetime(
+        df[LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+        format='%m/%d/%Y', errors="coerce"
+    )
+    print(calculate(begin_date, submission_date,
+                    [LabelNamesMapper.date_time_event.EVENT_START_DATE],
+                    [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+                    CalculationType.MEAN))
+    print(calculate(begin_date, submission_date,
+                    [LabelNamesMapper.date_time_event.EVENT_START_DATE],
+                    [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+                    CalculationType.STD))
+
 
 def draw_hist(data: pd.DataFrame, original_data_len: int,
               description: Tuple[str, str, str], save_data: bool) -> None:
@@ -54,19 +96,6 @@ def draw_hist(data: pd.DataFrame, original_data_len: int,
     show_and_save(description[0], save_data)
 
 
-# def draw_hist(df: pd.DataFrame, column_name: str, save_data: bool) -> None:
-#     df_filtered = df[df[column_name].notna()]
-#     plt.hist(df_filtered[column_name])
-#     df_len = len(df.index)
-#     df_filtered_len = len(df_filtered.index)
-#
-#     plt.title(
-#         f"{column_name}, liczba brakujących wartości: {df_len - df_filtered_len} "
-#         f"({((df_len - df_filtered_len) / df_len) * 100}%) "
-#     )
-#     show_and_save(column_name, save_data)
-
-
 def draw_plot(df: pd.DataFrame, x_axis_col_name: str,
               y_axis_col_name: str, chart_type: ChartType, save_data: bool) -> None:
     if chart_type == ChartType.LINE:
@@ -74,14 +103,23 @@ def draw_plot(df: pd.DataFrame, x_axis_col_name: str,
     elif chart_type == ChartType.BAR:
         plt.bar(df[x_axis_col_name], df[y_axis_col_name])
 
-    plt.title(f"{x_axis_col_name} to {y_axis_col_name}")
-    plt.xlabel(x_axis_col_name)
-    plt.ylabel(y_axis_col_name)
+    set_descriptions(f"{x_axis_col_name} to {y_axis_col_name}", x_axis_col_name, y_axis_col_name)
+    show_and_save(f"{x_axis_col_name}#{y_axis_col_name}", save_data)
 
-    if save_data:
-        plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"))
-        plt.close()
-    plt.show()
+
+def calculate(begin_value, end_value, begin_labels: List[str],
+              end_labels: List[str], calculation_type: CalculationType) -> str:
+    title = ""
+    value = 0
+    if CalculationType.MEAN == calculation_type:
+        title = "Mean of"
+        value = (end_value - begin_value).mean()
+    elif CalculationType.STD == calculation_type:
+        title = "Std of"
+        value = (end_value - begin_value).std()
+
+    return (f"{title} {[label + ' ' for label in begin_labels]} "
+            f"and {[label + ' ' for label in end_labels]} {value}")
 
 
 def filter_na(data: pd.DataFrame, column_name: str) -> pd.DataFrame:

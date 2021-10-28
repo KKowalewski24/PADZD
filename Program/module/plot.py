@@ -25,7 +25,8 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
     original_data_len = len(df.index)
 
     draw_hist(
-        df[LabelNamesMapper.date_time_event.EVENT_START_TIME].str[:2].sort_values(),
+        filter_na(df, LabelNamesMapper.date_time_event.EVENT_START_TIME)
+            .astype(str).str[:2].sort_values(),
         original_data_len, ("Hours", "", ""), save_data
     )
     draw_hist(
@@ -35,15 +36,15 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         original_data_len, ("Months", "", ""), save_data
     )
     draw_hist(
-        df[LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL],
+        filter_na(df, LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL).astype(str),
         original_data_len, ("Law breaking level", "", ""), save_data
     )
     draw_hist(
-        df[LabelNamesMapper.event_status.EVENT_STATUS],
+        filter_na(df, LabelNamesMapper.event_status.EVENT_STATUS).astype(str),
         original_data_len, ("Event status", "", ""), save_data
     )
     draw_hist(
-        filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION),
+        filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION).astype(str),
         original_data_len, ("Place type", "", ""), save_data
     )
 

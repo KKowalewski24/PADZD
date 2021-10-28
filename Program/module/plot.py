@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
-from module.LabelNamesMapper import LabelNamesMapper
+from module.LabelNamesMapper import LabelNamesMapper, EventLocationLabels, SuspectLabels, VictimLabels, IdentifierLabels
 from module.utils import create_directory, prepare_filename
 
 RESULTS_DIR = "saved_plots/"
@@ -32,12 +32,140 @@ def plot_charts(dataset: pd.DataFrame, save_data: bool) -> None:
         dataset[name] = label_encoder.fit_transform(dataset[name])
 
     create_directory(RESULTS_DIR)
+    dataset = dataset[dataset["SUSP_AGE_GROUP"].notna()]
+    suspect_age = dataset.groupby([SuspectLabels.SUSPECT_AGE_GROUP])[IdentifierLabels.ID].count()
+    victim_age = dataset.groupby([VictimLabels.VICTIM_AGE_GROUP])[IdentifierLabels.ID].count()
 
-    for params in LINE_CHART_PARAM_SETUP:
-        draw_plot(dataset, params[0], params[1], ChartType.LINE, save_data)
+    print("suspect_age: ",suspect_age)
+    print("victim_age: ",victim_age)
+    # draw_histograms_borough(dataset)
+    # draw_histograms_suspect(dataset)
+    # draw_histograms_victim(dataset)
+    # # draw_map(dataset)
+    # draw_pie_plots(dataset)
 
-    for params in BAR_CHART_PARAM_SETUP:
-        draw_plot(dataset, params[0], params[1], ChartType.BAR, save_data)
+    # for params in LINE_CHART_PARAM_SETUP:
+    #     draw_plot(dataset, params[0], params[1], ChartType.LINE, save_data)
+    #
+    # for params in BAR_CHART_PARAM_SETUP:
+    #     draw_plot(dataset, params[0], params[1], ChartType.BAR, save_data)
+
+def draw_pie_plots(dataset: pd.DataFrame) -> None:
+    # print_data_to_race_plots(dataset)
+    # print_data_to_sex_plots(dataset)
+    # WHITE on WHITE  232682
+    # WHITE on BLACK  29744
+    # BLACK on WHITE  114036
+    # BLACK on BLACK  769255
+    # razem=1145717
+    labels_race = 'WHITE on WHITE', 'WHITE on BLACK', 'BLACK on WHITE', 'BLACK on BLACK'
+    races = [232682/1145717, 29744/1145717, 114036/1145717, 769255/1145717]
+
+    plt.pie(races, labels=labels_race, autopct='%1.1f%%',
+            shadow=False, startangle=90)
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    plt.title("Race on race")
+    save_plot("Race", "pie chart")
+
+    # FEMALE on FEMALE     438353
+    # FEMALE on MALE       226069
+    # MALE on FEMALE       1140061
+    # MALE on MALE         783518
+    # razem=2588001
+    labels_race = 'FEMALE on FEMALE', 'FEMALE on MALE', 'MALE on FEMALE', 'MALE on MALE'
+    races = [438353/2588001, 226069/2588001, 1140061/2588001, 783518/2588001]
+
+    plt.pie(races, labels=labels_race, autopct='%1.1f%%',
+            shadow=False, startangle=90)
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+    plt.title("Sex on Sex")
+    save_plot("Sex", "pie chart")
+
+
+def print_data_to_race_plots(dataset: pd.DataFrame) -> None:
+    dataset = dataset.groupby([SuspectLabels.SUSPECT_RACE, VictimLabels.VICTIM_RACE])[IdentifierLabels.ID].count()
+    print("Race")
+    print(dataset)
+
+
+def print_data_to_sex_plots(dataset: pd.DataFrame) -> None:
+    dataset = dataset.groupby([SuspectLabels.SUSPECT_SEX, VictimLabels.VICTIM_SEX])[IdentifierLabels.ID].count()
+    print("Sex")
+    print(dataset)
+
+
+def draw_map(dataset: pd.DataFrame) -> None:
+    # dataset = dataset[EventLocationLabels.LONGITUDE, EventLocationLabels.LATITUDE]
+    # dataset = dataset[dataset.notna()]
+    dataset = dataset.dropna(subset=[EventLocationLabels.LONGITUDE, EventLocationLabels.LATITUDE])
+    dataset = dataset.astype({EventLocationLabels.LONGITUDE: str, EventLocationLabels.LATITUDE: str})
+    # x = dataset[EventLocationLabels.LONGITUDE]
+    # y = dataset[EventLocationLabels.LATITUDE]
+    plt.scatter(x=dataset[EventLocationLabels.LONGITUDE], y=dataset[EventLocationLabels.LATITUDE], alpha=0.1)
+    plt.title("Crimes in NYC")
+    save_plot("Crimes in NYC", "Crimes in NYC")
+
+def draw_histograms_borough(dataset: pd.DataFrame) -> None:
+    dataset = dataset[dataset[EventLocationLabels.BOROUGH_NAME].notna()]
+    dataset = dataset.astype({EventLocationLabels.BOROUGH_NAME: str})
+    x = dataset[EventLocationLabels.BOROUGH_NAME]
+    plt.hist(x, bins=9)
+    # plt.ylim([float("1e5"), float("1e7")])
+    plt.xlabel("Borough_name")
+    plt.ylabel("Number")
+    plt.title("Crimes in boroughs histogram")
+    save_plot("Borough_name", "Number")
+
+
+def draw_histograms_suspect(dataset: pd.DataFrame) -> None:
+    labels = [SuspectLabels.SUSPECT_AGE_GROUP, SuspectLabels.SUSPECT_RACE, SuspectLabels.SUSPECT_SEX]
+    bins = {SuspectLabels.SUSPECT_AGE_GROUP: 50,
+            SuspectLabels.SUSPECT_RACE: 15,
+            SuspectLabels.SUSPECT_SEX: 5}
+    rotations = {SuspectLabels.SUSPECT_AGE_GROUP: 0,
+                SuspectLabels.SUSPECT_RACE: 60,
+                SuspectLabels.SUSPECT_SEX: 0}
+
+    draw_histograms(dataset, labels, bins, rotations)
+
+
+def draw_histograms_victim(dataset: pd.DataFrame) -> None:
+    labels = [VictimLabels.VICTIM_AGE_GROUP, VictimLabels.VICTIM_RACE, VictimLabels.VICTIM_SEX]
+    bins = {VictimLabels.VICTIM_AGE_GROUP: 120,
+            VictimLabels.VICTIM_RACE: 15,
+            VictimLabels.VICTIM_SEX: 9}
+    rotations = {VictimLabels.VICTIM_AGE_GROUP: 0,
+                 VictimLabels.VICTIM_RACE: 60,
+                 VictimLabels.VICTIM_SEX: 0}
+
+    draw_histograms(dataset, labels, bins, rotations)
+
+
+def draw_histograms(dataset: pd.DataFrame, labels: [str], bins: {str: int}, rotation: {str: int}) -> None:
+    plt.figure(figsize=(cm_to_inch(20), cm_to_inch(20)))
+    for label in labels:
+        dataset = dataset[dataset[label].notna()]
+        dataset = dataset.astype({label: str})
+        x = dataset[label]
+        plt.hist(x, bins=bins[label])
+        # plt.ylim([float("1e5"), float("1e7")])
+        plt.xticks(rotation=rotation[label])
+        plt.xlabel(label)
+        plt.ylabel("Number")
+        plt.title(label  + " histogram")
+        save_plot(label, "Number")
+
+
+def cm_to_inch(value):
+    return value/2.54
+
+
+def save_plot(x_axis_col_name: str, y_axis_col_name: str) -> None:
+    plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"), bbox_inches="tight")
+    plt.close()
+    plt.show()
 
 
 def draw_plot(dataset: pd.DataFrame, x_axis_col_name: str,

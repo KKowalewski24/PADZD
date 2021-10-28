@@ -34,16 +34,16 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         original_data_len, ("Months", "", ""), save_data
     )
     draw_hist(
-        filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION),
-        original_data_len, ("Place type", "", ""), save_data
-    )
-    draw_hist(
         df[LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL],
         original_data_len, ("Law breaking level", "", ""), save_data
     )
     draw_hist(
         df[LabelNamesMapper.event_status.EVENT_STATUS],
         original_data_len, ("Event status", "", ""), save_data
+    )
+    draw_hist(
+        filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION),
+        original_data_len, ("Place type", "", ""), save_data
     )
 
     begin_datetime = ((df[LabelNamesMapper.date_time_event.EVENT_START_DATE] +
@@ -103,12 +103,12 @@ def draw_hist(data: pd.DataFrame, original_data_len: int,
     show_and_save(description[0], save_data)
 
 
-def draw_plot(df: pd.DataFrame, x_axis_col_name: str,
+def draw_plot(data_x_axis: pd.Series, data_y_axis: pd.Series, x_axis_col_name: str,
               y_axis_col_name: str, chart_type: ChartType, save_data: bool) -> None:
     if chart_type == ChartType.LINE:
-        plt.plot(df[x_axis_col_name], df[y_axis_col_name])
+        plt.plot(data_x_axis, data_y_axis)
     elif chart_type == ChartType.BAR:
-        plt.bar(df[x_axis_col_name], df[y_axis_col_name])
+        plt.bar(data_x_axis, data_y_axis)
 
     set_descriptions(f"{x_axis_col_name} to {y_axis_col_name}", x_axis_col_name, y_axis_col_name)
     show_and_save(f"{x_axis_col_name}#{y_axis_col_name}", save_data)

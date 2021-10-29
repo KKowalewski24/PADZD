@@ -221,7 +221,7 @@ def cm_to_inch(value):
 
 
 def save_plot(x_axis_col_name: str, y_axis_col_name: str) -> None:
-    plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"),
+    plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}-{y_axis_col_name}"),
                 bbox_inches="tight")
     plt.close()
     plt.show()
@@ -239,7 +239,7 @@ def draw_plot(dataset: pd.DataFrame, x_axis_col_name: str,
     plt.ylabel(y_axis_col_name)
 
     if save_data:
-        plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}#{y_axis_col_name}"))
+        plt.savefig(RESULTS_DIR + prepare_filename(f"{x_axis_col_name}-{y_axis_col_name}"))
         plt.close()
     plt.show()
 

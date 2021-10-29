@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 from enum import Enum
-from typing import List
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -81,14 +80,6 @@ class LabelNamesMapper:
     victim: VictimLabels = VictimLabels
 
 
-    @staticmethod
-    def get_non_numeric_column_names() -> List[str]:
-        # TODO ADD ALL FIELDS THAT ARE NOT NUMERIC
-        return [
-
-        ]
-
-
 RESULTS_DIR = "saved_plots/"
 
 
@@ -97,7 +88,7 @@ class ChartType(Enum):
     LINE = "Line"
 
 
-def plot_charts(dataset: pd.DataFrame, save_data: bool) -> None:
+def plot_charts(dataset: pd.DataFrame) -> None:
     create_directory(RESULTS_DIR)
     dataset = dataset[dataset["SUSP_AGE_GROUP"].notna()]
     suspect_age = dataset.groupby([SuspectLabels.SUSPECT_AGE_GROUP])[IdentifierLabels.ID].count()
@@ -105,22 +96,16 @@ def plot_charts(dataset: pd.DataFrame, save_data: bool) -> None:
 
     print("suspect_age: ", suspect_age)
     print("victim_age: ", victim_age)
-    # draw_histograms_borough(dataset)
-    # draw_histograms_suspect(dataset)
-    # draw_histograms_victim(dataset)
-    # # draw_map(dataset)
-    # draw_pie_plots(dataset)
-
-    # for params in LINE_CHART_PARAM_SETUP:
-    #     draw_plot(dataset, params[0], params[1], ChartType.LINE, save_data)
-    #
-    # for params in BAR_CHART_PARAM_SETUP:
-    #     draw_plot(dataset, params[0], params[1], ChartType.BAR, save_data)
+    draw_histograms_borough(dataset)
+    draw_histograms_suspect(dataset)
+    draw_histograms_victim(dataset)
+    draw_map(dataset)
+    draw_pie_plots(dataset)
 
 
 def draw_pie_plots(dataset: pd.DataFrame) -> None:
-    # print_data_to_race_plots(dataset)
-    # print_data_to_sex_plots(dataset)
+    print_data_to_race_plots(dataset)
+    print_data_to_sex_plots(dataset)
     # WHITE on WHITE  232682
     # WHITE on BLACK  29744
     # BLACK on WHITE  114036
@@ -271,4 +256,4 @@ def prepare_filename(name: str, extension: str = "", add_date: bool = True) -> s
 
 if __name__ == '__main__':
     df = pd.read_csv("../data/NYPD_Complaint_Data_Historic.csv")
-    plot_charts(df, True)
+    plot_charts(df)

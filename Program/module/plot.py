@@ -20,12 +20,33 @@ class CalculationType(Enum):
     STD = "Std"
 
 
+def draw_plot(data_x_axis: pd.Series, data_y_axis: pd.Series, x_axis_col_name: str,
+              y_axis_col_name: str, chart_type: ChartType, save_data: bool) -> None:
+    if chart_type == ChartType.LINE:
+        plt.plot(data_x_axis, data_y_axis)
+    elif chart_type == ChartType.BAR:
+        plt.bar(data_x_axis, data_y_axis)
+
+    _set_descriptions(f"{x_axis_col_name} to {y_axis_col_name}", x_axis_col_name, y_axis_col_name)
+    _show_and_save(f"{x_axis_col_name}-{y_axis_col_name}", save_data)
+
+
+def draw_hist(data: pd.DataFrame, original_data_len: int,
+              description: Tuple[str, str, str], save_data: bool) -> None:
+    plt.hist(data, bins=(data.nunique() * 2) - 1)
+    _set_descriptions(
+        description[0] + ", " + _calculate_sizes(original_data_len, len(data.index)),
+        description[1], description[2]
+    )
+    _show_and_save(description[0], save_data)
+
+
 def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
     create_directory(RESULTS_DIR)
     original_data_len = len(df.index)
 
     draw_hist(
-        filter_na(df, LabelNamesMapper.date_time_event.EVENT_START_TIME)
+        _filter_na(df, LabelNamesMapper.date_time_event.EVENT_START_TIME)
             .astype(str).str[:2].sort_values(),
         original_data_len, ("Hours", "", ""), save_data
     )
@@ -36,15 +57,15 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         original_data_len, ("Months", "", ""), save_data
     )
     draw_hist(
-        filter_na(df, LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL).astype(str),
+        _filter_na(df, LabelNamesMapper.law_breaking.LAW_BREAKING_LEVEL).astype(str),
         original_data_len, ("Law breaking level", "", ""), save_data
     )
     draw_hist(
-        filter_na(df, LabelNamesMapper.event_status.EVENT_STATUS).astype(str),
+        _filter_na(df, LabelNamesMapper.event_status.EVENT_STATUS).astype(str),
         original_data_len, ("Event status", "", ""), save_data
     )
     draw_hist(
-        filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION).astype(str),
+        _filter_na(df, LabelNamesMapper.event_surroundings.PLACE_TYPE_POSITION).astype(str),
         original_data_len, ("Place type", "", ""), save_data
     )
 
@@ -66,7 +87,7 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         f"{LabelNamesMapper.date_time_event.EVENT_END_TIME}",
         len(full_time_data.index)
     )
-    print(calculate(
+    print(_calculate_measures(
         begin_datetime, end_datetime,
         [
             LabelNamesMapper.date_time_event.EVENT_START_DATE,
@@ -77,7 +98,7 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
             LabelNamesMapper.date_time_event.EVENT_END_TIME
         ],
         CalculationType.MEAN))
-    print(calculate(
+    print(_calculate_measures(
         begin_datetime, end_datetime,
         [
             LabelNamesMapper.date_time_event.EVENT_START_DATE,
@@ -97,39 +118,18 @@ def generate_charts_stats(df: pd.DataFrame, save_data: bool) -> None:
         df[LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
         format='%m/%d/%Y', errors="coerce"
     )
-    print(calculate(begin_date, submission_date,
-                    [LabelNamesMapper.date_time_event.EVENT_START_DATE],
-                    [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
-                    CalculationType.MEAN))
-    print(calculate(begin_date, submission_date,
-                    [LabelNamesMapper.date_time_event.EVENT_START_DATE],
-                    [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
-                    CalculationType.STD))
+    print(_calculate_measures(begin_date, submission_date,
+                              [LabelNamesMapper.date_time_event.EVENT_START_DATE],
+                              [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+                              CalculationType.MEAN))
+    print(_calculate_measures(begin_date, submission_date,
+                              [LabelNamesMapper.date_time_event.EVENT_START_DATE],
+                              [LabelNamesMapper.date_time_submission.SUBMISSION_TO_POLICE_DATE],
+                              CalculationType.STD))
 
 
-def draw_hist(data: pd.DataFrame, original_data_len: int,
-              description: Tuple[str, str, str], save_data: bool) -> None:
-    plt.hist(data, bins=(data.nunique() * 2) - 1)
-    set_descriptions(
-        description[0] + ", " + calculate_sizes(original_data_len, len(data.index)),
-        description[1], description[2]
-    )
-    show_and_save(description[0], save_data)
-
-
-def draw_plot(data_x_axis: pd.Series, data_y_axis: pd.Series, x_axis_col_name: str,
-              y_axis_col_name: str, chart_type: ChartType, save_data: bool) -> None:
-    if chart_type == ChartType.LINE:
-        plt.plot(data_x_axis, data_y_axis)
-    elif chart_type == ChartType.BAR:
-        plt.bar(data_x_axis, data_y_axis)
-
-    set_descriptions(f"{x_axis_col_name} to {y_axis_col_name}", x_axis_col_name, y_axis_col_name)
-    show_and_save(f"{x_axis_col_name}#{y_axis_col_name}", save_data)
-
-
-def calculate(begin_value, end_value, begin_labels: List[str],
-              end_labels: List[str], calculation_type: CalculationType) -> str:
+def _calculate_measures(begin_value, end_value, begin_labels: List[str],
+                        end_labels: List[str], calculation_type: CalculationType) -> str:
     title = ""
     value = 0
     if CalculationType.MEAN == calculation_type:
@@ -143,24 +143,24 @@ def calculate(begin_value, end_value, begin_labels: List[str],
             f"and {[label + ' ' for label in end_labels]} {value}")
 
 
-def filter_na(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    return data[data[column_name].notna()][column_name]
-
-
-def calculate_sizes(original_data_len: int, data_len: int) -> str:
+def _calculate_sizes(original_data_len: int, data_len: int) -> str:
     return (
         f" Number of missing values: {original_data_len - data_len} "
         f"({round(((original_data_len - data_len) / original_data_len) * 100, 2)}%) "
     )
 
 
-def set_descriptions(title: str, x_label: str = "", y_label: str = "") -> None:
+def _filter_na(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    return data[data[column_name].notna()][column_name]
+
+
+def _set_descriptions(title: str, x_label: str = "", y_label: str = "") -> None:
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
 
 
-def show_and_save(name: str, save_data: bool) -> None:
+def _show_and_save(name: str, save_data: bool) -> None:
     if save_data:
         plt.savefig(RESULTS_DIR + prepare_filename(name))
         plt.close()

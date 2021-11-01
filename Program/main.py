@@ -3,7 +3,6 @@ from argparse import ArgumentParser, Namespace
 import pandas as pd
 
 from module.Logger import Logger
-from module.plot import generate_charts_stats
 from module.utils import check_if_exists_in_args, check_types_check_style, compile_to_pyc, \
     display_finish
 
@@ -26,8 +25,6 @@ def main() -> None:
     logger.info("Loading dataset...")
     df = pd.read_csv(DATA_FILEPATH)
     logger.info("Loading dataset finished")
-
-    generate_charts_stats(df, save_data)
 
     display_finish()
 

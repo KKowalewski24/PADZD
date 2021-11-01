@@ -80,7 +80,7 @@ class LabelNamesMapper:
     victim: VictimLabels = VictimLabels
 
 
-RESULTS_DIR = "saved_plots/"
+RESULTS_DIR = "saved_extra_plots/"
 
 
 class ChartType(Enum):
@@ -255,5 +255,4 @@ def prepare_filename(name: str, extension: str = "", add_date: bool = True) -> s
 
 
 if __name__ == '__main__':
-    df = pd.read_csv("../data/NYPD_Complaint_Data_Historic.csv")
-    plot_charts(df)
+    plot_charts(pd.read_csv("../data/NYPD_Complaint_Data_Historic.csv"))

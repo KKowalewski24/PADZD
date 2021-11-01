@@ -24,6 +24,24 @@ class DateTimeSubmissionLabels:
     SUBMISSION_TO_POLICE_TIMESTAMP = "RPT_TIMESTAMP"
 
 
+class EventLocationLabels:
+    PRECINCT_CODE = "ADDR_PCT_CD"
+    BOROUGH_NAME = "BORO_NM"
+    JURISDICTION_DESCRIPTION = "JURIS_DESC"
+    JURISDICTION_CODE = "JURISDICTION_CODE"
+    PARK_NAME = "PARKS_NM"
+    NYC_HOUSING_DEVELOPMENT = "HADEVELOPT"
+    DEVELOPMENT_LEVEl_CODE = "HOUSING_PSA"
+    NYC_X_COORDINATE = "X_COORD_CD"
+    NYC_Y_COORDINATE = "Y_COORD_CD"
+    TRANSIT_DISTRICT_CODE = "TRANSIT_DISTRICT"
+    LATITUDE = "Latitude"
+    LONGITUDE = "Longitude"
+    LATITUDE_LONGITUDE = "Lat_Lon"
+    PATROL_DISTRICT_NAME = "PATROL_BORO"
+    TRANSIT_STATION_NAME = "STATION_NAME"
+
+
 def main() -> None:
     args = prepare_args()
     filepath = args.filepath
@@ -37,18 +55,26 @@ def main() -> None:
         (df[DateTimeEventLabels.EVENT_START_DATE] + df[DateTimeEventLabels.EVENT_START_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
-    df = df.drop(columns=[DateTimeEventLabels.EVENT_START_DATE, DateTimeEventLabels.EVENT_START_TIME])
 
     df[DateTimeEventLabels.EVENT_END_TIMESTAMP] = (
         (df[DateTimeEventLabels.EVENT_END_DATE] + df[DateTimeEventLabels.EVENT_END_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
-    df = df.drop(columns=[DateTimeEventLabels.EVENT_END_DATE, DateTimeEventLabels.EVENT_END_TIME])
 
     df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP] = pd.to_datetime(
         df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE]
     )
-    df = df.drop(columns=[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE])
+
+    df.drop(columns=[
+        DateTimeEventLabels.EVENT_START_DATE,
+        DateTimeEventLabels.EVENT_START_TIME,
+        DateTimeEventLabels.EVENT_END_DATE,
+        DateTimeEventLabels.EVENT_END_TIME,
+        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE,
+        EventLocationLabels.NYC_X_COORDINATE,
+        EventLocationLabels.NYC_Y_COORDINATE,
+        EventLocationLabels.LATITUDE_LONGITUDE,
+    ], inplace=True)
 
     print("Saving data to file...")
     df.to_csv(output, index=False)

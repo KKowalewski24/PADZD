@@ -6,25 +6,52 @@ import pandas as pd
 
 """
 How to run:
-    python dataset_preprocessing.py -f ../data/NYPD_Complaint_Data_Historic.csv -r 1000000 -o ../data/NYPD_Data_Trimmed.csv
+    python dataset_preprocessing.py -f ../data/NYPD_Complaint_Data_Historic.csv -o ../data/NYPD_Data_Preprocessed.csv
 """
+
+
+class DateTimeEventLabels:
+    EVENT_START_DATE = "CMPLNT_FR_DT"
+    EVENT_START_TIME = "CMPLNT_FR_TM"
+    EVENT_START_TIMESTAMP = "CMPLNT_FR_TIMESTAMP"
+    EVENT_END_DATE = "CMPLNT_TO_DT"
+    EVENT_END_TIME = "CMPLNT_TO_TM"
+    EVENT_END_TIMESTAMP = "CMPLNT_TO_TIMESTAMP"
+
+
+class DateTimeSubmissionLabels:
+    SUBMISSION_TO_POLICE_DATE = "RPT_DT"
+    SUBMISSION_TO_POLICE_TIMESTAMP = "RPT_TIMESTAMP"
 
 
 def main() -> None:
     args = prepare_args()
     filepath = args.filepath
-    nrows = args.nrows
     output = args.output
 
     print("Loading data...")
     df: pd.DataFrame = pd.read_csv(filepath)
     print("Size of loaded data:", len(df.index))
-    # Consider more fancy imputation than "List wise deletion"
-    # print("Imputating data...")
-    # df = df.dropna()
-    # print("Size of data after imputation:", len(df.index))
+
+    df[DateTimeEventLabels.EVENT_START_TIMESTAMP] = (
+        (df[DateTimeEventLabels.EVENT_START_DATE] + df[DateTimeEventLabels.EVENT_START_TIME])
+            .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
+    )
+    df = df.drop(columns=[DateTimeEventLabels.EVENT_START_DATE, DateTimeEventLabels.EVENT_START_TIME])
+
+    df[DateTimeEventLabels.EVENT_END_TIMESTAMP] = (
+        (df[DateTimeEventLabels.EVENT_END_DATE] + df[DateTimeEventLabels.EVENT_END_TIME])
+            .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
+    )
+    df = df.drop(columns=[DateTimeEventLabels.EVENT_END_DATE, DateTimeEventLabels.EVENT_END_TIME])
+
+    df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP] = pd.to_datetime(
+        df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE]
+    )
+    df = df.drop(columns=[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE])
+
     print("Saving data to file...")
-    df.head(nrows).to_csv(output, index=False)
+    df.to_csv(output, index=False)
 
     display_finish()
 
@@ -34,9 +61,6 @@ def prepare_args() -> Namespace:
 
     arg_parser.add_argument(
         "-f", "--filepath", required=True, type=str, help="Filepath to CSV file"
-    )
-    arg_parser.add_argument(
-        "-r", "--nrows", required=True, type=int, help="Number of rows inserted to result file"
     )
     arg_parser.add_argument(
         "-o", "--output", required=True, type=str, help="Filename of output file"

@@ -255,4 +255,4 @@ def prepare_filename(name: str, extension: str = "", add_date: bool = True) -> s
 
 
 if __name__ == '__main__':
-    generate_charts_stats(pd.read_csv("../data/NYPD_file_beginning.csv"), True)
+    generate_charts_stats(pd.read_csv("../data/NYPD_Complaint_Data_Historic.csv"), True)

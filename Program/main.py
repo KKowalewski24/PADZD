@@ -3,8 +3,7 @@ from argparse import ArgumentParser, Namespace
 import pandas as pd
 
 from module.Logger import Logger
-from module.utils import check_if_exists_in_args, check_types_check_style, compile_to_pyc, \
-    display_finish
+from module.utils import display_finish, run_main
 
 """
     How to run
@@ -40,9 +39,4 @@ def prepare_args() -> Namespace:
 
 
 if __name__ == "__main__":
-    if check_if_exists_in_args("-t"):
-        check_types_check_style()
-    elif check_if_exists_in_args("-b"):
-        compile_to_pyc()
-    else:
-        main()
+    run_main(main)

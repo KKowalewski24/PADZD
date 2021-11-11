@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
@@ -8,14 +9,16 @@ import pandas as pd
 
 """
 How to run:
-    python dataset_preprocessing.py -f ../data/NYPD_Complaint_Data_Historic.csv -o ../data/NYPD_Data_Preprocessed.csv
+    python dataset_preprocessing.py -f ../data/NYPD_Complaint_Data_Historic.csv
 """
+
+RESULTS_DIR = "preprocessing_output/"
 
 
 def main() -> None:
     args = prepare_args()
     filepath = args.filepath
-    output = args.output
+    create_directory(RESULTS_DIR)
 
     print("Loading data...")
     df: pd.DataFrame = pd.read_csv(filepath)
@@ -23,6 +26,7 @@ def main() -> None:
 
     merge_cols(df)
     drop_cols(df)
+    group_data(df)
 
     calculate_stats(
         df,
@@ -50,7 +54,7 @@ def main() -> None:
     )
 
     print("Saving data to file...")
-    df.to_csv(output, index=False)
+    df.to_csv(f"{RESULTS_DIR}NYPD_Data_Preprocessed.csv", index=False)
 
     display_finish()
 
@@ -93,12 +97,24 @@ def drop_cols(df: pd.DataFrame) -> None:
     ], inplace=True)
 
 
+def group_data(df: pd.DataFrame) -> None:
+    (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
+     .unique()
+     .reset_index()
+     .to_csv(f"{RESULTS_DIR}key_code_desc_map.csv", index=False))
+
+    (df.groupby(LawBreakingLabels.PD_CODE)[LawBreakingLabels.PD_DESCRIPTION]
+     .unique()
+     .reset_index()
+     .to_csv(f"{RESULTS_DIR}pd_code_desc_map.csv", index=False))
+
+
 def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:
     stats: Dict[str, int] = {}
     for column in columns:
         stats[column] = df[column].isna().sum().astype(str)
 
-    with open("missing_values.json", "w") as file:
+    with open(f"{RESULTS_DIR}missing_values.json", "w") as file:
         json.dump(stats, file)
 
 
@@ -108,11 +124,13 @@ def prepare_args() -> Namespace:
     arg_parser.add_argument(
         "-f", "--filepath", required=True, type=str, help="Filepath to CSV file"
     )
-    arg_parser.add_argument(
-        "-o", "--output", required=True, type=str, help="Filename of output file"
-    )
 
     return arg_parser.parse_args()
+
+
+def create_directory(path: str) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 
 def check_types() -> None:
@@ -197,5 +215,5 @@ class VictimLabels:
 if __name__ == "__main__":
     if check_if_exists_in_args("-t"):
         check_types()
-
-    main()
+    else:
+        main()

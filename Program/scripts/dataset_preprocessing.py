@@ -1,6 +1,8 @@
+import json
 import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
+from typing import Dict, List
 
 import pandas as pd
 
@@ -104,15 +106,44 @@ def main() -> None:
         DateTimeEventLabels.EVENT_END_DATE,
         DateTimeEventLabels.EVENT_END_TIME,
         DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE,
+
+        EventLocationLabels.JURISDICTION_DESCRIPTION,
+        EventLocationLabels.JURISDICTION_CODE,
+        EventLocationLabels.PARK_NAME,
+        EventLocationLabels.NYC_HOUSING_DEVELOPMENT,
+        EventLocationLabels.DEVELOPMENT_LEVEl_CODE,
         EventLocationLabels.NYC_X_COORDINATE,
         EventLocationLabels.NYC_Y_COORDINATE,
+        EventLocationLabels.TRANSIT_DISTRICT_CODE,
         EventLocationLabels.LATITUDE_LONGITUDE,
+        EventLocationLabels.PATROL_DISTRICT_NAME,
+        EventLocationLabels.TRANSIT_STATION_NAME,
+
     ], inplace=True)
+
+    calculate_stats(
+        df,
+        [
+            DateTimeEventLabels.EVENT_START_TIMESTAMP,
+            DateTimeEventLabels.EVENT_END_TIMESTAMP,
+            DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
+            # TODO
+        ]
+    )
 
     print("Saving data to file...")
     df.to_csv(output, index=False)
 
     display_finish()
+
+
+def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:
+    stats: Dict[str, int] = {}
+    for column in columns:
+        stats[column] = df[column].isna().sum().astype(str)
+
+    with open("missing_values.json", "w") as file:
+        json.dump(stats, file)
 
 
 def prepare_args() -> Namespace:

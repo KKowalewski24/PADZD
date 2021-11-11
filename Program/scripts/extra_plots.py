@@ -13,12 +13,15 @@ class IdentifierLabels:
 class DateTimeEventLabels:
     EVENT_START_DATE = "CMPLNT_FR_DT"
     EVENT_START_TIME = "CMPLNT_FR_TM"
+    EVENT_START_TIMESTAMP = "CMPLNT_FR_TIMESTAMP"
     EVENT_END_DATE = "CMPLNT_TO_DT"
     EVENT_END_TIME = "CMPLNT_TO_TM"
+    EVENT_END_TIMESTAMP = "CMPLNT_TO_TIMESTAMP"
 
 
 class DateTimeSubmissionLabels:
     SUBMISSION_TO_POLICE_DATE = "RPT_DT"
+    SUBMISSION_TO_POLICE_TIMESTAMP = "RPT_TIMESTAMP"
 
 
 class LawBreakingLabels:
@@ -66,18 +69,6 @@ class VictimLabels:
     VICTIM_AGE_GROUP = "VIC_AGE_GROUP"
     VICTIM_RACE = "VIC_RACE"
     VICTIM_SEX = "VIC_SEX"
-
-
-class LabelNamesMapper:
-    identifier: IdentifierLabels = IdentifierLabels
-    date_time_event: DateTimeEventLabels = DateTimeEventLabels
-    date_time_submission: DateTimeSubmissionLabels = DateTimeSubmissionLabels
-    law_breaking: LawBreakingLabels = LawBreakingLabels
-    event_status: EventStatusLabels = EventStatusLabels
-    event_surroundings: EventSurroundingsLabels = EventSurroundingsLabels
-    event_location: EventLocationLabels = EventLocationLabels
-    suspect: SuspectLabels = SuspectLabels
-    victim: VictimLabels = VictimLabels
 
 
 RESULTS_DIR = "saved_extra_plots/"

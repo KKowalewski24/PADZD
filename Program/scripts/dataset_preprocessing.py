@@ -10,6 +10,10 @@ How to run:
 """
 
 
+class IdentifierLabels:
+    ID = "CMPLNT_NUM"
+
+
 class DateTimeEventLabels:
     EVENT_START_DATE = "CMPLNT_FR_DT"
     EVENT_START_TIME = "CMPLNT_FR_TM"
@@ -22,6 +26,23 @@ class DateTimeEventLabels:
 class DateTimeSubmissionLabels:
     SUBMISSION_TO_POLICE_DATE = "RPT_DT"
     SUBMISSION_TO_POLICE_TIMESTAMP = "RPT_TIMESTAMP"
+
+
+class LawBreakingLabels:
+    KEY_CODE = "KY_CD"
+    OFFENSE_DESCRIPTION = "OFNS_DESC"
+    PD_CODE = "PD_CD"
+    PD_DESCRIPTION = "PD_DESC"
+    LAW_BREAKING_LEVEL = "LAW_CAT_CD"
+
+
+class EventStatusLabels:
+    EVENT_STATUS = "CRM_ATPT_CPTD_CD"
+
+
+class EventSurroundingsLabels:
+    PLACE_TYPE = "PREM_TYP_DESC"
+    PLACE_TYPE_POSITION = "LOC_OF_OCCUR_DESC"
 
 
 class EventLocationLabels:
@@ -40,6 +61,18 @@ class EventLocationLabels:
     LATITUDE_LONGITUDE = "Lat_Lon"
     PATROL_DISTRICT_NAME = "PATROL_BORO"
     TRANSIT_STATION_NAME = "STATION_NAME"
+
+
+class SuspectLabels:
+    SUSPECT_AGE_GROUP = "SUSP_AGE_GROUP"
+    SUSPECT_RACE = "SUSP_RACE"
+    SUSPECT_SEX = "SUSP_SEX"
+
+
+class VictimLabels:
+    VICTIM_AGE_GROUP = "VIC_AGE_GROUP"
+    VICTIM_RACE = "VIC_RACE"
+    VICTIM_SEX = "VIC_SEX"
 
 
 def main() -> None:

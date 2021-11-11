@@ -60,22 +60,26 @@ def main() -> None:
 
 
 def merge_cols(df: pd.DataFrame) -> None:
+    print(f"Merging {DateTimeEventLabels.EVENT_START_TIMESTAMP}")
     df[DateTimeEventLabels.EVENT_START_TIMESTAMP] = (
         (df[DateTimeEventLabels.EVENT_START_DATE] + df[DateTimeEventLabels.EVENT_START_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
 
+    print(f"Merging {DateTimeEventLabels.EVENT_END_TIMESTAMP}")
     df[DateTimeEventLabels.EVENT_END_TIMESTAMP] = (
         (df[DateTimeEventLabels.EVENT_END_DATE] + df[DateTimeEventLabels.EVENT_END_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
 
+    print(f"Merging {DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP}")
     df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP] = pd.to_datetime(
         df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE]
     )
 
 
 def drop_cols(df: pd.DataFrame) -> None:
+    print("Dropping cols")
     df.drop(columns=[
         DateTimeEventLabels.EVENT_START_DATE,
         DateTimeEventLabels.EVENT_START_TIME,
@@ -98,11 +102,13 @@ def drop_cols(df: pd.DataFrame) -> None:
 
 
 def group_data(df: pd.DataFrame) -> None:
+    print(f"Grouping {LawBreakingLabels.KEY_CODE}")
     (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
      .unique()
      .reset_index()
      .to_csv(f"{RESULTS_DIR}key_code_desc_map.csv", index=False))
 
+    print(f"Grouping {LawBreakingLabels.PD_CODE}")
     (df.groupby(LawBreakingLabels.PD_CODE)[LawBreakingLabels.PD_DESCRIPTION]
      .unique()
      .reset_index()

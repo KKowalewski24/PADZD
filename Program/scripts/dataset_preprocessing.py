@@ -89,6 +89,38 @@ def merge_cols(df: pd.DataFrame) -> None:
     )
 
 
+def group_data(df: pd.DataFrame) -> None:
+    display_and_log(f"Grouping {LawBreakingLabels.KEY_CODE}")
+    (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
+     .unique()
+     .reset_index()
+     .to_csv(RESULTS_DIR + prepare_filename("key_code_desc_map", CSV), index=False))
+
+    display_and_log(f"Grouping {LawBreakingLabels.PD_CODE}")
+    (df.groupby(LawBreakingLabels.PD_CODE)[LawBreakingLabels.PD_DESCRIPTION]
+     .unique()
+     .reset_index()
+     .to_csv(RESULTS_DIR + prepare_filename("pd_code_desc_map", CSV), index=False))
+
+    _update_value_in_row(df, SuspectLabels.SUSPECT_SEX, "M", "MALE")
+    _update_value_in_row(df, SuspectLabels.SUSPECT_SEX, "F", "FEMALE")
+    df.loc[
+        ~df[SuspectLabels.SUSPECT_SEX].str.contains("F|M", na=False),
+        SuspectLabels.SUSPECT_SEX
+    ] = "OTHER"
+
+    _update_value_in_row(df, VictimLabels.VICTIM_SEX, "M", "MALE")
+    _update_value_in_row(df, VictimLabels.VICTIM_SEX, "F", "FEMALE")
+    df.loc[
+        ~df[VictimLabels.VICTIM_SEX].str.contains("F|M", na=False),
+        VictimLabels.VICTIM_SEX
+    ] = "OTHER"
+
+
+def _update_value_in_row(df: pd.DataFrame, label: str, old_value: str, new_value: str) -> None:
+    df.loc[df[label] == old_value, label] = new_value
+
+
 def drop_cols(df: pd.DataFrame) -> None:
     display_and_log("Dropping cols")
     df.drop(columns=[
@@ -113,20 +145,6 @@ def drop_cols(df: pd.DataFrame) -> None:
         EventLocationLabels.PATROL_DISTRICT_NAME,
         EventLocationLabels.TRANSIT_STATION_NAME,
     ], inplace=True)
-
-
-def group_data(df: pd.DataFrame) -> None:
-    display_and_log(f"Grouping {LawBreakingLabels.KEY_CODE}")
-    (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
-     .unique()
-     .reset_index()
-     .to_csv(RESULTS_DIR + prepare_filename("key_code_desc_map", CSV), index=False))
-
-    display_and_log(f"Grouping {LawBreakingLabels.PD_CODE}")
-    (df.groupby(LawBreakingLabels.PD_CODE)[LawBreakingLabels.PD_DESCRIPTION]
-     .unique()
-     .reset_index()
-     .to_csv(RESULTS_DIR + prepare_filename("pd_code_desc_map", CSV), index=False))
 
 
 def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:

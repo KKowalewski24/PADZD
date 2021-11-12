@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -13,6 +14,13 @@ How to run:
 """
 
 RESULTS_DIR = "preprocessing_output/"
+LOGS_FILENAME: str = "app.log"
+
+logging.basicConfig(
+    filename=LOGS_FILENAME,
+    level=logging.INFO,
+    format="[%(asctime)s] {%(pathname)s:%(lineno)d} - %(message)s"
+)
 
 
 def main() -> None:
@@ -20,13 +28,13 @@ def main() -> None:
     filepath = args.filepath
     create_directory(RESULTS_DIR)
 
-    print("Loading data...")
+    display_and_log("Loading data...")
     df: pd.DataFrame = pd.read_csv(filepath)
-    print("Size of loaded data:", len(df.index))
+    display_and_log(f"Size of loaded data: {len(df.index)}")
 
     merge_cols(df)
-    drop_cols(df)
     group_data(df)
+    drop_cols(df)
 
     calculate_stats(
         df,
@@ -53,33 +61,33 @@ def main() -> None:
         ]
     )
 
-    print("Saving data to file...")
+    display_and_log("Saving data to file...")
     df.to_csv(f"{RESULTS_DIR}NYPD_Data_Preprocessed.csv", index=False)
 
     display_finish()
 
 
 def merge_cols(df: pd.DataFrame) -> None:
-    print(f"Merging {DateTimeEventLabels.EVENT_START_TIMESTAMP}")
+    display_and_log(f"Merging {DateTimeEventLabels.EVENT_START_TIMESTAMP}")
     df[DateTimeEventLabels.EVENT_START_TIMESTAMP] = (
         (df[DateTimeEventLabels.EVENT_START_DATE] + df[DateTimeEventLabels.EVENT_START_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
 
-    print(f"Merging {DateTimeEventLabels.EVENT_END_TIMESTAMP}")
+    display_and_log(f"Merging {DateTimeEventLabels.EVENT_END_TIMESTAMP}")
     df[DateTimeEventLabels.EVENT_END_TIMESTAMP] = (
         (df[DateTimeEventLabels.EVENT_END_DATE] + df[DateTimeEventLabels.EVENT_END_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
 
-    print(f"Merging {DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP}")
+    display_and_log(f"Merging {DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP}")
     df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP] = pd.to_datetime(
         df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE]
     )
 
 
 def drop_cols(df: pd.DataFrame) -> None:
-    print("Dropping cols")
+    display_and_log("Dropping cols")
     df.drop(columns=[
         DateTimeEventLabels.EVENT_START_DATE,
         DateTimeEventLabels.EVENT_START_TIME,
@@ -105,13 +113,13 @@ def drop_cols(df: pd.DataFrame) -> None:
 
 
 def group_data(df: pd.DataFrame) -> None:
-    print(f"Grouping {LawBreakingLabels.KEY_CODE}")
+    display_and_log(f"Grouping {LawBreakingLabels.KEY_CODE}")
     (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
      .unique()
      .reset_index()
      .to_csv(f"{RESULTS_DIR}key_code_desc_map.csv", index=False))
 
-    print(f"Grouping {LawBreakingLabels.PD_CODE}")
+    display_and_log(f"Grouping {LawBreakingLabels.PD_CODE}")
     (df.groupby(LawBreakingLabels.PD_CODE)[LawBreakingLabels.PD_DESCRIPTION]
      .unique()
      .reset_index()
@@ -137,6 +145,11 @@ def prepare_args() -> Namespace:
     return arg_parser.parse_args()
 
 
+def display_and_log(text: str) -> None:
+    print(text)
+    logging.info(text)
+
+
 def create_directory(path: str) -> None:
     if not os.path.exists(path):
         os.makedirs(path)
@@ -151,9 +164,9 @@ def check_if_exists_in_args(arg: str) -> bool:
 
 
 def display_finish() -> None:
-    print("------------------------------------------------------------------------")
-    print("FINISHED")
-    print("------------------------------------------------------------------------")
+    display_and_log("------------------------------------------------------------------------")
+    display_and_log("FINISHED")
+    display_and_log("------------------------------------------------------------------------")
 
 
 class IdentifierLabels:

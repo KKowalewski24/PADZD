@@ -102,23 +102,32 @@ def group_data(df: pd.DataFrame) -> None:
      .reset_index()
      .to_csv(RESULTS_DIR + prepare_filename("pd_code_desc_map", CSV), index=False))
 
-    _update_value_in_row(df, SuspectLabels.SUSPECT_SEX, "M", "MALE")
-    _update_value_in_row(df, SuspectLabels.SUSPECT_SEX, "F", "FEMALE")
+    display_and_log("Grouping RACE")
+    df.loc[
+        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull()),
+        SuspectLabels.SUSPECT_RACE
+    ] = "OTHER"
+
+    df.loc[
+        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull()),
+        VictimLabels.VICTIM_RACE
+    ] = "OTHER"
+
+    display_and_log("Grouping GENDER")
+    df.loc[df[SuspectLabels.SUSPECT_SEX] == "M", SuspectLabels.SUSPECT_SEX] = "MALE"
+    df.loc[df[SuspectLabels.SUSPECT_SEX] == "F", SuspectLabels.SUSPECT_SEX] = "FEMALE"
+
     df.loc[
         ~df[SuspectLabels.SUSPECT_SEX].str.contains("F|M", na=False),
         SuspectLabels.SUSPECT_SEX
     ] = "OTHER"
 
-    _update_value_in_row(df, VictimLabels.VICTIM_SEX, "M", "MALE")
-    _update_value_in_row(df, VictimLabels.VICTIM_SEX, "F", "FEMALE")
+    df.loc[df[VictimLabels.VICTIM_SEX] == "M", VictimLabels.VICTIM_SEX] = "MALE"
+    df.loc[df[VictimLabels.VICTIM_SEX] == "F", VictimLabels.VICTIM_SEX] = "FEMALE"
     df.loc[
         ~df[VictimLabels.VICTIM_SEX].str.contains("F|M", na=False),
         VictimLabels.VICTIM_SEX
     ] = "OTHER"
-
-
-def _update_value_in_row(df: pd.DataFrame, label: str, old_value: str, new_value: str) -> None:
-    df.loc[df[label] == old_value, label] = new_value
 
 
 def drop_cols(df: pd.DataFrame) -> None:
@@ -148,6 +157,7 @@ def drop_cols(df: pd.DataFrame) -> None:
 
 
 def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:
+    display_and_log("Calculating stats")
     stats: Dict[str, int] = {}
     for column in columns:
         stats[column] = df[column].isna().sum().astype(str)

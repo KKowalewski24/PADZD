@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
+from datetime import datetime
 from typing import Dict, List
 
 import pandas as pd
@@ -13,6 +14,8 @@ How to run:
     python dataset_preprocessing.py -f ../data/NYPD_Complaint_Data_Historic.csv
 """
 
+JSON = ".json"
+CSV = ".csv"
 RESULTS_DIR = "preprocessing_output/"
 LOGS_FILENAME: str = "app.log"
 
@@ -62,7 +65,7 @@ def main() -> None:
     )
 
     display_and_log("Saving data to file...")
-    df.to_csv(f"{RESULTS_DIR}NYPD_Data_Preprocessed.csv", index=False)
+    df.to_csv(RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed", CSV), index=False)
 
     display_finish()
 
@@ -117,13 +120,13 @@ def group_data(df: pd.DataFrame) -> None:
     (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
      .unique()
      .reset_index()
-     .to_csv(f"{RESULTS_DIR}key_code_desc_map.csv", index=False))
+     .to_csv(RESULTS_DIR + prepare_filename("key_code_desc_map", CSV), index=False))
 
     display_and_log(f"Grouping {LawBreakingLabels.PD_CODE}")
     (df.groupby(LawBreakingLabels.PD_CODE)[LawBreakingLabels.PD_DESCRIPTION]
      .unique()
      .reset_index()
-     .to_csv(f"{RESULTS_DIR}pd_code_desc_map.csv", index=False))
+     .to_csv(RESULTS_DIR + prepare_filename("pd_code_desc_map", CSV), index=False))
 
 
 def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:
@@ -131,7 +134,7 @@ def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:
     for column in columns:
         stats[column] = df[column].isna().sum().astype(str)
 
-    with open(f"{RESULTS_DIR}missing_values.json", "w") as file:
+    with open(RESULTS_DIR + prepare_filename("missing_values", JSON), "w") as file:
         json.dump(stats, file)
 
 
@@ -148,6 +151,11 @@ def prepare_args() -> Namespace:
 def display_and_log(text: str) -> None:
     print(text)
     logging.info(text)
+
+
+def prepare_filename(name: str, extension: str = "", add_date: bool = True) -> str:
+    return (name + ("-" + datetime.now().strftime("%H%M%S") if add_date else "")
+            + extension).replace(" ", "")
 
 
 def create_directory(path: str) -> None:

@@ -87,6 +87,9 @@ def drop_cols(df: pd.DataFrame) -> None:
         DateTimeEventLabels.EVENT_END_TIME,
         DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE,
 
+        LawBreakingLabels.OFFENSE_DESCRIPTION,
+        LawBreakingLabels.PD_DESCRIPTION,
+
         EventLocationLabels.JURISDICTION_DESCRIPTION,
         EventLocationLabels.JURISDICTION_CODE,
         EventLocationLabels.PARK_NAME,

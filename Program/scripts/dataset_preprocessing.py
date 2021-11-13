@@ -36,7 +36,7 @@ def main() -> None:
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
     merge_cols(df)
-    group_data(df)
+    group_count_rename_data(df)
     drop_cols(df)
 
     calculate_stats(
@@ -89,7 +89,7 @@ def merge_cols(df: pd.DataFrame) -> None:
     )
 
 
-def group_data(df: pd.DataFrame) -> None:
+def group_count_rename_data(df: pd.DataFrame) -> None:
     display_and_log(f"Grouping {LawBreakingLabels.KEY_CODE}")
     (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]
      .unique()
@@ -101,6 +101,18 @@ def group_data(df: pd.DataFrame) -> None:
      .unique()
      .reset_index()
      .to_csv(RESULTS_DIR + prepare_filename("pd_code_desc_map", CSV), index=False))
+
+    display_and_log(f"Counting {SuspectLabels.SUSPECT_AGE_GROUP}")
+    (df.groupby([SuspectLabels.SUSPECT_AGE_GROUP])[IdentifierLabels.ID]
+     .count()
+     .reset_index()
+     .to_csv(RESULTS_DIR + prepare_filename("suspect_age_group_count", CSV), index=False))
+
+    display_and_log(f"Counting {VictimLabels.VICTIM_AGE_GROUP}")
+    (df.groupby([VictimLabels.VICTIM_AGE_GROUP])[IdentifierLabels.ID]
+     .count()
+     .reset_index()
+     .to_csv(RESULTS_DIR + prepare_filename("victim_age_group_count", CSV), index=False))
 
     display_and_log("Grouping RACE")
     df.loc[

@@ -31,7 +31,7 @@ def main() -> None:
     filepath = args.filepath
     create_directory(RESULTS_DIR)
 
-    display_and_log("Loading data...")
+    display_and_log("Loading data")
     df: pd.DataFrame = pd.read_csv(filepath)
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
@@ -40,7 +40,7 @@ def main() -> None:
     drop_cols(df)
     calculate_stats(df)
 
-    display_and_log("Saving data to file...")
+    display_and_log("Saving data to file")
     df.to_csv(RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed", CSV), index=False)
 
     display_finish()
@@ -94,12 +94,12 @@ def group_count_rename_data(df: pd.DataFrame) -> None:
     age_groups: List[str] = ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]
 
     df.loc[
-        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.contains("|".join(age_groups)),
+        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.contains("|".join(age_groups), na=False),
         SuspectLabels.SUSPECT_AGE_GROUP
     ] = df[SuspectLabels.SUSPECT_AGE_GROUP].value_counts().idxmax()
 
     df.loc[
-        ~df[VictimLabels.VICTIM_AGE_GROUP].str.contains("|".join(age_groups)),
+        ~df[VictimLabels.VICTIM_AGE_GROUP].str.contains("|".join(age_groups), na=False),
         VictimLabels.VICTIM_AGE_GROUP
     ] = df[VictimLabels.VICTIM_AGE_GROUP].value_counts().idxmax()
 

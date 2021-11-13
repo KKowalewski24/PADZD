@@ -43,15 +43,3 @@ class VictimLabels:
     VICTIM_AGE_GROUP = "VIC_AGE_GROUP"
     VICTIM_RACE = "VIC_RACE"
     VICTIM_SEX = "VIC_SEX"
-
-
-class LabelNamesMapper:
-    identifier: IdentifierLabels = IdentifierLabels
-    date_time_event: DateTimeEventLabels = DateTimeEventLabels
-    date_time_submission: DateTimeSubmissionLabels = DateTimeSubmissionLabels
-    law_breaking: LawBreakingLabels = LawBreakingLabels
-    event_status: EventStatusLabels = EventStatusLabels
-    event_surroundings: EventSurroundingsLabels = EventSurroundingsLabels
-    event_location: EventLocationLabels = EventLocationLabels
-    suspect: SuspectLabels = SuspectLabels
-    victim: VictimLabels = VictimLabels

@@ -38,31 +38,7 @@ def main() -> None:
     merge_cols(df)
     group_count_rename_data(df)
     drop_cols(df)
-
-    calculate_stats(
-        df,
-        [
-            DateTimeEventLabels.EVENT_START_TIMESTAMP,
-            DateTimeEventLabels.EVENT_END_TIMESTAMP,
-            DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
-            LawBreakingLabels.KEY_CODE,
-            LawBreakingLabels.PD_CODE,
-            LawBreakingLabels.LAW_BREAKING_LEVEL,
-            EventStatusLabels.EVENT_STATUS,
-            EventSurroundingsLabels.PLACE_TYPE,
-            EventSurroundingsLabels.PLACE_TYPE_POSITION,
-            EventLocationLabels.PRECINCT_CODE,
-            EventLocationLabels.BOROUGH_NAME,
-            EventLocationLabels.LATITUDE,
-            EventLocationLabels.LONGITUDE,
-            SuspectLabels.SUSPECT_AGE_GROUP,
-            SuspectLabels.SUSPECT_RACE,
-            SuspectLabels.SUSPECT_SEX,
-            VictimLabels.VICTIM_AGE_GROUP,
-            VictimLabels.VICTIM_RACE,
-            VictimLabels.VICTIM_SEX
-        ]
-    )
+    calculate_stats(df)
 
     display_and_log("Saving data to file...")
     df.to_csv(RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed", CSV), index=False)
@@ -168,7 +144,29 @@ def drop_cols(df: pd.DataFrame) -> None:
     ], inplace=True)
 
 
-def calculate_stats(df: pd.DataFrame, columns: List[str]) -> None:
+def calculate_stats(df: pd.DataFrame) -> None:
+    columns: List[str] = [
+        DateTimeEventLabels.EVENT_START_TIMESTAMP,
+        DateTimeEventLabels.EVENT_END_TIMESTAMP,
+        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
+        LawBreakingLabels.KEY_CODE,
+        LawBreakingLabels.PD_CODE,
+        LawBreakingLabels.LAW_BREAKING_LEVEL,
+        EventStatusLabels.EVENT_STATUS,
+        EventSurroundingsLabels.PLACE_TYPE,
+        EventSurroundingsLabels.PLACE_TYPE_POSITION,
+        EventLocationLabels.PRECINCT_CODE,
+        EventLocationLabels.BOROUGH_NAME,
+        EventLocationLabels.LATITUDE,
+        EventLocationLabels.LONGITUDE,
+        SuspectLabels.SUSPECT_AGE_GROUP,
+        SuspectLabels.SUSPECT_RACE,
+        SuspectLabels.SUSPECT_SEX,
+        VictimLabels.VICTIM_AGE_GROUP,
+        VictimLabels.VICTIM_RACE,
+        VictimLabels.VICTIM_SEX
+    ]
+
     display_and_log("Calculating stats")
     stats: Dict[str, int] = {}
     for column in columns:

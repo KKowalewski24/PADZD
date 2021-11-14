@@ -147,7 +147,7 @@ def drop_cols(df: pd.DataFrame) -> None:
         EventLocationLabels.JURISDICTION_CODE,
         EventLocationLabels.PARK_NAME,
         EventLocationLabels.NYC_HOUSING_DEVELOPMENT,
-        EventLocationLabels.DEVELOPMENT_LEVEl_CODE,
+        EventLocationLabels.DEVELOPMENT_LEVEL_CODE,
         EventLocationLabels.NYC_X_COORDINATE,
         EventLocationLabels.NYC_Y_COORDINATE,
         EventLocationLabels.TRANSIT_DISTRICT_CODE,
@@ -270,7 +270,7 @@ class EventLocationLabels:
     JURISDICTION_CODE = "JURISDICTION_CODE"
     PARK_NAME = "PARKS_NM"
     NYC_HOUSING_DEVELOPMENT = "HADEVELOPT"
-    DEVELOPMENT_LEVEl_CODE = "HOUSING_PSA"
+    DEVELOPMENT_LEVEL_CODE = "HOUSING_PSA"
     NYC_X_COORDINATE = "X_COORD_CD"
     NYC_Y_COORDINATE = "Y_COORD_CD"
     TRANSIT_DISTRICT_CODE = "TRANSIT_DISTRICT"

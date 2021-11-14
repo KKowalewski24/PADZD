@@ -31,7 +31,7 @@ def main() -> None:
     filepath = args.filepath
     create_directory(RESULTS_DIR)
 
-    display_and_log("Loading data...")
+    display_and_log("Loading data")
     df: pd.DataFrame = pd.read_csv(filepath)
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
@@ -40,7 +40,7 @@ def main() -> None:
     drop_cols(df)
     calculate_stats(df)
 
-    display_and_log("Saving data to file...")
+    display_and_log("Saving data to file")
     df.to_csv(RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed", CSV), index=False)
 
     display_finish()
@@ -90,6 +90,19 @@ def group_count_rename_data(df: pd.DataFrame) -> None:
      .reset_index()
      .to_csv(RESULTS_DIR + prepare_filename("victim_age_group_count", CSV), index=False))
 
+    display_and_log("Imputating AGE GROUP by inserting most frequent value")
+    age_groups: List[str] = ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]
+
+    df.loc[
+        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.contains("|".join(age_groups), na=False),
+        SuspectLabels.SUSPECT_AGE_GROUP
+    ] = df[SuspectLabels.SUSPECT_AGE_GROUP].value_counts().idxmax()
+
+    df.loc[
+        ~df[VictimLabels.VICTIM_AGE_GROUP].str.contains("|".join(age_groups), na=False),
+        VictimLabels.VICTIM_AGE_GROUP
+    ] = df[VictimLabels.VICTIM_AGE_GROUP].value_counts().idxmax()
+
     display_and_log("Grouping RACE")
     df.loc[
         (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull()),
@@ -134,7 +147,7 @@ def drop_cols(df: pd.DataFrame) -> None:
         EventLocationLabels.JURISDICTION_CODE,
         EventLocationLabels.PARK_NAME,
         EventLocationLabels.NYC_HOUSING_DEVELOPMENT,
-        EventLocationLabels.DEVELOPMENT_LEVEl_CODE,
+        EventLocationLabels.DEVELOPMENT_LEVEL_CODE,
         EventLocationLabels.NYC_X_COORDINATE,
         EventLocationLabels.NYC_Y_COORDINATE,
         EventLocationLabels.TRANSIT_DISTRICT_CODE,
@@ -257,7 +270,7 @@ class EventLocationLabels:
     JURISDICTION_CODE = "JURISDICTION_CODE"
     PARK_NAME = "PARKS_NM"
     NYC_HOUSING_DEVELOPMENT = "HADEVELOPT"
-    DEVELOPMENT_LEVEl_CODE = "HOUSING_PSA"
+    DEVELOPMENT_LEVEL_CODE = "HOUSING_PSA"
     NYC_X_COORDINATE = "X_COORD_CD"
     NYC_Y_COORDINATE = "Y_COORD_CD"
     TRANSIT_DISTRICT_CODE = "TRANSIT_DISTRICT"

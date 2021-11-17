@@ -12,7 +12,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
+from sklearn import metrics, naive_bayes
 from sklearn.preprocessing import LabelEncoder
 import calendar
 
@@ -23,10 +23,6 @@ from module.label_names_mapper import *
 """
 How to run:
     python classifier.py -f ../data/NYPD_Data_Preprocessed-1K.csv
-    python classifier.py module/label_names_mapper.py -f ../data/NYPD_Data_Preprocessed-1K.csv
-    python classifier.py -f Pulpit/data/NYPD_Data_Preprocessed-1K.csv
-    python E:\OneDrive\OneDrive - Politechnika Łódzka\2stopien\Semestr 2\PADZD\Program\scriptsclassifier.py -f Pulpit/data/NYPD_Data_Preprocessed-1K.csv
-
 """
 
 JSON = ".json"
@@ -44,90 +40,183 @@ logging.basicConfig(
 def main() -> None:
     # args = prepare_args()
     # filepath = args.filepath
-    filepath = "../data/NYPD_Data_Preprocessed-1K.csv"
+    filepath = "../data/NYPD_Data_Preprocessed-ALL.csv"
     create_directory(RESULTS_DIR)
 
     display_and_log("Loading data...")
-    df: pd.DataFrame = pd.read_csv(filepath)
+    df: pd.DataFrame = pd.read_csv(filepath, nrows=600000)
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
     df = preprocess_data(df)
-    decision_tree_classification(df)
 
-    display_and_log("Saving data to file")
+    # test_data_percentage_tree = [0.1, 0.2, 0.3, 0.35]
+    # for test_percentage in test_data_percentage_tree:
+    #     decision_tree_classification(df, test_percentage)
+    #
+    # test_data_percentage_bayes = [0.1, 0.2, 0.3, 0.35]
+    # for test_percentage in test_data_percentage_bayes:
+    #     bayes_classification(df, test_percentage)
+
+
+    #FINAL
+    decision_tree_classification(df, 0.2)
+    bayes_classification(df, 0.3)
 
     display_finish()
 
 
-def decision_tree_classification(data_set: pd.DataFrame) -> None:
-    train, test = train_test_split(data_set, test_size=0.2)
+def bayes_classification(data_set: pd.DataFrame, test_percentage: float) -> None:
+    accuracy_list: List[List[float]] = []
+    train, test = train_test_split(data_set, test_size=test_percentage)
+    y_train = train[LawBreakingLabels.KEY_CODE]
+    x_train = train.drop(columns=[LawBreakingLabels.KEY_CODE])
+    y_test = test[LawBreakingLabels.KEY_CODE]
+    x_test = test.drop(columns=[LawBreakingLabels.KEY_CODE])
+
+    bayes_classifier = naive_bayes.GaussianNB()
+    bayes_classifier.fit(x_train, y_train)
+    y_prediction = bayes_classifier.predict(x_test)
+    accuracy = round(metrics.accuracy_score(y_test, y_prediction), 4)
+    accuracy_list.append([accuracy])
+    print("Test data percentage: " + str(
+        round(test_percentage * 100, 2)) + "% ,\t" + "accuracy: " + str(accuracy))
+
+
+def decision_tree_classification(data_set: pd.DataFrame, test_percentage: float) -> None:
+#     print("Test data percentage: " + str(round(test_percentage * 100, 2)) + "%")
+#
+#     train, test = train_test_split(data_set, test_size=test_percentage)
+#
+#     y_train = train[LawBreakingLabels.KEY_CODE]
+#     x_train = train.drop(columns=[LawBreakingLabels.KEY_CODE])
+#     y_test = test[LawBreakingLabels.KEY_CODE]
+#     x_test = test.drop(columns=[LawBreakingLabels.KEY_CODE])
+#
+#     min_samples_leaf_range = [
+#        10, 100, 1000, 10000
+#     ]
+#     max_depth_range = [100, 1000, 10000, 100000]
+#     n_estimators_range = [100, 1000]
+#     max_samples_range = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.8, 0.99]
+#
+# ########################################################################################################################
+# ### min_samples_leaf_range
+#     train_acc_history = []
+#     test_acc_history = []
+#     for min_samples_leaf in min_samples_leaf_range:
+#         tree = DecisionTreeClassifier(random_state=47,
+#                                       min_samples_leaf=min_samples_leaf)
+#         tree.fit(x_train, y_train)
+#         train_acc_history.append(tree.score(x_train, y_train))
+#         test_acc_history.append(tree.score(x_test, y_test))
+#         print("min_samples_leaf:", min_samples_leaf, "\ttrain_acc:",
+#               train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+#     best_acc = np.max(test_acc_history)
+#     best_params = {
+#         "min_samples_leaf": min_samples_leaf_range[np.argmax(test_acc_history)]
+#     }
+#
+# ########################################################################################################################
+# ### max_depth_range
+#     train_acc_history = []
+#     test_acc_history = []
+#     for max_depth in max_depth_range:
+#         tree = DecisionTreeClassifier(random_state=47, max_depth=max_depth)
+#         tree.fit(x_train, y_train)
+#         train_acc_history.append(tree.score(x_train, y_train))
+#         test_acc_history.append(tree.score(x_test, y_test))
+#         print("max_depth:", max_depth, "\ttrain_acc:", train_acc_history[-1],
+#               "\ttest_acc:", test_acc_history[-1])
+#
+#     if best_acc < np.max(test_acc_history):
+#         best_acc = np.max(test_acc_history)
+#         best_params = {
+#             "max_depth": max_depth_range[np.argmax(test_acc_history)]
+#         }
+#     print("best params for single tree:", best_params)
+#
+# ########################################################################################################################
+# ### n_estimators_range
+#     train_acc_history = []
+#     test_acc_history = []
+#     for n_estimators in n_estimators_range:
+#         forest = RandomForestClassifier(random_state=47,
+#                                         n_jobs=-1,
+#                                         n_estimators=n_estimators,
+#                                         **best_params)
+#         forest.fit(x_train, y_train)
+#         train_acc_history.append(forest.score(x_train, y_train))
+#         test_acc_history.append(forest.score(x_test, y_test))
+#         print("n_estimators:", n_estimators, "\ttrain_acc:",
+#               train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+#     best_acc = np.max(test_acc_history)
+#     best_params['n_estimators'] = n_estimators_range[np.argmax(
+#         test_acc_history)]
+# ########################################################################################################################
+# ### max_samples_range
+#     train_acc_history = []
+#     test_acc_history = []
+#     for max_samples in max_samples_range:
+#         forest = RandomForestClassifier(random_state=47,
+#                                         n_jobs=-1,
+#                                         max_samples=max_samples,
+#                                         **best_params)
+#         forest.fit(x_train, y_train)
+#         train_acc_history.append(forest.score(x_train, y_train))
+#         test_acc_history.append(forest.score(x_test, y_test))
+#         print("max_samples:", max_samples, "\ttrain_acc:",
+#               train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+#
+#     best_acc = np.max(test_acc_history)
+#     best_params['max_samples'] = max_samples_range[np.argmax(test_acc_history)]
+#
+#     print("best params:", best_params, "best accuracy:", best_acc)
+
+########################################################################################################################
+### Final test
+    train, test = train_test_split(data_set, test_size=test_percentage)
 
     y_train = train[LawBreakingLabels.KEY_CODE]
     x_train = train.drop(columns=[LawBreakingLabels.KEY_CODE])
     y_test = test[LawBreakingLabels.KEY_CODE]
     x_test = test.drop(columns=[LawBreakingLabels.KEY_CODE])
 
-    min_samples_leaf_range = [
-       10, 100, 1000, 10000
-    ]
-    max_depth_range = [100, 1000, 10000, 100000]
-    n_estimators_range = [100, 1000, 10000]
-
-
-    forest = RandomForestClassifier(random_state=47,
-                                        n_jobs=-1,
-                                        n_estimators=100,
-                                        max_depth=100,
-                                        min_samples_leaf=10
-                                        )
-    forest.fit(x_train, y_train)
     train_acc_history = []
     test_acc_history = []
+    forest = RandomForestClassifier(random_state=47,
+                                    n_jobs=-1,
+                                    n_estimators=1000,
+                                    min_samples_leaf=100,
+                                    max_samples=0.99,
+                                    max_depth=100)
+    forest.fit(x_train, y_train)
     train_acc_history.append(forest.score(x_train, y_train))
     test_acc_history.append(forest.score(x_test, y_test))
-
-    print("n_estimators:", 100, "\ttrain_acc:",
+    print("\ttrain_acc:",
           train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
-
-    # train_acc_history = []
-    # test_acc_history = []
-    # for n_estimators in n_estimators_range:
-    #     forest = RandomForestClassifier(random_state=47,
-    #                                     n_jobs=-1,
-    #                                     n_estimators=n_estimators,
-    #                                     max_depth=100,
-    #                                     min_samples_leaf=10
-    #                                     )
-    #     forest.fit(X_train, y_train)
-    #     train_acc_history.append(forest.score(X_train, y_train))
-    #     test_acc_history.append(forest.score(X_test, y_test))
-    #     print("n_estimators:", n_estimators, "\ttrain_acc:",
-    #           train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
-    # # _plot_accuracy(413, train_acc_history, test_acc_history, "n_estimators",
-    # #                n_estimators_range)
-    # best_acc = np.max(test_acc_history)
-    #
-    # print("best accuracy:", best_acc)
-    # plt.show()
 
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
-    data = data.drop(columns=[IdentifierLabels.ID,
+    data = drop_unused_columns(data)
+    data = remove_na(data)
+    data = extract_hour_and_day(data)
+    data = transform_labels(data)
+    print("Data rows count, after preprocessing: ", data.shape[0])
+    return data
+
+
+def drop_unused_columns(data: pd.DataFrame) -> pd.DataFrame:
+    return data.drop(columns=[IdentifierLabels.ID,
                               LawBreakingLabels.PD_CODE,
                               EventLocationLabels.PRECINCT_CODE,
                               EventLocationLabels.BOROUGH_NAME,
                               EventLocationLabels.LATITUDE,
                               EventLocationLabels.LONGITUDE,
-                              SuspectLabels.SUSPECT_AGE_GROUP,
-                              VictimLabels.VICTIM_AGE_GROUP,
+                              # SuspectLabels.SUSPECT_AGE_GROUP,
+                              # VictimLabels.VICTIM_AGE_GROUP,
                               DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
                               DateTimeEventLabels.EVENT_END_TIMESTAMP
                               ])
-
-    data = remove_na(data)
-    data = extract_hour_and_day(data)
-    data = transform_labels(data)
-    return data
 
 
 def remove_na(data: pd.DataFrame) -> pd.DataFrame:
@@ -140,10 +229,10 @@ def remove_na(data: pd.DataFrame) -> pd.DataFrame:
         EventStatusLabels.EVENT_STATUS,
         EventSurroundingsLabels.PLACE_TYPE,
         EventSurroundingsLabels.PLACE_TYPE_POSITION,
-        # SuspectLabels.SUSPECT_AGE_GROUP,
+        SuspectLabels.SUSPECT_AGE_GROUP,
         SuspectLabels.SUSPECT_RACE,
         SuspectLabels.SUSPECT_SEX,
-        # VictimLabels.VICTIM_AGE_GROUP,
+        VictimLabels.VICTIM_AGE_GROUP,
         VictimLabels.VICTIM_RACE,
         VictimLabels.VICTIM_SEX
     ]
@@ -160,8 +249,10 @@ def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
         EventSurroundingsLabels.PLACE_TYPE_POSITION,
         VictimLabels.VICTIM_RACE,
         VictimLabels.VICTIM_SEX,
+        VictimLabels.VICTIM_AGE_GROUP,
         SuspectLabels.SUSPECT_RACE,
         SuspectLabels.SUSPECT_SEX,
+        SuspectLabels.SUSPECT_AGE_GROUP,
         'DayOfWeek'
     ]
     encoder = LabelEncoder()
@@ -177,6 +268,7 @@ def extract_hour_and_day(data: pd.DataFrame) -> pd.DataFrame:
         .map(lambda date: date.hour)
     data = data.drop(columns=[DateTimeEventLabels.EVENT_START_TIMESTAMP])
     return data
+
 
 def prepare_args() -> Namespace:
     arg_parser = ArgumentParser()
@@ -210,6 +302,7 @@ def display_finish() -> None:
 def display_and_log(text: str) -> None:
     print(text)
     logging.info(text)
+
 
 if __name__ == "__main__":
     main()

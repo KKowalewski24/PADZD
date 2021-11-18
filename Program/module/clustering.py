@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.cluster import DBSCAN
 import numpy as np
 import itertools
+from module.Logger import Logger
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -15,6 +16,8 @@ experiments = {
 
 
 def process_clustering(df: pd.DataFrame) -> None:
+    logger = Logger().get_logging_instance()
+    logger.info("Starting clustering...")
     for type in experiments.keys():
         print("Experiments for label type: " + type)
         if type == 'single':
@@ -23,6 +26,7 @@ def process_clustering(df: pd.DataFrame) -> None:
         else:
             for columns in experiments[type]:
                 calculate_multilabel_data(columns, df)
+    logger.info("Clustering finished...")
 
 
 def initial_processing_for_single_label(dataset: pd.DataFrame, label) -> pd.DataFrame:
@@ -79,7 +83,7 @@ def calculate_multilabel_data(columns, df):
 
 
 def calculate_single_label_data(column_name, df):
-    print("Label: " + column_name)
+    print("\nLabel: " + column_name)
     df_to_process, actual_labels, cropped_data = initial_processing_for_single_label(df, column_name)
     clasterize(column_name, actual_labels, df_to_process, cropped_data)
 
@@ -87,7 +91,7 @@ def calculate_single_label_data(column_name, df):
 def clasterize(column_name, actual_labels, df_to_process, cropped_data):
     actual_labels = pd.DataFrame(actual_labels)
     unique_actual_labels = actual_labels[column_name].unique()
-
+    print("--------------------------------------------------------------------")
     print("KMeans")
     k_means = KMeans(
         n_clusters=len(unique_actual_labels)
@@ -104,7 +108,7 @@ def clasterize(column_name, actual_labels, df_to_process, cropped_data):
     dbscan = DBSCAN()
     dbscan_labels = dbscan.fit_predict(df_to_process)
     print(dbscan_labels)
-    print("DBSCAN created: " + str(len(np.unique(dbscan_labels))) + " number of clusters\n")
+    print("DBSCAN created: " + str(len(np.unique(dbscan_labels))) + " number of clusters")
 
 
 def get_accuracy(cropped_data, labels_from_clustering, unique_actual_labels, column_name):

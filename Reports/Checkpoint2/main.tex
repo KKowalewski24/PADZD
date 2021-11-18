@@ -115,9 +115,19 @@
 
         \subsection{Regresja czasu trwania przestępstwa}
         \label{project_goal_2} {
-            Drugim celem będzie regresja czasu trwania przestępstwa dla tych przestępstw, dla których jest on znany. Tak więc wybrany zostanie podzbiór głównego zbioru danych i na podstawie czasu rozpoczęcia i zakończenia przestępstwa wyekstrahowany zostanie czas jego trwania. Na podstawie pozostałych kolumn (poza tych z datą i czasem) podjęta będzie próba wyuczenia modelu regresyjnego estymowania tego czasu.
-        
-            Wykorzystane zostaną modele przystosowane do zadań regresji, tak więc przede wszystkim lasy losowe, ewentualnie klasyfikator liniowy, maszyny wektorów nośnych czy wreszcie sieć neuronowa. Wykorzystane metody będą dobierane odpowiednio w zależności od wyników otrzymywanych w trakcie trwania eksperymentów i od napotkanych problemów. Dodatkowo planowane jest wykorzystanie biblioteki \emph{XGBoost}.
+            Drugim celem będzie regresja czasu trwania przestępstwa dla tych
+            przestępstw, dla których jest on znany. Tak więc wybrany zostanie podzbiór
+            głównego zbioru danych i na podstawie czasu rozpoczęcia i zakończenia
+            przestępstwa wyekstrahowany zostanie czas jego trwania. Na podstawie
+            pozostałych kolumn (poza tych z datą i czasem) podjęta będzie próba
+            wyuczenia modelu regresyjnego estymowania tego czasu.
+
+            Wykorzystane zostaną modele przystosowane do zadań regresji, tak więc
+            przede wszystkim lasy losowe, ewentualnie klasyfikator liniowy, maszyny
+            wektorów nośnych czy wreszcie sieć neuronowa. Wykorzystane metody będą
+            dobierane odpowiednio w zależności od wyników otrzymywanych w trakcie
+            trwania eksperymentów i od napotkanych problemów. Dodatkowo planowane jest
+            wykorzystanie biblioteki \emph{XGBoost}.
         }
 
         \subsection{Grupowanie przestępstw na podstawie podzbiorów cech}
@@ -163,177 +173,216 @@
     \section{Przetwarzanie i analiza danych} {
 
         \subsection{Klasyfikacja rodzaju lub poziomu przestępstwa} {
-            W celu realizacji tego zadania, z daty wystąpienia przestępstwa wyekstrahowane zostały informacje dotyczące dnia tygodnia oraz godziny wystąpienia zdarzenia. Na tym etapie badań, wszelkie wiersze, które posiadały brakujące dane zostały usunięte. 
-            Wykorzystując fragment danych, przeprowadzone zostały badania mające na celu ustalić najodpowiedniejsze parametry klasyfikatorów (las losowy i naiwny klasyfikator Bayes'a)
-            \subsubsection{Wyniki}{
-            W tabelach \ref{tab:params_forest_1} i \ref{tab:params_forest_2} przedstawione zostały wartości parametrów (również procent podziału danych na zbiór uczący i testowy) i ich wpływ na dokładność klasyfikacji dla 400000 wierszy, z których 73992 zostały odrzucone na skutek brakujących danych, dla klasyfikatora lasów losowych.
-            Tabela \ref{tab:params_bay} przedstawia wyniki otrzymane dla różnego procentowego podziału danych na zbiór uczący i testowy.
-            \begin{table}[!htbp]
-                \begin{tabular}{|c|c|c|c|c|}
-                    \hline
-                    \% testowy & Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
-                    10\% & min\_samples\_leaf & 10 & 0.6904 & 0.6161 \\ \hline
-10\% & min\_samples\_leaf & 100 & 0.6925 & 0.6288 \\ \hline
-10\% & min\_samples\_leaf & 1000 & 0.6146 & 0.6063 \\ \hline
-10\% & min\_samples\_leaf & 10000 & 0.5787 & 0.5702 \\ \hline
-20\% & min\_samples\_leaf & 10 & 0.6893 & 0.6199 \\ \hline
-20\% & min\_samples\_leaf & 100 & 0.6398 & 0.6353 \\ \hline
-20\% & min\_samples\_leaf & 1000 & 0.6105 & 0.6160 \\ \hline
-20\% & min\_samples\_leaf & 10000 & 0.5737 & 0.5780 \\ \hline
-30\% & min\_samples\_leaf & 10 & 0.6894 & 0.6152 \\ \hline
-30\% & min\_samples\_leaf & 100 & 0.6405 & 0.6314 \\ \hline
-30\% & min\_samples\_leaf & 1000 & 0.6125 & 0.6086 \\ \hline
-30\% & min\_samples\_leaf & 10000 & 0.5701 & 0.5668 \\ \hline
-35\% & min\_samples\_leaf & 10 & 0.6904 & 0.6155 \\ \hline
-35\% & min\_samples\_leaf & 100 & 0.6411 & 0.6300 \\ \hline
-35\% & min\_samples\_leaf & 1000 & 0.6127 & 0.6083 \\ \hline
-35\% & min\_samples\_leaf & 10000 & 0.5630 & 0.5610 \\ \hline
-10\% & max\_depth & 100 & 0.9255 & 0.5450 \\ \hline
-10\% & max\_depth & 1000 & 0.9255 & 0.5450 \\ \hline
-10\% & max\_depth & 10000 & 0.9255 & 0.5450 \\ \hline
-10\% & max\_depth & 100000 & 0.9255 & 0.5450 \\ \hline
-20\% & max\_depth & 100 & 0.9293 & 0.5533 \\ \hline
-20\% & max\_depth & 1000 & 0.9293 & 0.5533 \\ \hline
-20\% & max\_depth & 10000 & 0.9293 & 0.5533 \\ \hline
-20\% & max\_depth & 100000 & 0.9293 & 0.5533 \\ \hline
-30\% & max\_depth & 100 & 0.9348 & 0.5474 \\ \hline
-30\% & max\_depth & 1000 & 0.9348 & 0.5474 \\ \hline
-30\% & max\_depth & 10000 & 0.9348 & 0.5474 \\ \hline
-30\% & max\_depth & 100000 & 0.9348 & 0.5474 \\ \hline
-35\% & max\_depth & 100 & 0.9372 & 0.5474 \\ \hline
-35\% & max\_depth & 1000 & 0.9372 & 0.5474 \\ \hline
-35\% & max\_depth & 10000 & 0.9372 & 0.5474 \\ \hline
-35\% & max\_depth & 100000 & 0.9372 & 0.5474 \\ \hline
-10\% & n\_estimators & 100 & 0.6342 & 0.6235 \\ \hline
-10\% & n\_estimators & 1000 & 0.6342 & 0.6236 \\ \hline
-20\% & n\_estimators & 100 & 0.6305 & 0.6338 \\ \hline
-20\% & n\_estimators & 1000 & 0.6310 & 0.6348 \\ \hline
-30\% & n\_estimators & 100 & 0.6310 & 0.6275 \\ \hline
-30\% & n\_estimators & 1000 & 0.6312 & 0.6274 \\ \hline
-35\% & n\_estimators & 100 & 0.6321 & 0.6257 \\ \hline
-35\% & n\_estimators & 1000 & 0.6321 & 0.6254 \\ \hline
-\end{tabular}
-                \caption{Wyniki dla poszczególnych parametrów dla klasyfikatora lasów losowych}
-                \label{tab:params_forest_1}
-            \end{table}
-            \begin{table}[!htbp]
-                \begin{tabular}{|c|c|c|c|c|}
-                    \hline
-                    \% testowy & Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
-                    10\% & min\_samples\_leaf & 10 & 0.6904 & 0.6161 \\ \hline
-10\% & max\_samples & 0.01 & 0.5667 & 0.5548 \\ \hline
-10\% & max\_samples & 0.02 & 0.5859 & 0.5750 \\ \hline
-10\% & max\_samples & 0.05 & 0.6055 & 0.5947 \\ \hline
-10\% & max\_samples & 0.1 & 0.6148 & 0.6049 \\ \hline
-10\% & max\_samples & 0.2 & 0.6213 & 0.6115 \\ \hline
-10\% & max\_samples & 0.5 & 0.6291 & 0.6192 \\ \hline
-10\% & max\_samples & 0.8 & 0.6445 & 0.6221 \\ \hline
-10\% & max\_samples & 0.99 & 0.6339 & 0.6232 \\ \hline
-20\% & max\_samples & 0.01 & 0.5609 & 0.5637 \\ \hline
-20\% & max\_samples & 0.02 & 0.5826 & 0.5875 \\ \hline
-20\% & max\_samples & 0.05 & 0.6021 & 0.6075 \\ \hline
-20\% & max\_samples & 0.1 & 0.6118 & 0.6170 \\ \hline
-20\% & max\_samples & 0.2 & 0.6187 & 0.6233 \\ \hline
-20\% & max\_samples & 0.5 & 0.6258 & 0.6303 \\ \hline
-20\% & max\_samples & 0.8 & 0.6293 & 0.6332 \\ \hline
-20\% & max\_samples & 0.99 & 0.6308 & 0.6348 \\ \hline
-30\% & max\_samples & 0.01 & 0.5446 & 0.5448 \\ \hline
-30\% & max\_samples & 0.02 & 0.5822 & 0.5815 \\ \hline
-30\% & max\_samples & 0.05 & 0.6034 & 0.6007 \\ \hline
-30\% & max\_samples & 0.1 & 0.6122 & 0.6097 \\ \hline
-30\% & max\_samples & 0.2 & 0.6184 & 0.6156 \\ \hline
-30\% & max\_samples & 0.5 & 0.6266 & 0.6236 \\ \hline
-30\% & max\_samples & 0.8 & 0.6295 & 0.6258 \\ \hline
-30\% & max\_samples & 0.99 & 0.6313 & 0.6279 \\ \hline
-35\% & max\_samples & 0.01 & 0.5435 & 0.5424 \\ \hline
-35\% & max\_samples & 0.02 & 0.5736 & 0.5718 \\ \hline
-35\% & max\_samples & 0.05 & 0.6024 & 0.5996 \\ \hline
-35\% & max\_samples & 0.1 & 0.6114 & 0.6074 \\ \hline
-35\% & max\_samples & 0.2 & 0.6190 & 0.6141 \\ \hline
-35\% & max\_samples & 0.5 & 0.6272 & 0.6213 \\ \hline
-35\% & max\_samples & 0.8 & 0.6305 & 0.6237 \\ \hline
-35\% & max\_samples & 0.99 & 0.6317 & 0.6252 \\ \hline
+            W celu realizacji tego zadania, z daty wystąpienia przestępstwa
+            wyekstrahowane zostały informacje dotyczące dnia tygodnia oraz godziny
+            wystąpienia zdarzenia. Na tym etapie badań, wszelkie wiersze, które
+            posiadały brakujące dane zostały usunięte.
+            Wykorzystując fragment danych, przeprowadzone zostały badania mające na
+            celu ustalić najodpowiedniejsze parametry klasyfikatorów (las losowy i
+            naiwny klasyfikator Bayes'a)
 
-                \end{tabular}
-                \caption{Wyniki dla poszczególnych parametrów dla klasyfikatora lasów losowych}
-                \label{tab:params_forest_2}
-            \end{table}
-            \FloatBarrier
+            \subsubsection{Wyniki} {
+                W tabelach \ref{tab:params_forest_1} i \ref{tab:params_forest_2}
+                przedstawione zostały wartości parametrów (również procent podziału
+                danych na zbiór uczący i testowy) i ich wpływ na dokładność
+                klasyfikacji dla 400000 wierszy, z których 73992 zostały odrzucone na
+                skutek brakujących danych, dla klasyfikatora lasów losowych.
+                Tabela \ref{tab:params_bay} przedstawia wyniki otrzymane dla różnego
+                procentowego podziału danych na zbiór uczący i testowy.
+
+                \begin{table}[!htbp]
+                    \begin{tabular}{|c|c|c|c|c|}
+                        \hline
+                        \% testowy & Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
+                        10\% & min\_samples\_leaf & 10 & 0.6904 & 0.6161 \\ \hline
+                        10\% & min\_samples\_leaf & 100 & 0.6925 & 0.6288 \\ \hline
+                        10\% & min\_samples\_leaf & 1000 & 0.6146 & 0.6063 \\ \hline
+                        10\% & min\_samples\_leaf & 10000 & 0.5787 & 0.5702 \\ \hline
+                        20\% & min\_samples\_leaf & 10 & 0.6893 & 0.6199 \\ \hline
+                        20\% & min\_samples\_leaf & 100 & 0.6398 & 0.6353 \\ \hline
+                        20\% & min\_samples\_leaf & 1000 & 0.6105 & 0.6160 \\ \hline
+                        20\% & min\_samples\_leaf & 10000 & 0.5737 & 0.5780 \\ \hline
+                        30\% & min\_samples\_leaf & 10 & 0.6894 & 0.6152 \\ \hline
+                        30\% & min\_samples\_leaf & 100 & 0.6405 & 0.6314 \\ \hline
+                        30\% & min\_samples\_leaf & 1000 & 0.6125 & 0.6086 \\ \hline
+                        30\% & min\_samples\_leaf & 10000 & 0.5701 & 0.5668 \\ \hline
+                        35\% & min\_samples\_leaf & 10 & 0.6904 & 0.6155 \\ \hline
+                        35\% & min\_samples\_leaf & 100 & 0.6411 & 0.6300 \\ \hline
+                        35\% & min\_samples\_leaf & 1000 & 0.6127 & 0.6083 \\ \hline
+                        35\% & min\_samples\_leaf & 10000 & 0.5630 & 0.5610 \\ \hline
+                        10\% & max\_depth & 100 & 0.9255 & 0.5450 \\ \hline
+                        10\% & max\_depth & 1000 & 0.9255 & 0.5450 \\ \hline
+                        10\% & max\_depth & 10000 & 0.9255 & 0.5450 \\ \hline
+                        10\% & max\_depth & 100000 & 0.9255 & 0.5450 \\ \hline
+                        20\% & max\_depth & 100 & 0.9293 & 0.5533 \\ \hline
+                        20\% & max\_depth & 1000 & 0.9293 & 0.5533 \\ \hline
+                        20\% & max\_depth & 10000 & 0.9293 & 0.5533 \\ \hline
+                        20\% & max\_depth & 100000 & 0.9293 & 0.5533 \\ \hline
+                        30\% & max\_depth & 100 & 0.9348 & 0.5474 \\ \hline
+                        30\% & max\_depth & 1000 & 0.9348 & 0.5474 \\ \hline
+                        30\% & max\_depth & 10000 & 0.9348 & 0.5474 \\ \hline
+                        30\% & max\_depth & 100000 & 0.9348 & 0.5474 \\ \hline
+                        35\% & max\_depth & 100 & 0.9372 & 0.5474 \\ \hline
+                        35\% & max\_depth & 1000 & 0.9372 & 0.5474 \\ \hline
+                        35\% & max\_depth & 10000 & 0.9372 & 0.5474 \\ \hline
+                        35\% & max\_depth & 100000 & 0.9372 & 0.5474 \\ \hline
+                        10\% & n\_estimators & 100 & 0.6342 & 0.6235 \\ \hline
+                        10\% & n\_estimators & 1000 & 0.6342 & 0.6236 \\ \hline
+                        20\% & n\_estimators & 100 & 0.6305 & 0.6338 \\ \hline
+                        20\% & n\_estimators & 1000 & 0.6310 & 0.6348 \\ \hline
+                        30\% & n\_estimators & 100 & 0.6310 & 0.6275 \\ \hline
+                        30\% & n\_estimators & 1000 & 0.6312 & 0.6274 \\ \hline
+                        35\% & n\_estimators & 100 & 0.6321 & 0.6257 \\ \hline
+                        35\% & n\_estimators & 1000 & 0.6321 & 0.6254 \\ \hline
+                    \end{tabular}
+                    \caption{Wyniki dla poszczególnych parametrów dla klasyfikatora lasów losowych}
+                    \label{tab:params_forest_1}
+                \end{table}
+
+                \begin{table}[!htbp]
+                    \begin{tabular}{|c|c|c|c|c|}
+                        \hline
+                        \% testowy & Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
+                        10\% & min\_samples\_leaf & 10 & 0.6904 & 0.6161 \\ \hline
+                        10\% & max\_samples & 0.01 & 0.5667 & 0.5548 \\ \hline
+                        10\% & max\_samples & 0.02 & 0.5859 & 0.5750 \\ \hline
+                        10\% & max\_samples & 0.05 & 0.6055 & 0.5947 \\ \hline
+                        10\% & max\_samples & 0.1 & 0.6148 & 0.6049 \\ \hline
+                        10\% & max\_samples & 0.2 & 0.6213 & 0.6115 \\ \hline
+                        10\% & max\_samples & 0.5 & 0.6291 & 0.6192 \\ \hline
+                        10\% & max\_samples & 0.8 & 0.6445 & 0.6221 \\ \hline
+                        10\% & max\_samples & 0.99 & 0.6339 & 0.6232 \\ \hline
+                        20\% & max\_samples & 0.01 & 0.5609 & 0.5637 \\ \hline
+                        20\% & max\_samples & 0.02 & 0.5826 & 0.5875 \\ \hline
+                        20\% & max\_samples & 0.05 & 0.6021 & 0.6075 \\ \hline
+                        20\% & max\_samples & 0.1 & 0.6118 & 0.6170 \\ \hline
+                        20\% & max\_samples & 0.2 & 0.6187 & 0.6233 \\ \hline
+                        20\% & max\_samples & 0.5 & 0.6258 & 0.6303 \\ \hline
+                        20\% & max\_samples & 0.8 & 0.6293 & 0.6332 \\ \hline
+                        20\% & max\_samples & 0.99 & 0.6308 & 0.6348 \\ \hline
+                        30\% & max\_samples & 0.01 & 0.5446 & 0.5448 \\ \hline
+                        30\% & max\_samples & 0.02 & 0.5822 & 0.5815 \\ \hline
+                        30\% & max\_samples & 0.05 & 0.6034 & 0.6007 \\ \hline
+                        30\% & max\_samples & 0.1 & 0.6122 & 0.6097 \\ \hline
+                        30\% & max\_samples & 0.2 & 0.6184 & 0.6156 \\ \hline
+                        30\% & max\_samples & 0.5 & 0.6266 & 0.6236 \\ \hline
+                        30\% & max\_samples & 0.8 & 0.6295 & 0.6258 \\ \hline
+                        30\% & max\_samples & 0.99 & 0.6313 & 0.6279 \\ \hline
+                        35\% & max\_samples & 0.01 & 0.5435 & 0.5424 \\ \hline
+                        35\% & max\_samples & 0.02 & 0.5736 & 0.5718 \\ \hline
+                        35\% & max\_samples & 0.05 & 0.6024 & 0.5996 \\ \hline
+                        35\% & max\_samples & 0.1 & 0.6114 & 0.6074 \\ \hline
+                        35\% & max\_samples & 0.2 & 0.6190 & 0.6141 \\ \hline
+                        35\% & max\_samples & 0.5 & 0.6272 & 0.6213 \\ \hline
+                        35\% & max\_samples & 0.8 & 0.6305 & 0.6237 \\ \hline
+                        35\% & max\_samples & 0.99 & 0.6317 & 0.6252 \\ \hline
+                    \end{tabular}
+                    \caption{Wyniki dla poszczególnych parametrów dla klasyfikatora lasów losowych}
+                    \label{tab:params_forest_2}
+                \end{table}
+                \FloatBarrier
             }
+
             \begin{table}[!htbp]
                 \begin{tabular}{|c|c|}
                     \hline
                     \% testowy & Skuteczność \\ \hline
                     10\% & 0.328 \\ \hline
-20\% & 0.3368 \\ \hline
-30\% & 0.3293 \\ \hline
-35\% & 0.3284 \\ \hline
+                    20\% & 0.3368 \\ \hline
+                    30\% & 0.3293 \\ \hline
+                    35\% & 0.3284 \\ \hline
                 \end{tabular}
                 \caption{Wyniki dla naiwnego klasyfikatora Bayes'a}
                 \label{tab:params_bayes}
             \end{table}
             \FloatBarrier
-                        \subsubsection{Analiza wyników} {
 
-            W oparciu o wyniki zamieszczone w tabelach \ref{tab:params_forest_1} i \ref{tab:params_forest_2} dla klasyfikatora lasów losowych wybrano wartości parametrów, które umożliwią najwyższą dokładność klasyfikacji i umieszczono je w tabeli \ref{tab:params_forest_final}. 
-            
-            \begin{table}[!htbp]
-                \begin{tabular}{|c|c|c|}
-                    \hline
-                    \% testowy & Nazwa parametru & Wartość parametru \\ \hline
-20\% & n\_estimators & 1000 \\ \hline
-20\% & min\_samples\_leaf & 100 \\ \hline
-20\% & max\_samples & 0.99 \\ \hline
-20\% & max\_depth & 100 \\ \hline
-                \end{tabular}
-                \caption{Wyniki dla naiwnego klasyfikatora Bayes'a}
-                \label{tab:params_forest_final}
-            \end{table}
-            \FloatBarrier
-            
-            Na podstawie wyników zamieszczonych w tabeli \ref{tab:params_bayes} można stwierdzić, że naiwny klasyfikator bayesa ze względu na niską dokładność nie nadaje się do realizacji naszego zadania.
-            
-            Bazując na parametrach zamieszczonych w tabeli \ref{tab:params_forest_final} uruchomiono klasyfikator dla większej liczby danych, wyniki czego zostały zaprezentowane w tabeli \ref{tab:forest_exec}.
-            \begin{table}[!htbp]
-                \begin{tabular}{|c|c|c|c|}
-                    \hline
-                    Liczba wierszy & Liczba wierszy po odrzuceniu & Dokładność - trening & Dokładność - test \\ \hline
-400000 & 326008 & 0.6325 & 0.6294 \\ \hline
-600000 & 485043 & 0.6181 & 0.6173 \\ \hline
-700000 & 563763 & 0.6125 & 0.6114 \\ \hline
-                \end{tabular}
-                \caption{Wyniki kolejnych uruchomień klasyfikatora lasów losowych}
-                \label{tab:forest_exec}
-            \end{table}
-            \FloatBarrier
-            W wynikach z tabeli \ref{tab:forest_exec} można zauważyć spadek dokładności klasyfikacji wraz z wzrostem liczby danych. Dlatego najpewniej należy odrzucić próbę klasyfikacji typu przestępstwa, na rzecz bardziej ogólnego poziomu wykroczenia, dla którego możliwe będzie osiągnięcie wyższej dokładności klasyfikacji.
+            \subsubsection{Analiza wyników} {
+                W oparciu o wyniki zamieszczone w tabelach \ref{tab:params_forest_1} i \ref{tab:params_forest_2} dla
+                klasyfikatora lasów losowych wybrano wartości parametrów, które umożliwią najwyższą dokładność
+                klasyfikacji i umieszczono je w tabeli \ref{tab:params_forest_final}.
+
+                \begin{table}[!htbp]
+                    \begin{tabular}{|c|c|c|}
+                        \hline
+                        \% testowy & Nazwa parametru & Wartość parametru \\ \hline
+                        20\% & n\_estimators & 1000 \\ \hline
+                        20\% & min\_samples\_leaf & 100 \\ \hline
+                        20\% & max\_samples & 0.99 \\ \hline
+                        20\% & max\_depth & 100 \\ \hline
+                    \end{tabular}
+                    \caption{Wyniki dla naiwnego klasyfikatora Bayes'a}
+                    \label{tab:params_forest_final}
+                \end{table}
+                \FloatBarrier
+
+                Na podstawie wyników zamieszczonych w tabeli \ref{tab:params_bayes} można stwierdzić, że naiwny
+                klasyfikator bayesa ze względu na niską dokładność nie nadaje się do realizacji naszego zadania.
+
+                Bazując na parametrach zamieszczonych w tabeli \ref{tab:params_forest_final} uruchomiono klasyfikator
+                dla większej liczby danych, wyniki czego zostały zaprezentowane w tabeli \ref{tab:forest_exec}.
+
+                \begin{table}[!htbp]
+                    \begin{tabular}{|c|c|c|c|}
+                        \hline
+                        Liczba wierszy & Liczba wierszy po odrzuceniu & Dokładność - trening & Dokładność - test \\ \hline
+                        400000 & 326008 & 0.6325 & 0.6294 \\ \hline
+                        600000 & 485043 & 0.6181 & 0.6173 \\ \hline
+                        700000 & 563763 & 0.6125 & 0.6114 \\ \hline
+                    \end{tabular}
+                    \caption{Wyniki kolejnych uruchomień klasyfikatora lasów losowych}
+                    \label{tab:forest_exec}
+                \end{table}
+                \FloatBarrier
+
+                W wynikach z tabeli \ref{tab:forest_exec} można zauważyć spadek dokładności klasyfikacji wraz z
+                wzrostem liczby danych. Dlatego najpewniej należy odrzucić próbę klasyfikacji typu przestępstwa, na
+                rzecz bardziej ogólnego poziomu wykroczenia, dla którego możliwe będzie osiągnięcie wyższej
+                dokładności klasyfikacji.
             }
         }
 
         \subsection{Regresja czasu trwania przestępstwa} {
             \subsubsection{Przygotowanie danych do analizy} {
-                Zgodnie z założonym celem z danych wyekstrahowany został czas trwania przestępstwa (w sekundach), przy tym odrzucone zostały wszystkie rekordy, dla których czas ten nie jest znany i co więcej, w ogóle odrzucone zostały wszystkie rekordy, dla których brakuje jakiegokolwiek atrybutu. Wszystkie wartości tekstowe zostały zamienione na wartości liczbowe za pomocą klasy LabelEncoder. Ostatecznie ze zbioru po opisanym wcześniej ogólnym wstępnym przetwarzaniu danych, zawierającym ponad 7 mln. rekordów, zostało około 4.5 mln. rekordów. Ze względu na to, że pierwsze eksperymenty będą wykorzystane z użyciem lasu losowego, żadna normalizacja ani standaryzacja nie jest potrzebna.
+                Zgodnie z założonym celem z danych wyekstrahowany został czas trwania przestępstwa (w sekundach),
+                przy tym odrzucone zostały wszystkie rekordy, dla których czas ten nie jest znany i co więcej, w
+                ogóle odrzucone zostały wszystkie rekordy, dla których brakuje jakiegokolwiek atrybutu. Wszystkie
+                wartości tekstowe zostały zamienione na wartości liczbowe za pomocą klasy LabelEncoder. Ostatecznie
+                ze zbioru po opisanym wcześniej ogólnym wstępnym przetwarzaniu danych, zawierającym ponad 7 mln.
+                rekordów, zostało około 4.5 mln. rekordów. Ze względu na to, że pierwsze eksperymenty będą
+                wykorzystane z użyciem lasu losowego, żadna normalizacja ani standaryzacja nie jest potrzebna.
             }
             \subsubsection{Eksperymenty} {
-                Przeprowadzonych zostało kilka wstępnych eksperymentów, mających na celu wykorzystanie lasu losowego do regresji czasu trwania zdarzenia. We wszystkich 20\% zbioru jest wykorzystane na zbiór testowy, pozostała część stanowi zbiór treningowy. Jako miarę jakości regresji wykorzystano \emph{Mean Absolute Error} czyli średnią wartość bezwzględną błędu - różnicy między wartością oczekiwaną a zwróconą przez model. We wszystkich eksperymentach las modelem regresyjnym jest las losowy składający się ze 100 drzew, gdzie ich głębokość jest ograniczana w różnym stopniu. Wyniki zaprezentowane są w tabeli \ref{tab:tr_rf_max_depth}.
-                
+                Przeprowadzonych zostało kilka wstępnych eksperymentów, mających na celu wykorzystanie lasu losowego
+                do regresji czasu trwania zdarzenia. We wszystkich 20\% zbioru jest wykorzystane na zbiór testowy,
+                pozostała część stanowi zbiór treningowy. Jako miarę jakości regresji wykorzystano \emph{Mean
+                Absolute Error} czyli średnią wartość bezwzględną błędu - różnicy między wartością oczekiwaną a
+                zwróconą przez model. We wszystkich eksperymentach las modelem regresyjnym jest las losowy składający
+                się ze 100 drzew, gdzie ich głębokość jest ograniczana w różnym stopniu. Wyniki zaprezentowane są w
+                tabeli \ref{tab:tr_rf_max_depth}.
+
                 \begin{table}
                     \centering
-                    \begin{tabular}{|c|c|c|} \hline
+                    \begin{tabular}{|c|c|c|}
+                        \hline
                         \emph{max\_depth} & MAE treningowy & MAE testowy \\ \hline
-                         4 & $1544898s \approx 429h$ & $1568598s \approx 435h$ \\
-                         5 & $1531379s \approx 425h$ & $1554616s \approx 431h$ \\
-                         6 & $1503298s \approx 417h$ & $1530283s \approx 425h$ \\
-                         7 & $1482720s \approx 411h$ & $1512315s \approx 420h$ \\
-                         10 & $1425666s \approx 396h$ & $1480827s \approx 411h$ \\
-                         20 & $1070366s \approx 297h$ & $1528108s \approx 424h$ \\ \hline
+                        4 & $1544898s \approx 429h$ & $1568598s \approx 435h$ \\
+                        5 & $1531379s \approx 425h$ & $1554616s \approx 431h$ \\
+                        6 & $1503298s \approx 417h$ & $1530283s \approx 425h$ \\
+                        7 & $1482720s \approx 411h$ & $1512315s \approx 420h$ \\
+                        10 & $1425666s \approx 396h$ & $1480827s \approx 411h$ \\
+                        20 & $1070366s \approx 297h$ & $1528108s \approx 424h$ \\ \hline
                     \end{tabular}
                     \caption{Wyniki dla lasu losowego (100 drzew) przy różnych maksymalnych głębokościach}
                     \label{tab:tr_rf_max_depth}
                 \end{table}
             }
+
             \subsubsection{Dyskusja i wnioski} {
-                Przed przystąpieniem do oceny wyników działania klasyfikatora należy zbadać rozkład czasu trwania przestępstwa w całym zbiorze danych. Poniższe statystyki są przybliżone, jako że dokładne wartości nie mają w tym przypadku dużego znaczenia:
+                Przed przystąpieniem do oceny wyników działania klasyfikatora należy zbadać rozkład czasu trwania
+                przestępstwa w całym zbiorze danych. Poniższe statystyki są przybliżone, jako że dokładne wartości
+                nie mają w tym przypadku dużego znaczenia:
+
                 \begin{itemize}
                     \item średnia = 248h
                     \item odchylenie standardowe = 4769h (prawie 200 dni)
@@ -343,34 +392,66 @@
                     \item centyl 80 = 11h
                     \item centyl 90 = 40h
                 \end{itemize}
-                Po pierwsze należy wspomnieć, że rozkład tej wartości jest bardzo nierównomierny. Zdecydowana większość zdarzeń ma czas trwania poniżej 10 godzin, a nawet poniżej jednej godziny. Są jedna również przypadki, kiedy zdarzenie trwa w latach, jest ich jednak bardzo mało. Tak więc zbiór ten jest silnie niezbalansowany, jeżeli chodzi o to konkretne zagadnienie. Z tego powodu można spodziewać się znacznych trudności w uczeniu modelu regresyjnego.
-                
-                Obserwując wyniki z tabeli \ref{tab:tr_rf_max_depth} można stwierdzić, że optymalna głębokość drzewa znajduje się pomiędzy 10 a 20, jako że, w eksperymentach poprzedzających głębokość 10, błąd maleje. Z drugiej strony dla głębokości 20 model jest przetrenowany - błąd zaczął wzrastać na zbiorze testowym. Jeżeli chodzi o samą wartość błędu, to oscyluje ona w okolicach 400 godzin. Biorąc pod uwagę fakt, że zakres wartości czasu trwania przestępstwa to zakres od kilku minut czy sekund do kilku lat, wynik ten można uznać za niosący pewną wartość. Uwzględniając jednak, że zdecydowana większość zdarzeń trwa kilka godzin lub kilkadziesiąt minut, osiągnięta dokładność absolutnie nie jest zadowalająca.
-                
-                W dalszych badaniach należy zacząć od oczyszczenia zbioru i ponadto wykonania na nim dodatkowego wstępnego przetwarzania, mającego na celu na przykład zrównoważenie go. Należy również spróbować usprawnić model lasu losowego, być może wykorzystując bibliotekę \emph{XGBoost}. Ponadto można skorzystać z innych modeli oraz wprowadzić dodatkową ekstrakcję nowych cech z obecnie wykorzystywanych atrybutów.
+
+                Po pierwsze należy wspomnieć, że rozkład tej wartości jest bardzo nierównomierny. Zdecydowana
+                większość zdarzeń ma czas trwania poniżej 10 godzin, a nawet poniżej jednej godziny. Są jedna również
+                przypadki, kiedy zdarzenie trwa w latach, jest ich jednak bardzo mało. Tak więc zbiór ten jest silnie
+                niezbalansowany, jeżeli chodzi o to konkretne zagadnienie. Z tego powodu można spodziewać się
+                znacznych trudności w uczeniu modelu regresyjnego.
+
+                Obserwując wyniki z tabeli \ref{tab:tr_rf_max_depth} można stwierdzić, że optymalna głębokość drzewa
+                znajduje się pomiędzy 10 a 20, jako że, w eksperymentach poprzedzających głębokość 10, błąd maleje. Z
+                drugiej strony dla głębokości 20 model jest przetrenowany - błąd zaczął wzrastać na zbiorze testowym.
+                Jeżeli chodzi o samą wartość błędu, to oscyluje ona w okolicach 400 godzin. Biorąc pod uwagę fakt, że
+                zakres wartości czasu trwania przestępstwa to zakres od kilku minut czy sekund do kilku lat, wynik
+                ten można uznać za niosący pewną wartość. Uwzględniając jednak, że zdecydowana większość zdarzeń trwa
+                kilka godzin lub kilkadziesiąt minut, osiągnięta dokładność absolutnie nie jest zadowalająca.
+
+                W dalszych badaniach należy zacząć od oczyszczenia zbioru i ponadto wykonania na nim dodatkowego
+                wstępnego przetwarzania, mającego na celu na przykład zrównoważenie go. Należy również spróbować
+                usprawnić model lasu losowego, być może wykorzystując bibliotekę \emph{XGBoost}. Ponadto można
+                skorzystać z innych modeli oraz wprowadzić dodatkową ekstrakcję nowych cech z obecnie
+                wykorzystywanych atrybutów.
             }
-            
+
         }
 
         \subsection{Grupowanie przestępstw na podstawie podzbiorów cech} {
-            Do realizacji tej części zadania dane zostały poddane wstępnej obróbce, a następnie usunięto wiersze posiadające puste dane. Grupowanie odbywało się za pomocą 3 różnych algorytmów klasteryzacji (KMeans, DBSCAN, Aglomercyjny).
-            Spośród cech podejrzanego i ofiary zostały wybrane podzbiory stanowiące przedmiot eksperymentu - etykiety. Etykiety mogły składać się z danych pochodzących z jednej, lub wielu kolumn. Można było wyróżnić 4 eksperymenty na podstawie etykiet:
+            Do realizacji tej części zadania dane zostały poddane wstępnej obróbce, a następnie usunięto wiersze
+            posiadające puste dane. Grupowanie odbywało się za pomocą 3 różnych algorytmów klasteryzacji
+            (KMeans, DBSCAN, Aglomercyjny).
+            Spośród cech podejrzanego i ofiary zostały wybrane podzbiory stanowiące przedmiot eksperymentu - etykiety
+            Etykiety mogły składać się z danych pochodzących z jednej, lub wielu kolumn. Można było wyróżnić 4
+            eksperymenty na podstawie etykiet:
             \begin{itemize}
                 \item SUSP\_SEX - grupowanie na podstawie płci podejrzanego
                 \item VIC\_RACE - grupowanie na podstawie rasy ofiary
-                \item SUSP\_SEX\_VIC\_SEX - tworzona własna etykieta, która ma określać jakiego rodzaju przestępstwo miało miejce pod kątem płci
+                \item SUSP\_SEX\_VIC\_SEX - tworzona własna etykieta, która ma określać jakiego rodzaju przestępstwo
+                \item miało miejce pod kątem płci
                 \item SUSP\_RACE\_VIC\_RACE - stworzona własna etykieta, która określa tło rasowe incydentu
             \end{itemize}
+
             \subsubsection{Metodologia badań}
-            Na początku każdego eksperymentu wybierana została etykieta, która stanowiła główny przedmiot eksperymentu. Usuwane zostały niepełne, rekordy, a następnie pozostałe etykiety były zamieniane na wartości liczbowe do analizy. W przypadku algorytmów KMeans oraz Aglomeracyjnego liczba klastrów ustawiana była na liczbę unikatowych wartości w ramach danej etykiety. Ponieważ ten fragment zadania przewidywał wstępne przetwarzanie, aby zmniejszyć czas obliczeń pod uwagę były brane tylko 2 płcie (MALE, FEMALE) oraz rasy (WHITE, BLACK). Po przeprowadzonej klasteryzacji program dokonywał dopasowania różnych kombinacji wartości etykiety utworzonej przez algorytm i porównywał to z prawdziwymi wartościami etykiety w rekordach. Dla przykładu, jeżeli dany eksperyment dotyczył płci, liczba klastrów była ustawiana na 2. Oznaczało to, że algorytm utworzy etykiety \textit{0} oraz \textit{1}. Następnie należało sprawdzić wszystkie permutacje etykiet względem unikatowych wartości.
+            Na początku każdego eksperymentu wybierana została etykieta, która stanowiła główny przedmiot
+            eksperymentu. Usuwane zostały niepełne, rekordy, a następnie pozostałe etykiety były zamieniane na
+            wartości liczbowe do analizy. W przypadku algorytmów KMeans oraz Aglomeracyjnego liczba klastrów
+            ustawiana była na liczbę unikatowych wartości w ramach danej etykiety. Ponieważ ten fragment zadania
+            przewidywał wstępne przetwarzanie, aby zmniejszyć czas obliczeń pod uwagę były brane tylko 2 płcie (MALE,
+            FEMALE) oraz rasy (WHITE, BLACK). Po przeprowadzonej klasteryzacji program dokonywał dopasowania różnych
+            kombinacji wartości etykiety utworzonej przez algorytm i porównywał to z prawdziwymi wartościami etykiety
+            w rekordach. Dla przykładu, jeżeli dany eksperyment dotyczył płci, liczba klastrów była ustawiana na 2.
+            Oznaczało to, że algorytm utworzy etykiety \textit{0} oraz \textit{1}. Następnie należało sprawdzić
+            wszystkie permutacje etykiet względem unikatowych wartości.
             Przykład par wartość - etykieta z klastra:
             ('MALE', 0), ('FEMALE', 1) oraz
             ('MALE', 1), ('FEMALE', 0). Finalnie program wybiera układ w którym wartość \textit{accuracy} jest największa.
-            Podejście wiążę się ze znacznym wydłużeniem czasu działania programu w przypadku etykiet, które posiadają więcej niż 2 wartości (jak rasa).
-            Wygenerowane wyniki zawierają informacje o wykorzystanym algorytmie, etykiecie, liczbie próbek poddanych analizie, permutacji, która osiągnęła najlepsze accuracy i wartość tej metryki.
-            
+            Podejście wiążę się ze znacznym wydłużeniem czasu działania programu w przypadku etykiet, które posiadają
+            więcej niż 2 wartości (jak rasa).
+            Wygenerowane wyniki zawierają informacje o wykorzystanym algorytmie, etykiecie, liczbie próbek poddanych
+            analizie, permutacji, która osiągnęła najlepsze accuracy i wartość tej metryki.
+
             \subsubsection{Wyniki - Etykiety pojedyncze}
-            
+
             Skrócone nazwy etykiet:
             \begin{itemize}
                 \item M - male
@@ -378,7 +459,7 @@
                 \item B - black
                 \item W - white
             \end{itemize}
-            
+
             \begin{table}[!htbp]
                 \begin{tabular}{|c|c|c|c|c|c|}
                     \hline
@@ -390,7 +471,7 @@
                 \caption{Wyniki grupowania dla etykiety SUSP\_SEX}
                 \label{tab:ssex}
             \end{table}
-            
+
             \begin{table}[!htbp]
                 \begin{tabular}{|c|c|c|c|c|c|}
                     \hline
@@ -402,29 +483,29 @@
                 \caption{Wyniki grupowania dla etykiety VIC\_RACE}
                 \label{tab:ssex}
             \end{table}
-            
+
             \subsubsection{Wyniki - Etykiety z wielu kolumn}
-            
-           Skrócone nazwy wartości w przypadku etykiety SUSP\_SEX\_VIC\_SEX:
+
+            Skrócone nazwy wartości w przypadku etykiety SUSP\_SEX\_VIC\_SEX:
             \begin{itemize}
                 \item MM - male on male
                 \item MF - male on female
                 \item FM - female on male
                 \item FF - female on female
             \end{itemize}
-            
+
             \begin{table}[!htbp]
                 \begin{tabular}{|c|c|c|c|c|c|c|c|}
                     \hline
                     Wiersze & Po odrzuceniu & Algorytym & MM & MF & FM & FF & Accuracy \\ \hline
                     1000000 & 284593 & Kmeans & 2 & 0 & 1 & 3 & 25.07 \\ \hline
-                    1000000 & 284593 & Aglomeracyjny & 0 & 3 & 2 & 1  & 32.84 \\ \hline
+                    1000000 & 284593 & Aglomeracyjny & 0 & 3 & 2 & 1 & 32.84 \\ \hline
                     1000000 & 284593 & DBSCAN & - & - & - & - & - \\ \hline
                 \end{tabular}
                 \caption{Wyniki grupowania dla etykiety SUSP\_SEX\_VIC\_SEX}
                 \label{tab:svsex}
             \end{table}
-            
+
             Skrócone nazwy wartości w przypadku etykiety SUSP\_RACE\_VIC\_RACE:
             \begin{itemize}
                 \item BW - black on black
@@ -432,27 +513,32 @@
                 \item WB - white on black
                 \item WW - white on white
             \end{itemize}
-            
+
             \begin{table}[!htbp]
                 \begin{tabular}{|c|c|c|c|c|c|c|c|}
                     \hline
                     Wiersze & Po odrzuceniu & Algorytym & BW & BB & WB & WW & Accuracy \\ \hline
                     500000 & 68693 & Kmeans & 0 & 2 & 1 & 3 & 25.23 \\ \hline
-                    500000 & 68693 & Aglomeracyjny & 3 & 0 & 2 & 1  & 35.35 \\ \hline
+                    500000 & 68693 & Aglomeracyjny & 3 & 0 & 2 & 1 & 35.35 \\ \hline
                     500000 & 68693 & DBSCAN & - & - & - & - & - \\ \hline
                 \end{tabular}
                 \caption{Wyniki grupowania dla etykiety SUSP\_RACE\_VIC\_RACE}
                 \label{tab:svsex}
             \end{table}
-            
+
             \subsubsection{Analiza wyników}
-            DBSCAN został uruchomiony z domyślnymi parametrami. Spowodowało to, że utworzył tylko jeden klaster i umieścił w nim wszystkie elementy oznaczając je etykiety -1, co jest równe punktowi typu outlier.
-            
-            W przypadku algorytmu KMeans podczas testowania można było zauważyć, że algorytm osiąga accuracy zbliżone do 1/n\%, gdzie n jest liczbą klastrów. Może to sugerować, że algorytm nie działa poprawnie i generuje wyniki losowo.
-            
-            Algorytm aglomeracyjny osiągnął bardziej zróżnicowane wyniki, jednak należy przeprowadzić dodatkową weryfikację w celu ustalenia czy są one miarodajne.
-            
-            Dostosowywanie parametrów algorytmów w celu poprawy jakości klasteryzacji oraz analiza wyników będą celami na następne checkpointy
+            DBSCAN został uruchomiony z domyślnymi parametrami. Spowodowało to, że utworzył tylko jeden klaster i
+            umieścił w nim wszystkie elementy oznaczając je etykiety -1, co jest równe punktowi typu outlier.
+
+            W przypadku algorytmu KMeans podczas testowania można było zauważyć, że algorytm osiąga accuracy zbliżone
+            do 1/n\%, gdzie n jest liczbą klastrów. Może to sugerować, że algorytm nie działa poprawnie i generuje
+            wyniki losowo.
+
+            Algorytm aglomeracyjny osiągnął bardziej zróżnicowane wyniki, jednak należy przeprowadzić dodatkową
+            weryfikację w celu ustalenia czy są one miarodajne.
+
+            Dostosowywanie parametrów algorytmów w celu poprawy jakości klasteryzacji oraz analiza wyników będą
+            celami na następne checkpointy
         }
     }
 

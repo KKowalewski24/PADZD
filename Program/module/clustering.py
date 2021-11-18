@@ -116,13 +116,16 @@ def get_accuracy(cropped_data, labels_from_clustering, unique_actual_labels, col
     permutations = [list(zip(x, unique_labels_from_clustering)) for x in
                     itertools.permutations(unique_actual_labels, len(unique_labels_from_clustering))]
     accuracies = []
-    for p in permutations:
+    for index, p in enumerate(permutations):
         accurate = 0
-        for l in p:
-            for (idx, record) in cropped_data.iterrows():
-                if record[column_name] == l[0] and labels_from_clustering[idx] == l[1]:
-                    accurate += 1
-        accuracies.append(accurate / len(cropped_data) * 100.0)
+        if index == len(permutations) - 1:
+            accuracies.append(100.0 - np.sum(accuracies))
+        else:
+            for l in p:
+                for (idx, record) in cropped_data.iterrows():
+                    if record[column_name] == l[0] and labels_from_clustering[idx] == l[1]:
+                        accurate += 1
+            accuracies.append(accurate / len(cropped_data) * 100.0)
     index_of_highest_permutation = np.where(accuracies == np.amax(accuracies))[0][0]
     print(
         "Top accuracy for permutation " + str(permutations[index_of_highest_permutation]) + ": " + str(

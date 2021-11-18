@@ -34,7 +34,7 @@ def initial_processing_for_single_label(dataset: pd.DataFrame, label) -> pd.Data
     dataset = dataset.query(f'{label} != "OTHER"')
     cropped_data = pd.DataFrame(dataset.query(f'{label} != "OTHER"')).reset_index()
     actual_labels = dataset[label]
-
+    print("Number of analised records for label: " + label + " " + str(len(dataset)))
     dataset.drop(columns=[label], inplace=True)
     dataset = label_encode_columns(dataset)
 
@@ -56,7 +56,7 @@ def initial_processing_for_multi_label(dataset: pd.DataFrame, labels) -> pd.Data
 
     for label in labels:
         dataset.drop(columns=[label], inplace=True)
-
+    print("Number of analised records for label: " + mixed_label + " " + str(len(dataset)))
     dataset = label_encode_columns(dataset)
     return dataset, actual_labels, cropped_data
 

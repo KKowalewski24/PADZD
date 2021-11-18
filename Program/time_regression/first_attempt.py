@@ -16,7 +16,7 @@ def read_data(source_filename, target_filename):
         # extract duration time
         data['DURATION'] = (pd.to_datetime(data['CMPLNT_TO_TIMESTAMP']) -
                             pd.to_datetime(data['CMPLNT_FR_TIMESTAMP'])
-                            ).map(lambda delta: delta.seconds)
+                            ).map(lambda delta: delta.total_seconds())
         # drop not necessary columns
         data.drop('CMPLNT_NUM', axis=1, inplace=True)
         data.drop('RPT_TIMESTAMP', axis=1, inplace=True)

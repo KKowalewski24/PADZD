@@ -43,13 +43,26 @@ def read_data(source_filename, target_filename):
 
 
 if __name__ == '__main__':
-    X, y = read_data(
-        "data/NYPD_Data_Preprocessed-204442.csv",
-        "data/NYPD_Data_Preprocessed_time_regression.csv")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+    print("Preprocessing data...")
+    X, y = read_data("data/NYPD_Data_Preprocessed-204442.csv",
+                     "data/NYPD_Data_Preprocessed-204442_time_regression.csv")
+    print("\t DONE")
 
-    regressor = RandomForestRegressor()
-    regressor.fit(X_train, y_train)
+    print("Splitting...")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    print("\t DONE")
 
-    y_pred = regressor.predict(X_test)
-    print(f"Mean absolute error {mean_absolute_error(y_test, y_pred)}")
+    for max_depth in [4, 5, 6, 7, 10, 20]:
+        print(f"Training (max_depth={max_depth})...")
+        regressor = RandomForestRegressor(max_depth=max_depth,
+                                          n_jobs=-1,
+                                          verbose=1)
+        regressor.fit(X_train, y_train)
+        print("\t DONE")
+
+        print("Testing...")
+        y_pred_train = regressor.predict(X_train)
+        y_pred_test = regressor.predict(X_test)
+        print(f"\t TRAIN mean absolute error {mean_absolute_error(y_train, y_pred_train)}")
+        print(f"\t TEST mean absolute error {mean_absolute_error(y_test, y_pred_test)}")
+        print("\t DONE")

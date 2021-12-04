@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Dict, List
 
 import pandas as pd
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 """
 How to run:
@@ -38,6 +39,7 @@ def main() -> None:
     merge_cols(df)
     group_count_rename_data(df)
     drop_cols(df)
+    encode_columns(df)
     calculate_stats(df)
 
     display_and_log("Saving data to file")
@@ -155,6 +157,33 @@ def drop_cols(df: pd.DataFrame) -> None:
         EventLocationLabels.PATROL_DISTRICT_NAME,
         EventLocationLabels.TRANSIT_STATION_NAME,
     ], inplace=True)
+
+
+def encode_columns(df: pd.DataFrame) -> None:
+    one_hot_columns = [
+        LawBreakingLabels.KEY_CODE,
+        LawBreakingLabels.PD_CODE,
+        EventSurroundingsLabels.PLACE_TYPE,
+        EventSurroundingsLabels.PLACE_TYPE_POSITION,
+        EventLocationLabels.PRECINCT_CODE,
+        EventLocationLabels.BOROUGH_NAME,
+        SuspectLabels.SUSPECT_RACE,
+        SuspectLabels.SUSPECT_SEX,
+        VictimLabels.VICTIM_RACE,
+        VictimLabels.VICTIM_SEX,
+    ]
+    one_hot_encoder = OneHotEncoder(sparse=False)
+    for one_hot_column in one_hot_columns:
+        df[one_hot_column] = one_hot_encoder.fit_transform(df[one_hot_column])
+
+    ordinal_columns = [
+        LawBreakingLabels.LAW_BREAKING_LEVEL,
+        SuspectLabels.SUSPECT_AGE_GROUP,
+        VictimLabels.VICTIM_AGE_GROUP,
+    ]
+    ordinal_encoder = OrdinalEncoder()
+    for ordinal_column in ordinal_columns:
+        df[ordinal_column] = ordinal_encoder.fit_transform(df[ordinal_column])
 
 
 def calculate_stats(df: pd.DataFrame) -> None:

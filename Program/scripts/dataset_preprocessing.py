@@ -174,7 +174,7 @@ def encode_columns(df: pd.DataFrame) -> None:
     ]
     one_hot_encoder = OneHotEncoder(sparse=False)
     for one_hot_column in one_hot_columns:
-        df[one_hot_column] = one_hot_encoder.fit_transform(df[one_hot_column])
+        df[one_hot_column] = one_hot_encoder.fit_transform(df[[one_hot_column]])
 
     ordinal_columns = [
         LawBreakingLabels.LAW_BREAKING_LEVEL,
@@ -183,7 +183,7 @@ def encode_columns(df: pd.DataFrame) -> None:
     ]
     ordinal_encoder = OrdinalEncoder()
     for ordinal_column in ordinal_columns:
-        df[ordinal_column] = ordinal_encoder.fit_transform(df[ordinal_column])
+        df[ordinal_column] = ordinal_encoder.fit_transform(df[[ordinal_column]])
 
 
 def calculate_stats(df: pd.DataFrame) -> None:

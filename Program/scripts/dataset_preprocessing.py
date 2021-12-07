@@ -224,7 +224,7 @@ def encode_columns(df: pd.DataFrame) -> None:
         VictimLabels.VICTIM_SEX,
     ]
     display_and_log("Encoding one hot columns")
-    df = pd.get_dummies(df[one_hot_columns], prefix=one_hot_columns)
+    df = pd.get_dummies(df, columns=one_hot_columns, prefix=one_hot_columns)
 
     ordinal_columns: List[Tuple[str, List]] = [
         (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),

@@ -42,7 +42,8 @@ def main() -> None:
     drop_cols(df)
     columns_number = len(df.columns)
     calculate_stats(df)
-    encode_columns(df)
+    print_unique_ordinal_values(df)
+    df = encode_columns(df)
     df_reduced = reduce_dimensions(df, columns_number)
     df_reduced_2_times_more = reduce_dimensions(df, columns_number * 2)
 
@@ -105,15 +106,15 @@ def group_count_rename_data(df: pd.DataFrame) -> None:
      .to_csv(RESULTS_DIR + prepare_filename("victim_age_group_count", CSV), index=False))
 
     display_and_log("Imputating AGE GROUP by inserting most frequent value")
-    age_groups: List[str] = ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]
+    age_groups: List[str] = ["(<18)", "(18-24)", "(25-44)", "(45-64)", "(65+)", "(UNKNOWN)"]
 
     df.loc[
-        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.contains("|".join(age_groups), na=False),
+        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.match(pat="|".join(age_groups), na=False),
         SuspectLabels.SUSPECT_AGE_GROUP
     ] = df[SuspectLabels.SUSPECT_AGE_GROUP].value_counts().idxmax()
 
     df.loc[
-        ~df[VictimLabels.VICTIM_AGE_GROUP].str.contains("|".join(age_groups), na=False),
+        ~df[VictimLabels.VICTIM_AGE_GROUP].str.match(pat="|".join(age_groups), na=False),
         VictimLabels.VICTIM_AGE_GROUP
     ] = df[VictimLabels.VICTIM_AGE_GROUP].value_counts().idxmax()
 
@@ -203,7 +204,13 @@ def calculate_stats(df: pd.DataFrame) -> None:
         json.dump(stats, file)
 
 
-def encode_columns(df: pd.DataFrame) -> None:
+def print_unique_ordinal_values(df: pd.DataFrame) -> None:
+    print(df[LawBreakingLabels.LAW_BREAKING_LEVEL].unique())
+    print(df[SuspectLabels.SUSPECT_AGE_GROUP].unique())
+    print(df[VictimLabels.VICTIM_AGE_GROUP].unique())
+
+
+def encode_columns(df: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
         LawBreakingLabels.KEY_CODE,
         LawBreakingLabels.PD_CODE,
@@ -217,17 +224,19 @@ def encode_columns(df: pd.DataFrame) -> None:
         VictimLabels.VICTIM_SEX,
     ]
     display_and_log("Encoding one hot columns")
-    df = pd.get_dummies(df[one_hot_columns], prefix=one_hot_columns)
+    df = pd.get_dummies(df, columns=one_hot_columns, prefix=one_hot_columns)
 
     ordinal_columns: List[Tuple[str, List]] = [
-        (LawBreakingLabels.LAW_BREAKING_LEVEL, []),
-        (SuspectLabels.SUSPECT_AGE_GROUP, []),
-        (VictimLabels.VICTIM_AGE_GROUP, []),
+        (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
+        (SuspectLabels.SUSPECT_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
+        (VictimLabels.VICTIM_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
     ]
     display_and_log("Encoding ordinal columns")
     for ordinal_column in ordinal_columns:
         label, categories = ordinal_column
         df[label] = OrdinalEncoder(categories=categories).fit_transform(df[[label]])
+
+    return df
 
 
 def reduce_dimensions(df: pd.DataFrame, output_dim_number: int) -> pd.DataFrame:

@@ -7,6 +7,7 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from typing import Dict, List, Tuple
 from module.utils import display_finish, run_main
+import matplotlib.pyplot as plt
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -14,11 +15,15 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics, naive_bayes
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, \
+    roc_curve
+from sklearn.model_selection import learning_curve
 import calendar
 
 import pandas as pd
 
 from module.label_names_mapper import *
+from module.LatexGenerator import LatexGenerator
 
 """
 How to run:
@@ -35,6 +40,9 @@ logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] {%(pathname)s:%(lineno)d} - %(message)s"
 )
+
+LATEX_RESULTS_DIR = "latex_results"
+latex_generator: LatexGenerator = LatexGenerator(LATEX_RESULTS_DIR)
 
 
 def main() -> None:
@@ -83,97 +91,8 @@ def bayes_classification(data_set: pd.DataFrame, test_percentage: float) -> None
 
 
 def decision_tree_classification(data_set: pd.DataFrame, test_percentage: float) -> None:
-#     print("Test data percentage: " + str(round(test_percentage * 100, 2)) + "%")
-#
-#     train, test = train_test_split(data_set, test_size=test_percentage)
-#
-#     y_train = train[LawBreakingLabels.KEY_CODE]
-#     x_train = train.drop(columns=[LawBreakingLabels.KEY_CODE])
-#     y_test = test[LawBreakingLabels.KEY_CODE]
-#     x_test = test.drop(columns=[LawBreakingLabels.KEY_CODE])
-#
-#     min_samples_leaf_range = [
-#        10, 100, 1000, 10000
-#     ]
-#     max_depth_range = [100, 1000, 10000, 100000]
-#     n_estimators_range = [100, 1000]
-#     max_samples_range = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.8, 0.99]
-#
-# ########################################################################################################################
-# ### min_samples_leaf_range
-#     train_acc_history = []
-#     test_acc_history = []
-#     for min_samples_leaf in min_samples_leaf_range:
-#         tree = DecisionTreeClassifier(random_state=47,
-#                                       min_samples_leaf=min_samples_leaf)
-#         tree.fit(x_train, y_train)
-#         train_acc_history.append(tree.score(x_train, y_train))
-#         test_acc_history.append(tree.score(x_test, y_test))
-#         print("min_samples_leaf:", min_samples_leaf, "\ttrain_acc:",
-#               train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
-#     best_acc = np.max(test_acc_history)
-#     best_params = {
-#         "min_samples_leaf": min_samples_leaf_range[np.argmax(test_acc_history)]
-#     }
-#
-# ########################################################################################################################
-# ### max_depth_range
-#     train_acc_history = []
-#     test_acc_history = []
-#     for max_depth in max_depth_range:
-#         tree = DecisionTreeClassifier(random_state=47, max_depth=max_depth)
-#         tree.fit(x_train, y_train)
-#         train_acc_history.append(tree.score(x_train, y_train))
-#         test_acc_history.append(tree.score(x_test, y_test))
-#         print("max_depth:", max_depth, "\ttrain_acc:", train_acc_history[-1],
-#               "\ttest_acc:", test_acc_history[-1])
-#
-#     if best_acc < np.max(test_acc_history):
-#         best_acc = np.max(test_acc_history)
-#         best_params = {
-#             "max_depth": max_depth_range[np.argmax(test_acc_history)]
-#         }
-#     print("best params for single tree:", best_params)
-#
-# ########################################################################################################################
-# ### n_estimators_range
-#     train_acc_history = []
-#     test_acc_history = []
-#     for n_estimators in n_estimators_range:
-#         forest = RandomForestClassifier(random_state=47,
-#                                         n_jobs=-1,
-#                                         n_estimators=n_estimators,
-#                                         **best_params)
-#         forest.fit(x_train, y_train)
-#         train_acc_history.append(forest.score(x_train, y_train))
-#         test_acc_history.append(forest.score(x_test, y_test))
-#         print("n_estimators:", n_estimators, "\ttrain_acc:",
-#               train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
-#     best_acc = np.max(test_acc_history)
-#     best_params['n_estimators'] = n_estimators_range[np.argmax(
-#         test_acc_history)]
-# ########################################################################################################################
-# ### max_samples_range
-#     train_acc_history = []
-#     test_acc_history = []
-#     for max_samples in max_samples_range:
-#         forest = RandomForestClassifier(random_state=47,
-#                                         n_jobs=-1,
-#                                         max_samples=max_samples,
-#                                         **best_params)
-#         forest.fit(x_train, y_train)
-#         train_acc_history.append(forest.score(x_train, y_train))
-#         test_acc_history.append(forest.score(x_test, y_test))
-#         print("max_samples:", max_samples, "\ttrain_acc:",
-#               train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
-#
-#     best_acc = np.max(test_acc_history)
-#     best_params['max_samples'] = max_samples_range[np.argmax(test_acc_history)]
-#
-#     print("best params:", best_params, "best accuracy:", best_acc)
+    print("Test data percentage: " + str(round(test_percentage * 100, 2)) + "%")
 
-########################################################################################################################
-### Final test
     train, test = train_test_split(data_set, test_size=test_percentage)
 
     y_train = train[LawBreakingLabels.KEY_CODE]
@@ -181,19 +100,128 @@ def decision_tree_classification(data_set: pd.DataFrame, test_percentage: float)
     y_test = test[LawBreakingLabels.KEY_CODE]
     x_test = test.drop(columns=[LawBreakingLabels.KEY_CODE])
 
+    min_samples_leaf_range = [
+       10, 100, 1000, 10000
+    ]
+    max_depth_range = [5, 10, 15, 25]
+    n_estimators_range = [100, 1000]
+    max_samples_range = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.8, 0.99]
+
+########################################################################################################################
+### min_samples_leaf_range
     train_acc_history = []
     test_acc_history = []
-    forest = RandomForestClassifier(random_state=47,
-                                    n_jobs=-1,
-                                    n_estimators=1000,
-                                    min_samples_leaf=100,
-                                    max_samples=0.99,
-                                    max_depth=100)
-    forest.fit(x_train, y_train)
-    train_acc_history.append(forest.score(x_train, y_train))
-    test_acc_history.append(forest.score(x_test, y_test))
-    print("\ttrain_acc:",
-          train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+    for min_samples_leaf in min_samples_leaf_range:
+        tree = DecisionTreeClassifier(random_state=47,
+                                      min_samples_leaf=min_samples_leaf)
+        tree.fit(x_train, y_train)
+        train_acc_history.append(tree.score(x_train, y_train))
+        test_acc_history.append(tree.score(x_test, y_test))
+        print("min_samples_leaf:", min_samples_leaf, "\ttrain_acc:",
+              train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+    best_acc = np.max(test_acc_history)
+    best_params = {
+        "min_samples_leaf": min_samples_leaf_range[np.argmax(test_acc_history)]
+    }
+
+########################################################################################################################
+### max_depth_range
+    train_acc_history = []
+    test_acc_history = []
+    for max_depth in max_depth_range:
+        tree = DecisionTreeClassifier(random_state=47, max_depth=max_depth)
+        tree.fit(x_train, y_train)
+        train_acc_history.append(tree.score(x_train, y_train))
+        test_acc_history.append(tree.score(x_test, y_test))
+        print("max_depth:", max_depth, "\ttrain_acc:", train_acc_history[-1],
+              "\ttest_acc:", test_acc_history[-1])
+
+    if best_acc < np.max(test_acc_history):
+        best_acc = np.max(test_acc_history)
+        best_params = {
+            "max_depth": max_depth_range[np.argmax(test_acc_history)]
+        }
+    print("best params for single tree:", best_params)
+
+########################################################################################################################
+### n_estimators_range
+    train_acc_history = []
+    test_acc_history = []
+    for n_estimators in n_estimators_range:
+        forest = RandomForestClassifier(random_state=47,
+                                        n_jobs=-1,
+                                        n_estimators=n_estimators,
+                                        **best_params)
+        forest.fit(x_train, y_train)
+        train_acc_history.append(forest.score(x_train, y_train))
+        test_acc_history.append(forest.score(x_test, y_test))
+        print("n_estimators:", n_estimators, "\ttrain_acc:",
+              train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+    best_acc = np.max(test_acc_history)
+    best_params['n_estimators'] = n_estimators_range[np.argmax(
+        test_acc_history)]
+########################################################################################################################
+### max_samples_range
+    train_acc_history = []
+    test_acc_history = []
+    for max_samples in max_samples_range:
+        forest = RandomForestClassifier(random_state=47,
+                                        n_jobs=-1,
+                                        max_samples=max_samples,
+                                        **best_params)
+        forest.fit(x_train, y_train)
+        train_acc_history.append(forest.score(x_train, y_train))
+        test_acc_history.append(forest.score(x_test, y_test))
+        print("max_samples:", max_samples, "\ttrain_acc:",
+              train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+
+    best_acc = np.max(test_acc_history)
+    best_params['max_samples'] = max_samples_range[np.argmax(test_acc_history)]
+
+    print("best params:", best_params, "best accuracy:", best_acc)
+
+########################################################################################################################
+### Final test
+
+    # train, test = train_test_split(data_set, test_size=test_percentage)
+    #
+    # y_train = train[LawBreakingLabels.KEY_CODE]
+    # x_train = train.drop(columns=[LawBreakingLabels.KEY_CODE])
+    # y_test = test[LawBreakingLabels.KEY_CODE]
+    # x_test = test.drop(columns=[LawBreakingLabels.KEY_CODE])
+    #
+    # train_acc_history = []
+    # test_acc_history = []
+    # forest = RandomForestClassifier(random_state=47,
+    #                                 n_jobs=-1,
+    #                                 n_estimators=1000,
+    #                                 min_samples_leaf=100,
+    #                                 max_samples=0.99,
+    #                                 max_depth=100)
+    # forest.fit(x_train, y_train)
+    # train_acc_history.append(forest.score(x_train, y_train))
+    # test_acc_history.append(forest.score(x_test, y_test))
+    # print("\ttrain_acc:",
+    #       train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
+    #
+    #
+    #
+    # y_pred = forest.predict(x_test)
+    # y_proba = forest.predict_proba(x_test)
+    #
+    # results = {
+    #     "confusion_matrix": confusion_matrix(y_test, y_pred),
+    #     "accuracy": np.round(accuracy_score(y_test, y_pred), 4),
+    #     "recall": np.round(recall_score(y_test, y_pred, average=None), 4),
+    #     "precision": np.round(precision_score(y_test, y_pred, average=None), 4),
+    #     "roc_curves": [roc_curve(y_test, y_proba[:, i], pos_label=i) for i in np.unique(y_test)],
+    #     "learning_curve": learning_curve(forest, x_train, y_train, n_jobs=-1,
+    #                                      train_sizes=np.linspace(0.1, 1.0, 10))
+    # }
+    #
+    # save_metrics(results, "forest")
+
+
 
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
@@ -302,6 +330,68 @@ def display_finish() -> None:
 def display_and_log(text: str) -> None:
     print(text)
     logging.info(text)
+
+
+
+def save_metrics(metrics, filename_prefix):
+    # save tables with confusion matrices
+    for classifier in metrics:
+        matrix = metrics[classifier]["confusion_matrix"]
+        latex_generator.generate_vertical_table(
+            matrix[0], matrix[1:], filename_prefix + "_" + classifier + "_confusion_matrix"
+        )
+
+    # save tables with basic metrics
+    if len(list(metrics.values())[0]["recall"]) == 2:
+        matrix = [
+            [classifier,
+             metrics[classifier]["accuracy"],
+             metrics[classifier]["recall"][1],
+             metrics[classifier]["recall"][0],
+             metrics[classifier]["precision"][1]]
+            for classifier in metrics]
+        latex_generator.generate_vertical_table(
+            ["Classifier", "Accuracy", "Sensitivity", "Specificity", "Precision"],
+            matrix, filename_prefix + "_basic_metrics"
+        )
+    else:
+        matrix = [
+            [classifier,
+             metrics[classifier]["accuracy"],
+             str(metrics[classifier]["recall"]),
+             str(metrics[classifier]["precision"])]
+            for classifier in metrics]
+        latex_generator.generate_vertical_table(
+            ["Classifier", "Accuracy", "Sensitivities", "Precisions"],
+            matrix, filename_prefix + "_basic_metrics"
+        )
+
+    # save chart with ROC curve
+    number_of_roc_curves = len(list(metrics.values())[0]["roc_curves"])
+    if number_of_roc_curves == 2:
+        for classifier in metrics:
+            fpr, tpr, _ = metrics[classifier]["roc_curves"][1]
+            plt.plot(fpr, tpr, label=classifier)
+        plt.legend()
+    else:
+        for i in range(number_of_roc_curves):
+            plt.subplot(int(np.ceil(number_of_roc_curves / 2)), 2, i + 1)
+            plt.title("class: " + str(i))
+            for classifier in metrics:
+                fpr, tpr, _ = metrics[classifier]["roc_curves"][i]
+                plt.plot(fpr, tpr, label=classifier)
+            plt.legend()
+    plt.show()
+
+    # save charts with learning curves
+    for classifier, i in zip(metrics, range(len(metrics))):
+        plt.subplot(int(np.ceil(len(metrics) / 2)), 2, i + 1)
+        plt.title(classifier)
+        train_sizes_abs, train_scores, test_scores, = metrics[classifier]["learning_curve"]
+        plt.plot(train_sizes_abs, np.average(train_scores, axis=1), label="train")
+        plt.plot(train_sizes_abs, np.average(test_scores, axis=1), label="test")
+        plt.legend()
+    plt.show()
 
 
 if __name__ == "__main__":

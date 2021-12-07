@@ -219,7 +219,9 @@ def decision_tree_classification(data_set: pd.DataFrame, test_percentage: float)
     #                                      train_sizes=np.linspace(0.1, 1.0, 10))
     # }
     #
-    # save_metrics(results, "forest")
+    # metrics = []
+    # metrics["forest"] = results
+    # save_metrics(metrics, "forest")
 
 
 

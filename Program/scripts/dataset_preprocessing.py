@@ -42,6 +42,7 @@ def main() -> None:
     drop_cols(df)
     columns_number = len(df.columns)
     calculate_stats(df)
+    print_unique_ordinal_values(df)
     encode_columns(df)
     df_reduced = reduce_dimensions(df, columns_number)
     df_reduced_2_times_more = reduce_dimensions(df, columns_number * 2)
@@ -203,6 +204,12 @@ def calculate_stats(df: pd.DataFrame) -> None:
         json.dump(stats, file)
 
 
+def print_unique_ordinal_values(df: pd.DataFrame) -> None:
+    print(df[LawBreakingLabels.LAW_BREAKING_LEVEL].unique())
+    print(df[SuspectLabels.SUSPECT_AGE_GROUP].unique())
+    print(df[VictimLabels.VICTIM_AGE_GROUP].unique())
+
+
 def encode_columns(df: pd.DataFrame) -> None:
     one_hot_columns = [
         LawBreakingLabels.KEY_CODE,
@@ -220,9 +227,9 @@ def encode_columns(df: pd.DataFrame) -> None:
     df = pd.get_dummies(df[one_hot_columns], prefix=one_hot_columns)
 
     ordinal_columns: List[Tuple[str, List]] = [
-        (LawBreakingLabels.LAW_BREAKING_LEVEL, []),
-        (SuspectLabels.SUSPECT_AGE_GROUP, []),
-        (VictimLabels.VICTIM_AGE_GROUP, []),
+        (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
+        (SuspectLabels.SUSPECT_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
+        (VictimLabels.VICTIM_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
     ]
     display_and_log("Encoding ordinal columns")
     for ordinal_column in ordinal_columns:

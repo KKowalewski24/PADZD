@@ -39,7 +39,7 @@ def main() -> None:
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
     merge_cols(df)
-    imputate_nan_values(df)
+    df.fillna(df.mean(), inplace=True)
     group_count_rename_data(df)
     drop_cols(df)
     columns_number = len(df.columns)
@@ -96,11 +96,6 @@ def _convert_datetime_to_timestamp(df: pd.DataFrame, input_column: str,
                                    output_column: str) -> pd.DataFrame:
     df[output_column] = pd.to_datetime(df[input_column]).values.astype(np.int64) // 10 ** 9
     return df
-
-
-def imputate_nan_values(df: pd.DataFrame) -> None:
-    df = df[EventLocationLabels.LONGITUDE].fillna(df[EventLocationLabels.LONGITUDE].mean())
-    df = df[EventLocationLabels.LATITUDE].fillna(df[EventLocationLabels.LATITUDE].mean())
 
 
 def group_count_rename_data(df: pd.DataFrame) -> None:
@@ -268,7 +263,7 @@ def encode_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def reduce_dimensions(df: pd.DataFrame, output_dim_number: int) -> pd.DataFrame:
     display_and_log(f"Reduce dimensions for number of target dims: {output_dim_number}")
-    return PCA(n_components=output_dim_number).fit_transform(df)
+    return pd.DataFrame(PCA(n_components=output_dim_number).fit_transform(df))
 
 
 def prepare_args() -> Namespace:

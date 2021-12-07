@@ -5,10 +5,11 @@ import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import OrdinalEncoder
 
 """
 How to run:
@@ -39,11 +40,22 @@ def main() -> None:
     merge_cols(df)
     group_count_rename_data(df)
     drop_cols(df)
-    encode_columns(df)
+    columns_number = len(df.columns)
     calculate_stats(df)
+    encode_columns(df)
+    df_reduced = reduce_dimensions(df, columns_number)
+    df_reduced_2_times_more = reduce_dimensions(df, columns_number * 2)
 
     display_and_log("Saving data to file")
-    df.to_csv(RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed", CSV), index=False)
+    df.to_csv(
+        RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed", CSV), index=False
+    )
+    df_reduced.to_csv(
+        RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed_Reduced", CSV), index=False
+    )
+    df_reduced_2_times_more.to_csv(
+        RESULTS_DIR + prepare_filename("NYPD_Data_Preprocessed_Reduced_2", CSV), index=False
+    )
 
     display_finish()
 
@@ -159,33 +171,6 @@ def drop_cols(df: pd.DataFrame) -> None:
     ], inplace=True)
 
 
-def encode_columns(df: pd.DataFrame) -> None:
-    one_hot_columns = [
-        LawBreakingLabels.KEY_CODE,
-        LawBreakingLabels.PD_CODE,
-        EventSurroundingsLabels.PLACE_TYPE,
-        EventSurroundingsLabels.PLACE_TYPE_POSITION,
-        EventLocationLabels.PRECINCT_CODE,
-        EventLocationLabels.BOROUGH_NAME,
-        SuspectLabels.SUSPECT_RACE,
-        SuspectLabels.SUSPECT_SEX,
-        VictimLabels.VICTIM_RACE,
-        VictimLabels.VICTIM_SEX,
-    ]
-    one_hot_encoder = OneHotEncoder(sparse=False)
-    for one_hot_column in one_hot_columns:
-        df[one_hot_column] = one_hot_encoder.fit_transform(df[[one_hot_column]])
-
-    ordinal_columns = [
-        LawBreakingLabels.LAW_BREAKING_LEVEL,
-        SuspectLabels.SUSPECT_AGE_GROUP,
-        VictimLabels.VICTIM_AGE_GROUP,
-    ]
-    ordinal_encoder = OrdinalEncoder()
-    for ordinal_column in ordinal_columns:
-        df[ordinal_column] = ordinal_encoder.fit_transform(df[[ordinal_column]])
-
-
 def calculate_stats(df: pd.DataFrame) -> None:
     columns: List[str] = [
         DateTimeEventLabels.EVENT_START_TIMESTAMP,
@@ -216,6 +201,38 @@ def calculate_stats(df: pd.DataFrame) -> None:
 
     with open(RESULTS_DIR + prepare_filename("missing_values", JSON), "w") as file:
         json.dump(stats, file)
+
+
+def encode_columns(df: pd.DataFrame) -> None:
+    one_hot_columns = [
+        LawBreakingLabels.KEY_CODE,
+        LawBreakingLabels.PD_CODE,
+        EventSurroundingsLabels.PLACE_TYPE,
+        EventSurroundingsLabels.PLACE_TYPE_POSITION,
+        EventLocationLabels.PRECINCT_CODE,
+        EventLocationLabels.BOROUGH_NAME,
+        SuspectLabels.SUSPECT_RACE,
+        SuspectLabels.SUSPECT_SEX,
+        VictimLabels.VICTIM_RACE,
+        VictimLabels.VICTIM_SEX,
+    ]
+    display_and_log("Encoding one hot columns")
+    df = pd.get_dummies(df[one_hot_columns], prefix=one_hot_columns)
+
+    ordinal_columns: List[Tuple[str, List]] = [
+        (LawBreakingLabels.LAW_BREAKING_LEVEL, []),
+        (SuspectLabels.SUSPECT_AGE_GROUP, []),
+        (VictimLabels.VICTIM_AGE_GROUP, []),
+    ]
+    display_and_log("Encoding ordinal columns")
+    for ordinal_column in ordinal_columns:
+        label, categories = ordinal_column
+        df[label] = OrdinalEncoder(categories=categories).fit_transform(df[[label]])
+
+
+def reduce_dimensions(df: pd.DataFrame, output_dim_number: int) -> pd.DataFrame:
+    display_and_log(f"Reduce dimensions for number of target dims: {output_dim_number}")
+    return PCA(n_components=output_dim_number).fit_transform(df)
 
 
 def prepare_args() -> Namespace:

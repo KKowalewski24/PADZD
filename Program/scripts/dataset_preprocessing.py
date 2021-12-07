@@ -97,6 +97,11 @@ def _convert_datetime_to_timestamp(df: pd.DataFrame, input_column: str,
     return df
 
 
+def imputate_nan_values(df: pd.DataFrame) -> None:
+    df = df[EventLocationLabels.LONGITUDE].fillna(df[EventLocationLabels.LONGITUDE].mean())
+    df = df[EventLocationLabels.LATITUDE].fillna(df[EventLocationLabels.LATITUDE].mean())
+
+
 def group_count_rename_data(df: pd.DataFrame) -> None:
     display_and_log(f"Grouping {LawBreakingLabels.KEY_CODE}")
     (df.groupby(LawBreakingLabels.KEY_CODE)[LawBreakingLabels.OFFENSE_DESCRIPTION]

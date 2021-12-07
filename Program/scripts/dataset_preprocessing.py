@@ -214,6 +214,7 @@ def encode_columns(df: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
         LawBreakingLabels.KEY_CODE,
         LawBreakingLabels.PD_CODE,
+        EventStatusLabels.EVENT_STATUS,
         EventSurroundingsLabels.PLACE_TYPE,
         EventSurroundingsLabels.PLACE_TYPE_POSITION,
         EventLocationLabels.PRECINCT_CODE,

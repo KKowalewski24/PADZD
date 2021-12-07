@@ -39,6 +39,7 @@ def main() -> None:
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
     merge_cols(df)
+    imputate_nan_values(df)
     group_count_rename_data(df)
     drop_cols(df)
     columns_number = len(df.columns)

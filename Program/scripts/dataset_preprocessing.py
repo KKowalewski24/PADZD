@@ -106,15 +106,15 @@ def group_count_rename_data(df: pd.DataFrame) -> None:
      .to_csv(RESULTS_DIR + prepare_filename("victim_age_group_count", CSV), index=False))
 
     display_and_log("Imputating AGE GROUP by inserting most frequent value")
-    age_groups: List[str] = ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]
+    age_groups: List[str] = ["(<18)", "(18-24)", "(25-44)", "(45-64)", "(65+)", "(UNKNOWN)"]
 
     df.loc[
-        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.contains("|".join(age_groups), na=False),
+        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.match(pat="|".join(age_groups), na=False),
         SuspectLabels.SUSPECT_AGE_GROUP
     ] = df[SuspectLabels.SUSPECT_AGE_GROUP].value_counts().idxmax()
 
     df.loc[
-        ~df[VictimLabels.VICTIM_AGE_GROUP].str.contains("|".join(age_groups), na=False),
+        ~df[VictimLabels.VICTIM_AGE_GROUP].str.match(pat="|".join(age_groups), na=False),
         VictimLabels.VICTIM_AGE_GROUP
     ] = df[VictimLabels.VICTIM_AGE_GROUP].value_counts().idxmax()
 

@@ -43,7 +43,7 @@ def main() -> None:
     columns_number = len(df.columns)
     calculate_stats(df)
     print_unique_ordinal_values(df)
-    encode_columns(df)
+    df = encode_columns(df)
     df_reduced = reduce_dimensions(df, columns_number)
     df_reduced_2_times_more = reduce_dimensions(df, columns_number * 2)
 
@@ -210,7 +210,7 @@ def print_unique_ordinal_values(df: pd.DataFrame) -> None:
     print(df[VictimLabels.VICTIM_AGE_GROUP].unique())
 
 
-def encode_columns(df: pd.DataFrame) -> None:
+def encode_columns(df: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
         LawBreakingLabels.KEY_CODE,
         LawBreakingLabels.PD_CODE,
@@ -235,6 +235,8 @@ def encode_columns(df: pd.DataFrame) -> None:
     for ordinal_column in ordinal_columns:
         label, categories = ordinal_column
         df[label] = OrdinalEncoder(categories=categories).fit_transform(df[[label]])
+
+    return df
 
 
 def reduce_dimensions(df: pd.DataFrame, output_dim_number: int) -> pd.DataFrame:

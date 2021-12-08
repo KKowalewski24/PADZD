@@ -7,6 +7,7 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from typing import Dict, List, Tuple
 
+import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import OrdinalEncoder
@@ -38,6 +39,7 @@ def main() -> None:
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
     merge_cols(df)
+    df.fillna(df.mean(), inplace=True)
     group_count_rename_data(df)
     drop_cols(df)
     columns_number = len(df.columns)
@@ -67,17 +69,33 @@ def merge_cols(df: pd.DataFrame) -> None:
         (df[DateTimeEventLabels.EVENT_START_DATE] + df[DateTimeEventLabels.EVENT_START_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
+    df = _convert_datetime_to_timestamp(
+        df, DateTimeEventLabels.EVENT_START_TIMESTAMP, DateTimeEventLabels.EVENT_START_TIMESTAMP_UNIX
+    )
 
     display_and_log(f"Merging {DateTimeEventLabels.EVENT_END_TIMESTAMP}")
     df[DateTimeEventLabels.EVENT_END_TIMESTAMP] = (
         (df[DateTimeEventLabels.EVENT_END_DATE] + df[DateTimeEventLabels.EVENT_END_TIME])
             .apply(pd.to_datetime, format='%m/%d/%Y%H:%M:%S', errors='coerce')
     )
+    df = _convert_datetime_to_timestamp(
+        df, DateTimeEventLabels.EVENT_END_TIMESTAMP, DateTimeEventLabels.EVENT_END_TIMESTAMP_UNIX
+    )
 
     display_and_log(f"Merging {DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP}")
     df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP] = pd.to_datetime(
         df[DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE]
     )
+    df = _convert_datetime_to_timestamp(
+        df, DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
+        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP_UNIX
+    )
+
+
+def _convert_datetime_to_timestamp(df: pd.DataFrame, input_column: str,
+                                   output_column: str) -> pd.DataFrame:
+    df[output_column] = pd.to_datetime(df[input_column]).values.astype(np.int64) // 10 ** 9
+    return df
 
 
 def group_count_rename_data(df: pd.DataFrame) -> None:
@@ -151,9 +169,12 @@ def drop_cols(df: pd.DataFrame) -> None:
     df.drop(columns=[
         DateTimeEventLabels.EVENT_START_DATE,
         DateTimeEventLabels.EVENT_START_TIME,
+        DateTimeEventLabels.EVENT_START_TIMESTAMP,
         DateTimeEventLabels.EVENT_END_DATE,
         DateTimeEventLabels.EVENT_END_TIME,
+        DateTimeEventLabels.EVENT_END_TIMESTAMP,
         DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_DATE,
+        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
 
         LawBreakingLabels.OFFENSE_DESCRIPTION,
         LawBreakingLabels.PD_DESCRIPTION,
@@ -174,9 +195,9 @@ def drop_cols(df: pd.DataFrame) -> None:
 
 def calculate_stats(df: pd.DataFrame) -> None:
     columns: List[str] = [
-        DateTimeEventLabels.EVENT_START_TIMESTAMP,
-        DateTimeEventLabels.EVENT_END_TIMESTAMP,
-        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
+        DateTimeEventLabels.EVENT_START_TIMESTAMP_UNIX,
+        DateTimeEventLabels.EVENT_END_TIMESTAMP_UNIX,
+        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP_UNIX,
         LawBreakingLabels.KEY_CODE,
         LawBreakingLabels.PD_CODE,
         LawBreakingLabels.LAW_BREAKING_LEVEL,
@@ -214,6 +235,7 @@ def encode_columns(df: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
         LawBreakingLabels.KEY_CODE,
         LawBreakingLabels.PD_CODE,
+        EventStatusLabels.EVENT_STATUS,
         EventSurroundingsLabels.PLACE_TYPE,
         EventSurroundingsLabels.PLACE_TYPE_POSITION,
         EventLocationLabels.PRECINCT_CODE,
@@ -241,7 +263,7 @@ def encode_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def reduce_dimensions(df: pd.DataFrame, output_dim_number: int) -> pd.DataFrame:
     display_and_log(f"Reduce dimensions for number of target dims: {output_dim_number}")
-    return PCA(n_components=output_dim_number).fit_transform(df)
+    return pd.DataFrame(PCA(n_components=output_dim_number).fit_transform(df))
 
 
 def prepare_args() -> Namespace:
@@ -291,14 +313,17 @@ class DateTimeEventLabels:
     EVENT_START_DATE = "CMPLNT_FR_DT"
     EVENT_START_TIME = "CMPLNT_FR_TM"
     EVENT_START_TIMESTAMP = "CMPLNT_FR_TIMESTAMP"
+    EVENT_START_TIMESTAMP_UNIX = "CMPLNT_FR_TIMESTAMP_UNIX"
     EVENT_END_DATE = "CMPLNT_TO_DT"
     EVENT_END_TIME = "CMPLNT_TO_TM"
     EVENT_END_TIMESTAMP = "CMPLNT_TO_TIMESTAMP"
+    EVENT_END_TIMESTAMP_UNIX = "CMPLNT_TO_TIMESTAMP_UNIX"
 
 
 class DateTimeSubmissionLabels:
     SUBMISSION_TO_POLICE_DATE = "RPT_DT"
     SUBMISSION_TO_POLICE_TIMESTAMP = "RPT_TIMESTAMP"
+    SUBMISSION_TO_POLICE_TIMESTAMP_UNIX = "RPT_TIMESTAMP_UNIX"
 
 
 class LawBreakingLabels:

@@ -52,11 +52,11 @@ def main() -> None:
     create_directory(RESULTS_DIR)
 
     display_and_log("Loading data...")
-    df: pd.DataFrame = pd.read_csv(filepath, nrows=600000)
+    df: pd.DataFrame = pd.read_csv(filepath, nrows=1000)
     display_and_log(f"Size of loaded data: {len(df.index)}")
 
     df = preprocess_data(df)
-
+    print(df["DayOfWeek"])
     # test_data_percentage_tree = [0.1, 0.2, 0.3, 0.35]
     # for test_percentage in test_data_percentage_tree:
     #     decision_tree_classification(df, test_percentage)
@@ -67,8 +67,8 @@ def main() -> None:
 
 
     #FINAL
-    decision_tree_classification(df, 0.2)
-    bayes_classification(df, 0.3)
+    # decision_tree_classification(df, 0.2)
+    # bayes_classification(df, 0.3)
 
     display_finish()
 
@@ -230,7 +230,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     data = drop_unused_columns(data)
     data = remove_na(data)
     data = extract_hour_and_day(data)
-    data = transform_labels(data)
+    # data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
     return data
 

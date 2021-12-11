@@ -57,9 +57,12 @@
     \section{Podział obowiązków w zespole} {
         \begin{itemize}
             \item Szymon Gruda - Kontynuacja prac nad celem, związanym z klasyfikacją kodu przestępstwa.
-            \item Jan Karwowski - Badanie sensowności dodanie OneHotEncoding oraz OrdinalEncoding, rozwiązywanie problemów z przepełnianiem się pamięci RAM po dokonaniu encodingu
-            \item Michał Kidawa - kontynuacja badania eksperymentów związanych z grupowaniem elementów zbioru na podstawie istniejących oraz tworzonych cech
-            \item Kamil Kowalewski - Zmiany w preprocessingu aby była możliwość osiągnięcia lepszy efektów niż te uzyskane w celach w Checkpoint 2 oraz przygotowania sprawozdania
+            \item Jan Karwowski - Badanie sensowności dodanie OneHotEncoding oraz OrdinalEncoding,
+            rozwiązywanie problemów z przepełnianiem się pamięci RAM po dokonaniu encodingu
+            \item Michał Kidawa - kontynuacja badania eksperymentów związanych z grupowaniem elementów
+            zbioru na podstawie istniejących oraz tworzonych cech
+            \item Kamil Kowalewski - Zmiany w preprocessingu aby była możliwość osiągnięcia lepszy efektów
+            niż te uzyskane w celach w Checkpoint 2 oraz przygotowania sprawozdania
         \end{itemize}
     }
 
@@ -151,8 +154,15 @@
     \label{operation_schema} {
 
         \subsection{Cel 1 - Klasyfikacja} {
-            Na podstawie niskiej dokładności klasyfikacji, wykorzystującej naiwny klasyfikator Bayes'a, zrezygnowano z dalszego testowania wykorzystania tego klasyfikatora, z powodu braku przesłanego, jakoby mógł spełniać swoje zadanie, bazując na danych z badanego zbioru danych.
-            W celu poprawy rezultatów otrzymywanych na skutek działania klasyfikatora, poprawiono kodowanie wartości takich kolumn danych jak płeć, grupa wiekowa, dzień tygodnia i dzień roku. Następnie przeprowadzono serię eksperymentów, które pozwoliły określić czy cel w obecnej postaci jest możliwy do zrealizowania.
+            Na podstawie niskiej dokładności klasyfikacji, wykorzystującej naiwny
+            klasyfikator Bayes'a, zrezygnowano z dalszego testowania wykorzystania tego
+            klasyfikatora, z powodu braku przesłanego, jakoby mógł spełniać swoje
+            zadanie, bazując na danych z badanego zbioru danych.
+            W celu poprawy rezultatów otrzymywanych na skutek działania klasyfikatora,
+            poprawiono kodowanie wartości takich kolumn danych jak płeć, grupa wiekowa,
+            dzień tygodnia i dzień roku. Następnie przeprowadzono serię eksperymentów,
+            które pozwoliły określić czy cel w obecnej postaci jest możliwy do
+            zrealizowania.
         }
 
     }
@@ -160,133 +170,175 @@
     \section{Wstępne przetwarzanie danych} {
         W ramach wstępnego przetwarzania danych został przygotowany skrypt o nazwie
         \textit{dataset\_preprocessing.py}. Jego dokładne działanie zostało opisane w
-        ramach Checkpoint 2 w sekcji o tej samej nazwie. Co więcej w ramach Checkpoint 3 zostały dokonane następujące zmiany aby dane były lepiej przygotowane do poszczególnych celów:
+        ramach Checkpoint 2 w sekcji o tej samej nazwie. Co więcej w ramach Checkpoint
+        3 zostały dokonane następujące zmiany aby dane były lepiej przygotowane do
+        poszczególnych celów:
         \begin{enumerate}
             \item Konwersja Pandas Datetime na Timestamp aby były to liczby
-            \item Dodanie enkodowania kolumn z użyciem OneHotEncoder dla kolumn typu \emph{categorical} - dzięki temu powstaję wiele nowych kolumn
+            \item Dodanie enkodowania kolumn z użyciem OneHotEncoder dla kolumn typu \emph{categorical} -
+            dzięki temu powstaję wiele nowych kolumn
             \item Dodanie enkodowania kolumn z użyciem OrdinalEncoder dla kolumn typu \emph{ordinal}
-            \item Zapis otrzymanego pliku po dokonaniu enkodowania wskazanymi wyżej metodami oraz dwukrotne wykorzystanie PCA na uzyskanym DataFrame z parametrem \emph{n\_components} równym liczbie kolumn oraz dwukrotności po pierwszej fazie preprocessingu tzn przed dokonaniem enkodowania. Wszystkie trzy pliki były dostępne do użycia w algorytmach i metodach Data Science do zrealizowania celów.
+            \item Zapis otrzymanego pliku po dokonaniu enkodowania wskazanymi wyżej metodami oraz dwukrotne
+            wykorzystanie PCA na uzyskanym DataFrame z parametrem \emph{n\_components} równym liczbie
+            kolumn oraz dwukrotności po pierwszej fazie preprocessingu tzn przed dokonaniem
+            enkodowania. Wszystkie trzy pliki były dostępne do użycia w algorytmach i metodach Data
+            Science do zrealizowania celów.
         \end{enumerate}
-        Po wykonaniu w/w skryptu okazała się niestety, że z powodu tego powstałej liczby kolumn nie jest możliwe przeprowadzanie analizy danych na całym pliku. Były dokonywane próby optymalizacji tego poprzez dokonanie encodingu w czasie działania programu bez tworzenia tak ogromnego pliku natomiast żaden z członków grupy nie dysponuję tak potężnym sprzętem, który miałby 40GiB RAMu. Problem ten zostanie omówiony z prowadzącym zajęcia w czasie przedstawiania tego Checkpointu celem otrzymania sugestii jak go rozwiązać. Dokonane różne warianty preprocessingu miały na celu polepszyć wyniki z Checkpoint 2 lecz niestety z przyczyn technicznych nie udało się tego dokonać.
+        Po wykonaniu w/w skryptu okazała się niestety, że z powodu tego powstałej
+        liczby kolumn nie jest możliwe przeprowadzanie analizy danych na całym pliku.
+        Były dokonywane próby optymalizacji tego poprzez dokonanie encodingu w czasie
+        działania programu bez tworzenia tak ogromnego pliku natomiast żaden z członków
+        grupy nie dysponuję tak potężnym sprzętem, który miałby 40GiB RAMu. Problem ten
+        zostanie omówiony z prowadzącym zajęcia w czasie przedstawiania tego
+        Checkpointu celem otrzymania sugestii jak go rozwiązać. Dokonane różne warianty
+        preprocessingu miały na celu polepszyć wyniki z Checkpoint 2 lecz niestety z
+        przyczyn technicznych nie udało się tego dokonać.
     }
 
     \section{Przetwarzanie i analiza danych} {
 
         \subsection{Cel 1 - Klasyfikacja} {
-            W ramach tego celu zmieniono kodowanie kolumn, przechowujących informację o rasie, płci, grupie wiekowej. Zarówno dla podejrzanego jak i dla ofiary przestępstwa. Następnie zakodowano status popełnionego przestępstwa. Z analizy danych przeprowadzonych w ramach Checkpoint'u 1, można było wnioskować, że dzień tygodnia oraz dzień roku (w kontekście pory roku) może przenosić ważne dla klasyfikacji informacje. Dlatego, aby zminimalizować straty informacji, związane z wykorzystaniem daty popełnienia przestępstwa. Dzień tygodnia oraz dzień roku, zakodowano jako parę wartości funkcji trygonometrycznych sinus i cosinus, dzięki czemu udaje się przechować informację o cyklicznej naturze czasu.
-            Po przeprowadzeniu tych operacji przeprowadzono naukę oraz test klasyfikatora, wykorzystując do tego jeden milion próbek ze zbioru. 
-                        \FloatBarrier
+            W ramach tego celu zmieniono kodowanie kolumn, przechowujących informację o rasie, płci, grupie
+            wiekowej. Zarówno dla podejrzanego jak i dla ofiary przestępstwa. Następnie zakodowano status
+            popełnionego przestępstwa. Z analizy danych przeprowadzonych w ramach Checkpoint'u 1, można
+            było wnioskować, że dzień tygodnia oraz dzień roku (w kontekście pory roku) może przenosić
+            ważne dla klasyfikacji informacje. Dlatego, aby zminimalizować straty informacji, związane z
+            wykorzystaniem daty popełnienia przestępstwa. Dzień tygodnia oraz dzień roku, zakodowano jako
+            parę wartości funkcji trygonometrycznych sinus i cosinus, dzięki czemu udaje się przechować
+            informację o cyklicznej naturze czasu.
+            Po przeprowadzeniu tych operacji przeprowadzono naukę oraz test klasyfikatora, wykorzystując do
+            tego jeden milion próbek ze zbioru.
+            \FloatBarrier
 
             \begin{table}
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-      Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
-            min\_samples\_leaf & 10 & 0.7065 & 0.6067 \\ \hline
-            min\_samples\_leaf & 100 & 0.6468 & 0.6342 \\ \hline
-            min\_samples\_leaf & 1000 & 0.6214 & 0.6183 \\ \hline
-            min\_samples\_leaf & 10000 & 0.5909 & 0.5909 \\ \hline
-            max\_depth & 5 & 0.6006 & 0.6002 \\ \hline
-            max\_depth & 10 & 0.6287 & 0.6248 \\ \hline
-            max\_depth & 15 & 0.6673 & 0.6311 \\ \hline
-            max\_depth & 25 & 0.8303 & 0.5875 \\ \hline
-            n\_estimators & 100 & 0.6333 & 0.6287 \\ \hline
-            n\_estimators & 1000 & 0.6343 & 0.6297 \\ \hline
-            
-            max\_samples & 0.01 & 0.5375 & 0.5370 \\ \hline
-            max\_samples & 0.02 & 0.5697 & 0.5697 \\ \hline
-            max\_samples & 0.05 & 0.6034 & 0.6030 \\ \hline
-            max\_samples & 0.1 & 0.6162 & 0.6151 \\ \hline
-            max\_samples & 0.2 & 0.6213 & 0.6194 \\ \hline
-            max\_samples & 0.5 & 0.6295 & 0.6261 \\ \hline
-            max\_samples & 0.8 & 0.6327 & 0.6284 \\ \hline
-            max\_samples & 0.99 & 0.6344 & 0.6299 \\ \hline
+                \centering
+                \begin{tabular}{|c|c|c|c|}
+                    \hline
+                    Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
+                    min\_samples\_leaf & 10 & 0.7065 & 0.6067 \\ \hline
+                    min\_samples\_leaf & 100 & 0.6468 & 0.6342 \\ \hline
+                    min\_samples\_leaf & 1000 & 0.6214 & 0.6183 \\ \hline
+                    min\_samples\_leaf & 10000 & 0.5909 & 0.5909 \\ \hline
+                    max\_depth & 5 & 0.6006 & 0.6002 \\ \hline
+                    max\_depth & 10 & 0.6287 & 0.6248 \\ \hline
+                    max\_depth & 15 & 0.6673 & 0.6311 \\ \hline
+                    max\_depth & 25 & 0.8303 & 0.5875 \\ \hline
+                    n\_estimators & 100 & 0.6333 & 0.6287 \\ \hline
+                    n\_estimators & 1000 & 0.6343 & 0.6297 \\ \hline
 
-            \hline
-    \end{tabular}
-    \caption{Wyniki dla lasu losowego przy wykorzystaniu różnych parametrów, dla kodu przestępstwa}
-    \label{tab:forest_parameters_keyCode}
-\end{table}
-                  \FloatBarrier
-  
-    Następnym krokiem było wybranie najlepszych parametrów i zbadanie dla nich kilku metryk, dla dokładności klasyfikacji 62,86\% wartości \textit{Sensitivities} dla kodów przestępstw, prezentowały się tak:
-    [0.     0.12   0.3734 0.5475 0.2113 0.7401 0.     0.     0.     0.
- 0.     0.     0.0389 0.9363 0.0721 0.     0.0574 0.     0.     0.
- 0.465  0.     0.     0.     0.0599 0.9807 0.     0.     0.     0.
- 0.822  0.     0.     0.9061 0.     0.     0.     0.     0.     0.1015
- 0.     0.     0.     0.     0.     0.     0.0098 0.     0.1207 0.
- 0.     0.     0.     0.     0.9989 0.     0.     0.    ]
-   
-    Natomiast wartości \textit{Precisions}
-    [0.     0.4049 0.4818 0.4048 0.4834 0.4861 0.     0.     0.     0.
- 0.     0.     0.641  0.3771 0.4219 0.     0.4795 0.     0.     0.
- 0.3985 0.     0.     0.     0.6766 0.4683 0.     0.     0.     0.
- 0.7215 0.     0.     0.4829 0.     0.     0.     0.     0.     0.6505
- 0.     0.     0.     0.     0.     0.     0.9167 0.     0.472  0.
- 0.     0.     0.     0.     0.9954 0.     0.     0.    ]
-    
-    
-    Po zapoznaniu się z powyższymi wynikami oraz tabelą \ref{tab:forest_parameters_keyCode} można stwierdzić, że poczynione zmiany w celu poprawy dokładności klasyfikacji kodu przestępstwa nie zaskutkowały wielkimi zmianami. Jest to spowodowane najprawdopobniej niemożliwością wykonania takiej klasyfikacji bazując na tych danych. Dlatego zbadane zostało jak zachowuje się klasyfikator, przy klasyfikacji poziomu przestępstwa, wyniki eksperymentów zaprezentowano poniżej,
-    
-    
-\begin{table}
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-      Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
-            min\_samples\_leaf & 10 & 0.9999 & 0.9999 \\ \hline
-            min\_samples\_leaf & 100 & 0.9999 & 0.9999 \\ \hline
-            min\_samples\_leaf & 1000 & 0.9999 & 0.9999 \\ \hline
-            min\_samples\_leaf & 10000 & 0.9999 & 0.9999 \\ \hline
-            max\_depth & 5 & 0.9999 & 0.9999 \\ \hline
-            max\_depth & 10 & 0.9999 & 0.9999 \\ \hline
-            max\_depth & 15 & 0.9999 & 0.9999 \\ \hline
-            max\_depth & 25 & 0.9999 & 0.9999 \\ \hline
-            n\_estimators & 100 & 0.6333 & 0.6287 \\ \hline
-            n\_estimators & 1000 & 0.6343 & 0.6297 \\ \hline
-            
-            max\_samples & 0.01 & 0.9999 & 0.9999 \\ \hline
-            max\_samples & 0.02 & 0.9999 & 0.9999 \\ \hline
-            max\_samples & 0.05 & 0.9967 & 0.9968 \\ \hline
-            max\_samples & 0.1 & 0.9991 & 0.9989 \\ \hline
-            max\_samples & 0.2 & 0.9999 & 0.9999 \\ \hline
-            max\_samples & 0.5 & 0.9999 & 0.9999 \\ \hline
-            max\_samples & 0.8 & 0.9999 & 0.9999 \\ \hline
-            max\_samples & 0.99 & 0.9999 & 0.9999 \\ \hline
+                    max\_samples & 0.01 & 0.5375 & 0.5370 \\ \hline
+                    max\_samples & 0.02 & 0.5697 & 0.5697 \\ \hline
+                    max\_samples & 0.05 & 0.6034 & 0.6030 \\ \hline
+                    max\_samples & 0.1 & 0.6162 & 0.6151 \\ \hline
+                    max\_samples & 0.2 & 0.6213 & 0.6194 \\ \hline
+                    max\_samples & 0.5 & 0.6295 & 0.6261 \\ \hline
+                    max\_samples & 0.8 & 0.6327 & 0.6284 \\ \hline
+                    max\_samples & 0.99 & 0.6344 & 0.6299 \\ \hline
 
-            \hline
-    \end{tabular}
-    \caption{Wyniki dla lasu losowego przy wykorzystaniu różnych parametrów, dla poziomu przestępstwa}
-    \label{tab:forest_parameters_law_breaking_law}
-\end{table}
-                \FloatBarrier
-                
-                
-                Dla najlepszych parametrów zbadano metryki, dla dokładności klasyfikacji 99,99\% wartości \textit{Sensitivities} dla kodów przestępstw, prezentowały się tak:
-                [0.9999 1.     0.9999]
-   
-    Natomiast wartości \textit{Precisions} [0.9999 0.9999 1.    ]
+                    \hline
+                \end{tabular}
+                \caption{Wyniki dla lasu losowego przy wykorzystaniu różnych parametrów, dla kodu
+                przestępstwa}
+                \label{tab:forest_parameters_keyCode}
+            \end{table}
+            \FloatBarrier
+
+            Następnym krokiem było wybranie najlepszych parametrów i zbadanie dla nich kilku metryk, dla
+            dokładności klasyfikacji 62,86\% wartości \textit{Sensitivities} dla kodów przestępstw,
+            prezentowały się tak:
+            [0. 0.12 0.3734 0.5475 0.2113 0.7401 0. 0. 0. 0.
+            0. 0. 0.0389 0.9363 0.0721 0. 0.0574 0. 0. 0.
+            0.465 0. 0. 0. 0.0599 0.9807 0. 0. 0. 0.
+            0.822 0. 0. 0.9061 0. 0. 0. 0. 0. 0.1015
+            0. 0. 0. 0. 0. 0. 0.0098 0. 0.1207 0.
+            0. 0. 0. 0. 0.9989 0. 0. 0.    ]
+
+            Natomiast wartości \textit{Precisions}
+            [0. 0.4049 0.4818 0.4048 0.4834 0.4861 0. 0. 0. 0.
+            0. 0. 0.641 0.3771 0.4219 0. 0.4795 0. 0. 0.
+            0.3985 0. 0. 0. 0.6766 0.4683 0. 0. 0. 0.
+            0.7215 0. 0. 0.4829 0. 0. 0. 0. 0. 0.6505
+            0. 0. 0. 0. 0. 0. 0.9167 0. 0.472 0.
+            0. 0. 0. 0. 0.9954 0. 0. 0.    ]
+
+
+            Po zapoznaniu się z powyższymi wynikami oraz tabelą \ref{tab:forest_parameters_keyCode} można
+            stwierdzić, że poczynione zmiany w celu poprawy dokładności klasyfikacji kodu przestępstwa nie
+            zaskutkowały wielkimi zmianami. Jest to spowodowane najprawdopobniej niemożliwością wykonania
+            takiej klasyfikacji bazując na tych danych. Dlatego zbadane zostało jak zachowuje się
+            klasyfikator, przy klasyfikacji poziomu przestępstwa, wyniki eksperymentów zaprezentowano poniżej,
+
+
+            \begin{table}
+                \centering
+                \begin{tabular}{|c|c|c|c|}
+                    \hline
+                    Nazwa parametru & Wartość parametru & Skuteczność trening & skuteczność test \\ \hline
+                    min\_samples\_leaf & 10 & 0.9999 & 0.9999 \\ \hline
+                    min\_samples\_leaf & 100 & 0.9999 & 0.9999 \\ \hline
+                    min\_samples\_leaf & 1000 & 0.9999 & 0.9999 \\ \hline
+                    min\_samples\_leaf & 10000 & 0.9999 & 0.9999 \\ \hline
+                    max\_depth & 5 & 0.9999 & 0.9999 \\ \hline
+                    max\_depth & 10 & 0.9999 & 0.9999 \\ \hline
+                    max\_depth & 15 & 0.9999 & 0.9999 \\ \hline
+                    max\_depth & 25 & 0.9999 & 0.9999 \\ \hline
+                    n\_estimators & 100 & 0.6333 & 0.6287 \\ \hline
+                    n\_estimators & 1000 & 0.6343 & 0.6297 \\ \hline
+
+                    max\_samples & 0.01 & 0.9999 & 0.9999 \\ \hline
+                    max\_samples & 0.02 & 0.9999 & 0.9999 \\ \hline
+                    max\_samples & 0.05 & 0.9967 & 0.9968 \\ \hline
+                    max\_samples & 0.1 & 0.9991 & 0.9989 \\ \hline
+                    max\_samples & 0.2 & 0.9999 & 0.9999 \\ \hline
+                    max\_samples & 0.5 & 0.9999 & 0.9999 \\ \hline
+                    max\_samples & 0.8 & 0.9999 & 0.9999 \\ \hline
+                    max\_samples & 0.99 & 0.9999 & 0.9999 \\ \hline
+
+                    \hline
+                \end{tabular}
+                \caption{Wyniki dla lasu losowego przy wykorzystaniu różnych parametrów, dla poziomu
+                przestępstwa}
+                \label{tab:forest_parameters_law_breaking_law}
+            \end{table}
+            \FloatBarrier
+
+
+            Dla najlepszych parametrów zbadano metryki, dla dokładności klasyfikacji 99,99\% wartości
+            \textit{Sensitivities} dla kodów przestępstw, prezentowały się tak:
+            [0.9999 1. 0.9999]
+
+            Natomiast wartości \textit{Precisions} [0.9999 0.9999 1.    ]
         }
-        
-        Macierz pomyłek (ang. \textit{Confusion Matrix}) została zaprezentowana w tabeli \ref{tab:forest_forest_confusion_matrix_law_breaking_law}, niestety dla kodu przestępstwa nie udało się takiej macierzy przedstawić w sposób czytelny, dlatego pominięto ją w sprawozdaniu.
+
+        Macierz pomyłek (ang. \textit{Confusion Matrix}) została zaprezentowana w tabeli
+        \ref{tab:forest_forest_confusion_matrix_law_breaking_law}, niestety dla kodu przestępstwa nie udało
+        się takiej macierzy przedstawić w sposób czytelny, dlatego pominięto ją w sprawozdaniu.
         \begin{table}[!htbp]
-\centering
-\begin{tabular}{|c|c|c|}
-\hline
-VIOLATION & MISDEMEANOR & FELONY\\ \hline
-35959 & 2 & 0 \\ \hline
-3 & 84691 & 1 \\ \hline
-0 & 3 & 46626 \\ \hline
-\end{tabular}
-\caption
-{Macierz pomyłek dla rodzaju przestępstwa}
-\label{tab:forest_forest_confusion_matrix_law_breaking_law}
-\end{table}
-\FloatBarrier
-Wnioskując na podstawie rozbieżności pomiędzy dokładnościami klasyfikatorów, klasyfikujących kod przestępstwa a jego rodzaj można wywnioskować, że jeden cel jest zbyt ambitny, a drugi ma potencjał na uogólnienie. Dlatego w kolejnej iteracji badawczej, spróbujemy osiągnąć pewną modyfikację celu i wyznaczyć mniejszy zbiór kolumn (lub mniej oczywisty ich dobór), który pozwoli klasyfikować rodzaj popełnionego przestępstwa z zachowaniem możliwie największej dokładności klasyfikacji.
+            \centering
+            \begin{tabular}{|c|c|c|}
+                \hline
+                VIOLATION & MISDEMEANOR & FELONY\\ \hline
+                35959 & 2 & 0 \\ \hline
+                3 & 84691 & 1 \\ \hline
+                0 & 3 & 46626 \\ \hline
+            \end{tabular}
+            \caption
+            {Macierz pomyłek dla rodzaju przestępstwa}
+            \label{tab:forest_forest_confusion_matrix_law_breaking_law}
+        \end{table}
+        \FloatBarrier
+        Wnioskując na podstawie rozbieżności pomiędzy dokładnościami klasyfikatorów, klasyfikujących kod
+        przestępstwa a jego rodzaj można wywnioskować, że jeden cel jest zbyt ambitny, a drugi ma potencjał
+        na uogólnienie. Dlatego w kolejnej iteracji badawczej, spróbujemy osiągnąć pewną modyfikację celu i
+        wyznaczyć mniejszy zbiór kolumn (lub mniej oczywisty ich dobór), który pozwoli klasyfikować rodzaj
+        popełnionego przestępstwa z zachowaniem możliwie największej dokładności klasyfikacji.
 
         \subsection{Cel 2 - Klasteryzacja} {
-            Pomimo zmian zarówno w parametrach klasteryzacji, jak i charakterystyce zbioru, który po preprocessingu trafił do metod związanych z grupowanie nie udało się poprawić jakości klasteryzacji. Przy zmianie liczby klastrów otrzymywane wyniki grupowania nadal stanowiły trend podziału danych na 1 / N, gdzie N to liczba klastrów. Algorytm DBSCAN nadal klasyfikował wszystkie próbki jako elementy wyjątkowe, czyli outliers. 
+            Pomimo zmian zarówno w parametrach klasteryzacji, jak i charakterystyce zbioru, który po
+            preprocessingu trafił do metod związanych z grupowanie nie udało się poprawić jakości
+            klasteryzacji. Przy zmianie liczby klastrów otrzymywane wyniki grupowania nadal stanowiły trend
+            podziału danych na 1 / N, gdzie N to liczba klastrów. Algorytm DBSCAN nadal klasyfikował
+            wszystkie próbki jako elementy wyjątkowe, czyli outliers.
         }
 
     }

@@ -98,7 +98,7 @@ class LatexGenerator:
 
 
     def generate_vertical_table(self, header_names: List[str],
-                                body_values: List[List[float]],
+                                body_values: List[List[str]],
                                 filename: str) -> None:
         if not self._compare_array_with_matrix_rows(header_names, body_values):
             raise Exception("Lists must have equal length")
@@ -108,7 +108,7 @@ class LatexGenerator:
 
         header: str = ""
         for i in range(len(header_names)):
-            header += str(header_names[i])
+            header += self._fix_underscore_issue(str(header_names[i]))
             if i < len(header_names) - 1:
                 header += self.table.ampersand
 
@@ -117,7 +117,7 @@ class LatexGenerator:
         body: str = ""
         for i in range(len(body_values)):
             for j in range(len(body_values[i])):
-                body += str(body_values[i][j])
+                body += self._fix_underscore_issue(str(body_values[i][j]))
                 if j < len(body_values[i]) - 1:
                     body += self.table.ampersand
             body += " " + self.table.back_slashes + " " + self.table.hline
@@ -223,6 +223,10 @@ class LatexGenerator:
 
     def _remove_png_extension(self, string: str) -> str:
         return string.replace(".png", "")
+
+
+    def _fix_underscore_issue(self, string: str) -> str:
+        return string.replace("_", "\_")
 
 
 def replace_char_for_caption(string: str) -> str:

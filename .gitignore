@@ -1,3 +1,5 @@
 .idea
 
 Program/data/NYPD_Complaint_Data_Historic.csv
+
+*.csv

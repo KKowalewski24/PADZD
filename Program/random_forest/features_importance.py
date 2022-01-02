@@ -17,7 +17,7 @@ def _mean_decrease(forest: RandomForestClassifier, feature_names) -> None:
     std = np.std([tree.feature_importances_ for tree in forest.estimators_], axis=0)
     elapsed_time = time.time() - start_time
 
-    print(f"Elapsed time to compute the importances: {elapsed_time:.3f} seconds")
+    print(f"Elapsed time to compute the importances (mean_decrease): {elapsed_time:.3f} seconds")
     forest_importances = pd.Series(importances, index=feature_names)
 
     _draw_plot_bar(forest_importances, std, "Feature importances using MDI", "Mean decrease in impurity")
@@ -29,11 +29,14 @@ def _feature_permutation(forest: RandomForestClassifier, X_test: pd.DataFrame, y
         forest, X_test, y_test, n_repeats=10, random_state=42, n_jobs=2
     )
     elapsed_time = time.time() - start_time
-    print(f"Elapsed time to compute the importances: {elapsed_time:.3f} seconds")
+    print(f"Elapsed time to compute the importances (feature_permutation): {elapsed_time:.3f} seconds")
 
     forest_importances = pd.Series(result.importances_mean, index=feature_names)
 
-    _draw_plot_bar(forest_importances, result.importances_std, "Feature importances using permutation on full model", "Mean accuracy decrease")
+    _draw_plot_bar(forest_importances, result.importances_std,
+                   "Feature importances using permutation on full model",
+                   "Mean accuracy decrease"
+                   )
 
 
 def _draw_plot_bar(forest_importances: pd.Series, yerr, title, xlabel) -> None:

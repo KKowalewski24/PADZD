@@ -31,7 +31,6 @@ def decision_tree_classification(data_set: pd.DataFrame,
     forest = RandomForestClassifier(random_state=47,
                                     n_jobs=-1)
 
-
     forest.fit(x_train, y_train)
     train_acc_history.append(forest.score(x_train, y_train))
     test_acc_history.append(forest.score(x_test, y_test))

@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 
 from random_forest.preprocess import *
 from random_forest.features_importance import specify_features_importances
+import matplotlib.pyplot as plt
 
 
 def main() -> None:
@@ -32,6 +33,9 @@ def process_law_breaking_level(data_set: pd.DataFrame) -> None:
                              label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL,
                              test_percentage=.2
                              )
+    
+    plt.hist(data_set[LawBreakingLabels.LAW_BREAKING_LEVEL], bins=(data_set[LawBreakingLabels.LAW_BREAKING_LEVEL].nunique() * 2) - 1)
+    plt.show()
 
 
 def decision_tree_classification(data_set: pd.DataFrame,

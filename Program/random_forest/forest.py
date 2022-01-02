@@ -11,14 +11,31 @@ def main() -> None:
 
     df: pd.DataFrame = pd.read_csv(filepath, nrows=1000)
     df = preprocess_data(df)
+    df_copy = df.copy()
+    process_key_code(df)
+    process_law_breaking_level(df_copy)
 
-    decision_tree_classification(data_set=df,
-                                 label_to_classifier=LawBreakingLabels.KEY_CODE,
-                                 test_percentage=.2)
+
+def process_key_code(data_set: pd.DataFrame) -> None:
+    data_set = preprocess_data_to_classifer(data=data_set,
+                                 label_to_classifier=LawBreakingLabels.KEY_CODE)
+    decision_tree_classification(data_set=data_set,
+                             label_to_classifier=LawBreakingLabels.KEY_CODE,
+                             test_percentage=.2
+                             )
+
+
+def process_law_breaking_level(data_set: pd.DataFrame) -> None:
+    data_set = preprocess_data_to_classifer(data=data_set,
+                                 label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL)
+    decision_tree_classification(data_set=data_set,
+                             label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL,
+                             test_percentage=.2
+                             )
 
 
 def decision_tree_classification(data_set: pd.DataFrame,
-                                 label_to_classifier:str,
+                                 label_to_classifier: str,
                                  test_percentage: float) -> None:
     train, test = train_test_split(data_set, test_size=test_percentage)
 
@@ -40,7 +57,6 @@ def decision_tree_classification(data_set: pd.DataFrame,
     specify_features_importances(forest=forest,
                                  x_test=x_test,
                                  y_test=y_test)
-
 
 
 if __name__ == "__main__":

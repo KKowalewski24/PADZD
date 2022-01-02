@@ -6,10 +6,10 @@ from typing import Dict, List, Tuple
 
 PROCESSED_COLUMN_NAMES = [
     LawBreakingLabels.KEY_CODE,
-    # LawBreakingLabels.LAW_BREAKING_LEVEL,
-    # DateTimeEventLabels.EVENT_START_TIMESTAMP,
-    # EventStatusLabels.EVENT_STATUS,
-    # EventSurroundingsLabels.PLACE_TYPE,
+    LawBreakingLabels.LAW_BREAKING_LEVEL,
+    DateTimeEventLabels.EVENT_START_TIMESTAMP,
+    EventStatusLabels.EVENT_STATUS,
+    EventSurroundingsLabels.PLACE_TYPE,
     EventSurroundingsLabels.PLACE_TYPE_POSITION,
     SuspectLabels.SUSPECT_AGE_GROUP,
     SuspectLabels.SUSPECT_RACE,
@@ -52,13 +52,23 @@ PROCESSED_COLUMN_NAMES = [
 # train_acc: 0.9768932267168391 	test_acc: 0.3387425525243023
 
 
+def preprocess_data_to_classifer(data: pd.DataFrame, label_to_classifier: str) -> pd.DataFrame:
+    if label_to_classifier == LawBreakingLabels.KEY_CODE:
+        data = data[data[LawBreakingLabels.KEY_CODE].notna()]
+        data.drop(LawBreakingLabels.LAW_BREAKING_LEVEL, axis=1, inplace=True)
+    else:
+        data = data[data[LawBreakingLabels.LAW_BREAKING_LEVEL].notna()]
+        data.drop(LawBreakingLabels.KEY_CODE, axis=1, inplace=True)
+    return data
+
+
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     data = drop_unused_columns(data)
     data = remove_na(data)
-    # data = extract_hour_and_day(data)
+    data = extract_hour_and_day(data)
 
-    # for column in ['day_of_week_sin','day_of_week_cos','day_of_year_sin','day_of_year_cos']:
-    #     data = data[data[column].notna()]
+    for column in ['day_of_week_sin','day_of_week_cos','day_of_year_sin','day_of_year_cos']:
+        data = data[data[column].notna()]
 
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
@@ -72,18 +82,19 @@ def drop_unused_columns(data: pd.DataFrame) -> pd.DataFrame:
 
 def remove_na(data: pd.DataFrame) -> pd.DataFrame:
     for column in PROCESSED_COLUMN_NAMES:
-        data = data[data[column].notna()]
+        if column != LawBreakingLabels.KEY_CODE or column != LawBreakingLabels.LAW_BREAKING_LEVEL:
+            data = data[data[column].notna()]
     return data
 
 
 def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
-        # EventStatusLabels.EVENT_STATUS,
+        EventStatusLabels.EVENT_STATUS,
         VictimLabels.VICTIM_RACE,
         VictimLabels.VICTIM_SEX,
         SuspectLabels.SUSPECT_RACE,
         SuspectLabels.SUSPECT_SEX,
-        # EventSurroundingsLabels.PLACE_TYPE,
+        EventSurroundingsLabels.PLACE_TYPE,
         EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
     ordinal_columns: List[Tuple[str, List]] = [

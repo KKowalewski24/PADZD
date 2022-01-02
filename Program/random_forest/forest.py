@@ -77,12 +77,13 @@ def _feature_permutation(forest: RandomForestClassifier, X_test: pd.DataFrame, y
     _draw_plot_bar(forest_importances, result.importances_std, "Feature importances using permutation on full model", "Mean accuracy decrease")
 
 
-def _draw_plot_bar(forest_importances, yerr, title, ylabel) -> None:
-    fig, ax = plt.subplots()
-    forest_importances.plot.bar(yerr=yerr, ax=ax)
-    ax.set_title("Feature importances using MDI")
-    ax.set_ylabel("Mean decrease in impurity")
-    # fig.tight_layout()
+def _draw_plot_bar(forest_importances: pd.Series, yerr, title, xlabel) -> None:
+    fig, ax = plt.subplots(figsize=(16, 9))
+    forest_importances.plot.barh(color='green', xerr=yerr, ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel("Feature name")
+
     plt.show()
 
 

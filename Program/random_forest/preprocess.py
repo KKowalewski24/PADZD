@@ -4,14 +4,61 @@ import pandas as pd
 from module.label_names_mapper import *
 from typing import Dict, List, Tuple
 
+PROCESSED_COLUMN_NAMES = [
+    LawBreakingLabels.KEY_CODE,
+    # LawBreakingLabels.LAW_BREAKING_LEVEL,
+    # DateTimeEventLabels.EVENT_START_TIMESTAMP,
+    # EventStatusLabels.EVENT_STATUS,
+    # EventSurroundingsLabels.PLACE_TYPE,
+    EventSurroundingsLabels.PLACE_TYPE_POSITION,
+    SuspectLabels.SUSPECT_AGE_GROUP,
+    SuspectLabels.SUSPECT_RACE,
+    SuspectLabels.SUSPECT_SEX,
+    VictimLabels.VICTIM_AGE_GROUP,
+    VictimLabels.VICTIM_RACE,
+    VictimLabels.VICTIM_SEX,
+    # EventLocationLabels.LONGITUDE,
+    # EventLocationLabels.LATITUDE
+]
+
+#Dla 100k testowe accuracy
+#victim i suspect i czas
+    # train_acc: 0.7095739430827439 	test_acc: 0.2937228582708251
+#suspect i czas
+    # train_acc: 0.34135548609968747 	test_acc: 0.21713383339913148
+#victim i czas
+    # train_acc: 0.37366552491436855 	test_acc: 0.25566278313915697
+#victim i suspect
+    # train_acc: 0.40294112809040517 	test_acc: 0.3469307191262583
+#victim i suspect LAW_BREAKING_LEVEL
+    # train_acc: 0.6643363545145 	test_acc: 0.6086584643726561
+#victim i suspect EVENT_STATUS
+    # train_acc: 0.41207046863948155 	test_acc: 0.34719389433515363
+#victim i suspect EVENT_STATUS PLACE_TYPE  i PLACE_TYPE_POSITION
+#   train_acc: 0.6027801842955028 	test_acc: 0.35667034178610807
+#     train_acc: 0.6075057100102387 	test_acc: 0.35659158922664985 HOTENCODING
+#victim i suspect EVENT_STATUS PLACE_TYPE
+    # train_acc: 0.5468540940550719 	test_acc: 0.3465477370333664
+    # train_acc: 0.5465402467830655 	test_acc: 0.34978526593987447 HOTencoding
+#victim i suspect EVENT_STATUS PLACE_TYPE_POSITION
+    # train_acc: 0.47011678946543345 	test_acc: 0.3623608716099702
+    # train_acc: 0.47141009562627373 	test_acc: 0.3617338140774416 hotencoding
+
+# victim i suspect PLACE_TYPE_POSITION
+#     train_acc: 0.4628860322934629 	test_acc: 0.3599310236714219
+#     train_acc: 0.4619258504467785 	test_acc: 0.36361498667502745 hotencofing
+
+# dodanie longitude i latitude
+# train_acc: 0.9768932267168391 	test_acc: 0.3387425525243023
+
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     data = drop_unused_columns(data)
     data = remove_na(data)
-    data = extract_hour_and_day(data)
+    # data = extract_hour_and_day(data)
 
-    for column in ['day_of_week_sin','day_of_week_cos','day_of_year_sin','day_of_year_cos']:
-        data = data[data[column].notna()]
+    # for column in ['day_of_week_sin','day_of_week_cos','day_of_year_sin','day_of_year_cos']:
+    #     data = data[data[column].notna()]
 
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
@@ -19,62 +66,35 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def drop_unused_columns(data: pd.DataFrame) -> pd.DataFrame:
-    return data.drop(columns=[IdentifierLabels.ID,
-                              LawBreakingLabels.PD_CODE,
-                              EventLocationLabels.PRECINCT_CODE,
-                              EventLocationLabels.BOROUGH_NAME,
-                              EventLocationLabels.LATITUDE,
-                              EventLocationLabels.LONGITUDE,
-                              # SuspectLabels.SUSPECT_AGE_GROUP,
-                              # VictimLabels.VICTIM_AGE_GROUP,
-                              DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
-                              DateTimeEventLabels.EVENT_END_TIMESTAMP,
-                              "CMPLNT_FR_TM", "CMPLNT_TO_TM", "OFNS_DESC",
-                              'PD_DESC', 'JURIS_DESC', 'JURISDICTION_CODE',
-                              'PARKS_NM', 'HADEVELOPT', 'HOUSING_PSA', 'X_COORD_CD', 'Y_COORD_CD', 'TRANSIT_DISTRICT',
-                              'Lat_Lon', 'PATROL_BORO', 'STATION_NAME'
-                              ])
+    # removes all columns that are NOT in the given list
+    return data[data.columns.intersection(PROCESSED_COLUMN_NAMES)]
 
 
 def remove_na(data: pd.DataFrame) -> pd.DataFrame:
-    columns = [
-        DateTimeEventLabels.EVENT_START_TIMESTAMP,
-        # DateTimeEventLabels.EVENT_END_TIMESTAMP,
-        # DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
-        LawBreakingLabels.KEY_CODE,
-        LawBreakingLabels.LAW_BREAKING_LEVEL,
-        EventStatusLabels.EVENT_STATUS,
-        EventSurroundingsLabels.PLACE_TYPE,
-        EventSurroundingsLabels.PLACE_TYPE_POSITION,
-        SuspectLabels.SUSPECT_AGE_GROUP,
-        SuspectLabels.SUSPECT_RACE,
-        SuspectLabels.SUSPECT_SEX,
-        VictimLabels.VICTIM_AGE_GROUP,
-        VictimLabels.VICTIM_RACE,
-        VictimLabels.VICTIM_SEX
-    ]
-    for column in columns:
+    for column in PROCESSED_COLUMN_NAMES:
         data = data[data[column].notna()]
     return data
 
 
 def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
-        EventStatusLabels.EVENT_STATUS,
+        # EventStatusLabels.EVENT_STATUS,
         VictimLabels.VICTIM_RACE,
         VictimLabels.VICTIM_SEX,
         SuspectLabels.SUSPECT_RACE,
-        SuspectLabels.SUSPECT_SEX
+        SuspectLabels.SUSPECT_SEX,
+        # EventSurroundingsLabels.PLACE_TYPE,
+        EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
     ordinal_columns: List[Tuple[str, List]] = [
-        (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
-        (SuspectLabels.SUSPECT_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
+        # (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
         (VictimLabels.VICTIM_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
+        (SuspectLabels.SUSPECT_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
     ]
     rest_columns = [
         # LawBreakingLabels.KEY_CODE,
-        EventSurroundingsLabels.PLACE_TYPE,
-        EventSurroundingsLabels.PLACE_TYPE_POSITION
+        # EventSurroundingsLabels.PLACE_TYPE,
+        # EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
 
     data = pd.get_dummies(data, columns=one_hot_columns, prefix=one_hot_columns)

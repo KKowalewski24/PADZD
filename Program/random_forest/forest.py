@@ -36,7 +36,6 @@ def process_law_breaking_level(data_set: pd.DataFrame) -> None:
                              )
 
 
-
 def decision_tree_classification(data_set: pd.DataFrame,
                                  label_to_classifier: str,
                                  test_percentage: float) -> None:

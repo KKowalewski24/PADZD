@@ -5,6 +5,7 @@ from sklearn.inspection import permutation_importance
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 
+RESULTS_DIR = "saved_plots/"
 
 def specify_features_importances(forest: RandomForestClassifier, x_test: pd.DataFrame, y_test: pd.DataFrame, processed_label: str) -> None:
     _mean_decrease(forest, feature_names=x_test.columns, processed_label=processed_label)
@@ -46,4 +47,6 @@ def _draw_plot_bar(forest_importances: pd.Series, yerr, title, xlabel, processed
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Feature name")
 
+    plt.savefig(RESULTS_DIR + title + " for " + processed_label)
+    plt.close()
     plt.show()

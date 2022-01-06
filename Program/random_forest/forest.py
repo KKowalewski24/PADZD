@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 
 
 def main() -> None:
-    filepath = "../data/NYPD_Data_Preprocessed_v2.csv"
+    filepath = "../data/NYPD_Complaint_Data_Historic.csv"
+    # filepath = "../data/NYPD_Data_Preprocessed_v2.csv"
     # create_directory(RESULTS_DIR)
 
     df: pd.DataFrame = pd.read_csv(filepath, nrows=1000)
@@ -33,9 +34,7 @@ def process_law_breaking_level(data_set: pd.DataFrame) -> None:
                              label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL,
                              test_percentage=.2
                              )
-    
-    plt.hist(data_set[LawBreakingLabels.LAW_BREAKING_LEVEL], bins=(data_set[LawBreakingLabels.LAW_BREAKING_LEVEL].nunique() * 2) - 1)
-    plt.show()
+
 
 
 def decision_tree_classification(data_set: pd.DataFrame,
@@ -60,7 +59,8 @@ def decision_tree_classification(data_set: pd.DataFrame,
 
     specify_features_importances(forest=forest,
                                  x_test=x_test,
-                                 y_test=y_test)
+                                 y_test=y_test,
+                                 processed_label=label_to_classifier)
 
 
 if __name__ == "__main__":

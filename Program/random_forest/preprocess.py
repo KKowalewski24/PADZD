@@ -63,16 +63,66 @@ def preprocess_data_to_classifer(data: pd.DataFrame, label_to_classifier: str) -
 
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
+    print("Data rows count, before preprocessing: ", data.shape[0])
+    preprocess_age_and_sex(data)
+
+    print("Droping columns...")
     data = drop_unused_columns(data)
+
+    print("Removing na...")
     data = remove_na(data)
+
+    print("Extracting hour and day...")
     data = extract_hour_and_day(data)
 
-    for column in ['day_of_week_sin','day_of_week_cos','day_of_year_sin','day_of_year_cos']:
+    for column in ['day_of_week_sin', 'day_of_week_cos', 'day_of_year_sin', 'day_of_year_cos']:
         data = data[data[column].notna()]
 
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
     return data
+
+
+def preprocess_age_and_sex(df: pd.DataFrame) -> None:
+    print("Imputating AGE GROUP by inserting most frequent value")
+    age_groups: List[str] = ["(<18)", "(18-24)", "(25-44)", "(45-64)", "(65+)", "(UNKNOWN)"]
+
+    df.loc[
+        ~df[SuspectLabels.SUSPECT_AGE_GROUP].str.match(pat="|".join(age_groups), na=False),
+        SuspectLabels.SUSPECT_AGE_GROUP
+    ] = df[SuspectLabels.SUSPECT_AGE_GROUP].value_counts().idxmax()
+
+    df.loc[
+        ~df[VictimLabels.VICTIM_AGE_GROUP].str.match(pat="|".join(age_groups), na=False),
+        VictimLabels.VICTIM_AGE_GROUP
+    ] = df[VictimLabels.VICTIM_AGE_GROUP].value_counts().idxmax()
+
+    print("Grouping RACE")
+    df.loc[
+        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull()),
+        SuspectLabels.SUSPECT_RACE
+    ] = "OTHER"
+
+    df.loc[
+        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull()),
+        VictimLabels.VICTIM_RACE
+    ] = "OTHER"
+
+    print("Grouping GENDER")
+    df.loc[df[SuspectLabels.SUSPECT_SEX] == "M", SuspectLabels.SUSPECT_SEX] = "MALE"
+    df.loc[df[SuspectLabels.SUSPECT_SEX] == "F", SuspectLabels.SUSPECT_SEX] = "FEMALE"
+
+    df.loc[
+        ~df[SuspectLabels.SUSPECT_SEX].str.contains("F|M", na=False),
+        SuspectLabels.SUSPECT_SEX
+    ] = "OTHER"
+
+    df.loc[df[VictimLabels.VICTIM_SEX] == "M", VictimLabels.VICTIM_SEX] = "MALE"
+    df.loc[df[VictimLabels.VICTIM_SEX] == "F", VictimLabels.VICTIM_SEX] = "FEMALE"
+    df.loc[
+        ~df[VictimLabels.VICTIM_SEX].str.contains("F|M", na=False),
+        VictimLabels.VICTIM_SEX
+    ] = "OTHER"
 
 
 def drop_unused_columns(data: pd.DataFrame) -> pd.DataFrame:

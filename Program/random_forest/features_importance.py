@@ -47,6 +47,6 @@ def _draw_plot_bar(forest_importances: pd.Series, yerr, title, xlabel, processed
     ax.set_xlabel(xlabel)
     ax.set_ylabel("Feature name")
 
-    plt.savefig(RESULTS_DIR + title + " for " + processed_label)
+    plt.savefig(RESULTS_DIR + title + " for " + processed_label, bbox_inches="tight")
     plt.close()
     plt.show()

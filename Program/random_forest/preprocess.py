@@ -186,7 +186,7 @@ def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
         SuspectLabels.SUSPECT_RACE,
         SuspectLabels.SUSPECT_SEX,
         # EventSurroundingsLabels.PLACE_TYPE,
-        EventSurroundingsLabels.PLACE_TYPE_POSITION
+        # EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
     ordinal_columns: List[Tuple[str, List]] = [
         # (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
@@ -196,7 +196,7 @@ def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
     rest_columns = [
         # LawBreakingLabels.KEY_CODE,
         # EventSurroundingsLabels.PLACE_TYPE,
-        # EventSurroundingsLabels.PLACE_TYPE_POSITION
+        EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
 
     data = pd.get_dummies(data, columns=one_hot_columns, prefix=one_hot_columns)

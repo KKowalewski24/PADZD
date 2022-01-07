@@ -82,7 +82,6 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
 
-    print(data.columns.values)
     return data
 
 

@@ -11,7 +11,8 @@ def main() -> None:
     # filepath = "../data/NYPD_Data_Preprocessed_v2.csv"
     # create_directory(RESULTS_DIR)
 
-    df: pd.DataFrame = pd.read_csv(filepath, nrows=1000)
+    # df: pd.DataFrame = pd.read_csv(filepath)
+    df: pd.DataFrame = pd.read_csv(filepath, nrows=100000)
     df = preprocess_data(df)
     df_copy = df.copy()
     process_key_code(df)
@@ -19,6 +20,7 @@ def main() -> None:
 
 
 def process_key_code(data_set: pd.DataFrame) -> None:
+    print(LawBreakingLabels.KEY_CODE + " processing...")
     data_set = preprocess_data_to_classifer(data=data_set,
                                  label_to_classifier=LawBreakingLabels.KEY_CODE)
     decision_tree_classification(data_set=data_set,
@@ -28,6 +30,7 @@ def process_key_code(data_set: pd.DataFrame) -> None:
 
 
 def process_law_breaking_level(data_set: pd.DataFrame) -> None:
+    print(LawBreakingLabels.LAW_BREAKING_LEVEL + " processing...")
     data_set = preprocess_data_to_classifer(data=data_set,
                                  label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL)
     decision_tree_classification(data_set=data_set,

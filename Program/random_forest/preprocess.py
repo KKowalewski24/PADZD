@@ -107,11 +107,11 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
         SuspectLabels.SUSPECT_RACE
     ] = "OTHER"
     df.loc[
-        df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE"),
+        (df[SuspectLabels.SUSPECT_RACE] == "WHITE"),
         SuspectLabels.SUSPECT_RACE
     ] = "WHITE"
     df.loc[
-        df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK"),
+        (df[SuspectLabels.SUSPECT_RACE] == "BLACK"),
         SuspectLabels.SUSPECT_RACE
     ] = "BLACK"
     df.loc[
@@ -125,11 +125,11 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
         VictimLabels.VICTIM_RACE
     ] = "OTHER"
     df.loc[
-        df[VictimLabels.VICTIM_RACE].str.contains("WHITE"),
+        (df[VictimLabels.VICTIM_RACE] == "WHITE"),
         VictimLabels.VICTIM_RACE
     ] = "WHITE"
     df.loc[
-        df[VictimLabels.VICTIM_RACE].str.contains("BLACK"),
+        (df[VictimLabels.VICTIM_RACE] == "BLACK"),
         VictimLabels.VICTIM_RACE
     ] = "BLACK"
     df.loc[

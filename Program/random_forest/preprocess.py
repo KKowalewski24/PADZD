@@ -9,7 +9,7 @@ PROCESSED_COLUMN_NAMES = [
     LawBreakingLabels.LAW_BREAKING_LEVEL,
     DateTimeEventLabels.EVENT_START_TIMESTAMP,
     EventStatusLabels.EVENT_STATUS,
-    EventSurroundingsLabels.PLACE_TYPE,
+    # EventSurroundingsLabels.PLACE_TYPE,
     EventSurroundingsLabels.PLACE_TYPE_POSITION,
     SuspectLabels.SUSPECT_AGE_GROUP,
     SuspectLabels.SUSPECT_RACE,
@@ -80,6 +80,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
 
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
+
     return data
 
 
@@ -99,14 +100,31 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
 
     print("Grouping RACE")
     df.loc[
-        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull()),
+        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull()) | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=True) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=True)),
         SuspectLabels.SUSPECT_RACE
     ] = "OTHER"
+    df.loc[
+        df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE"),
+        SuspectLabels.SUSPECT_RACE
+    ] = "WHITE"
+    df.loc[
+        df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK"),
+        SuspectLabels.SUSPECT_RACE
+    ] = "BLACK"
 
     df.loc[
-        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull()),
+        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull()) | (~df[VictimLabels.VICTIM_RACE].str.contains("WHITE", na=True) & ~df[VictimLabels.VICTIM_RACE].str.contains("BLACK", na=True)),
         VictimLabels.VICTIM_RACE
     ] = "OTHER"
+    df.loc[
+        df[VictimLabels.VICTIM_RACE].str.contains("WHITE"),
+        VictimLabels.VICTIM_RACE
+    ] = "WHITE"
+    df.loc[
+        df[VictimLabels.VICTIM_RACE].str.contains("BLACK"),
+        VictimLabels.VICTIM_RACE
+    ] = "BLACK"
+
 
     print("Grouping GENDER")
     df.loc[df[SuspectLabels.SUSPECT_SEX] == "M", SuspectLabels.SUSPECT_SEX] = "MALE"
@@ -144,7 +162,7 @@ def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
         VictimLabels.VICTIM_SEX,
         SuspectLabels.SUSPECT_RACE,
         SuspectLabels.SUSPECT_SEX,
-        EventSurroundingsLabels.PLACE_TYPE,
+        # EventSurroundingsLabels.PLACE_TYPE,
         EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
     ordinal_columns: List[Tuple[str, List]] = [

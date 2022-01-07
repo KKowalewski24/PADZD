@@ -8,7 +8,7 @@ PROCESSED_COLUMN_NAMES = [
     LawBreakingLabels.KEY_CODE,
     LawBreakingLabels.LAW_BREAKING_LEVEL,
     DateTimeEventLabels.EVENT_START_TIMESTAMP,
-    EventStatusLabels.EVENT_STATUS,
+    # EventStatusLabels.EVENT_STATUS,
     # EventSurroundingsLabels.PLACE_TYPE,
     EventSurroundingsLabels.PLACE_TYPE_POSITION,
     SuspectLabels.SUSPECT_AGE_GROUP,
@@ -65,6 +65,7 @@ def preprocess_data_to_classifer(data: pd.DataFrame, label_to_classifier: str) -
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     print("Data rows count, before preprocessing: ", data.shape[0])
     preprocess_age_and_sex(data)
+    preprocess_place_type_position(data)
 
     print("Droping columns...")
     data = drop_unused_columns(data)
@@ -81,6 +82,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
 
+    print(data.columns.values)
     return data
 
 
@@ -100,7 +102,8 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
 
     print("Grouping RACE")
     df.loc[
-        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull()) | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=True) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=True)),
+        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull())
+        | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("HISPANIC", na=False)),
         SuspectLabels.SUSPECT_RACE
     ] = "OTHER"
     df.loc[
@@ -111,9 +114,14 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
         df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK"),
         SuspectLabels.SUSPECT_RACE
     ] = "BLACK"
+    df.loc[
+        df[SuspectLabels.SUSPECT_RACE].str.contains("HISPANIC"),
+        SuspectLabels.SUSPECT_RACE
+    ] = "HISPANIC"
 
     df.loc[
-        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull()) | (~df[VictimLabels.VICTIM_RACE].str.contains("WHITE", na=True) & ~df[VictimLabels.VICTIM_RACE].str.contains("BLACK", na=True)),
+        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull())
+        | (~df[VictimLabels.VICTIM_RACE].str.contains("WHITE", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("BLACK", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("HISPANIC", na=False)),
         VictimLabels.VICTIM_RACE
     ] = "OTHER"
     df.loc[
@@ -124,6 +132,10 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
         df[VictimLabels.VICTIM_RACE].str.contains("BLACK"),
         VictimLabels.VICTIM_RACE
     ] = "BLACK"
+    df.loc[
+        df[VictimLabels.VICTIM_RACE].str.contains("HISPANIC"),
+        VictimLabels.VICTIM_RACE
+    ] = "HISPANIC"
 
 
     print("Grouping GENDER")
@@ -143,6 +155,18 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
     ] = "OTHER"
 
 
+def preprocess_place_type_position(df: pd.DataFrame) -> None:
+    print("Grouping PLACE TYPE POSITION")
+    df.loc[
+        (df[EventSurroundingsLabels.PLACE_TYPE_POSITION].isnull()),
+        EventSurroundingsLabels.PLACE_TYPE_POSITION
+    ] = "UNKNOWN"
+    df.loc[
+        (~df[EventSurroundingsLabels.PLACE_TYPE_POSITION].str.contains("FRONT OF") & ~df[EventSurroundingsLabels.PLACE_TYPE_POSITION].str.contains("INSIDE") & ~df[EventSurroundingsLabels.PLACE_TYPE_POSITION].str.contains("UNKNOWN")),
+        EventSurroundingsLabels.PLACE_TYPE_POSITION
+    ] = "OTHER"
+
+
 def drop_unused_columns(data: pd.DataFrame) -> pd.DataFrame:
     # removes all columns that are NOT in the given list
     return data[data.columns.intersection(PROCESSED_COLUMN_NAMES)]
@@ -157,7 +181,7 @@ def remove_na(data: pd.DataFrame) -> pd.DataFrame:
 
 def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
-        EventStatusLabels.EVENT_STATUS,
+        # EventStatusLabels.EVENT_STATUS,
         VictimLabels.VICTIM_RACE,
         VictimLabels.VICTIM_SEX,
         SuspectLabels.SUSPECT_RACE,

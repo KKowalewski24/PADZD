@@ -274,7 +274,7 @@ def find_important_weights(array, clusters_nr, clusterer):
     plt.figure()
     ax = plt.gca()
     scatterHs = []
-    clr = ['r', 'b', 'k']
+    clr = ['r', 'b', 'g']
     for cluster in set(results.labels_):
         scatterHs.append(ax.scatter(Xred[results.labels_ == cluster, 0], Xred[results.labels_ == cluster, 1],
                                     color=clr[cluster], label='Cluster {}'.format(cluster)))

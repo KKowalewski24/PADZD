@@ -194,6 +194,12 @@
                     \caption{Histogram liczby przestępstw/wykroczeń zależnie od jego typu}
                     \label{hist_law_breaking_level}
                 \end{figure}
+                % \begin{figure}[!htbp]
+                %     \centering
+                %     \includegraphics[width=\textwidth]{img/}
+                %     \caption{}
+                %     \label{}
+                % \end{figure}
                 \FloatBarrier
 
                 Na podstawie rysunku \ref{hist_law_breaking_level} można zaobserwować,
@@ -321,8 +327,7 @@
     \section{Cele projektu} \label{project_goals} {
         W ramach projektu sformułowane zostały trzy następujące cele.
 
-        \subsection{Klasyfikacja rodzaju lub poziomu przestępstwa}
-        \label{project_goal_1} {
+        \subsection{Klasyfikacja rodzaju lub poziomu przestępstwa} \label{project_goal_1} {
 
             W ramach tego etapu przeprowadzony zostanie szereg eksperymentów mających
             na celu stworzenie klasyfikatora typu przestępstwa (KY\_CD). Jeżeli okaże
@@ -351,33 +356,24 @@
             metody imputacji brakujących danych, prosta ekstrakcja cech (zwłaszcza z
             daty), naiwny klasyfikator Bayesa i lasy losowe.
         }
+        
+        \subsection{Regresja czasu trwania przestępstwa} \label{project_goal_2} {
+            Drugim celem będzie regresja czasu trwania przestępstwa dla tych
+            przestępstw, dla których jest on znany. Tak więc wybrany zostanie podzbiór
+            głównego zbioru danych i na podstawie czasu rozpoczęcia i zakończenia
+            przestępstwa wyekstrahowany zostanie czas jego trwania. Na podstawie
+            pozostałych kolumn (poza tych z datą i czasem) podjęta będzie próba
+            wyuczenia modelu regresyjnego estymowania tego czasu.
 
-        \subsection{Klasyfikacja wieloetykietowa cech podejrzanego}
-        \label{project_goal_2} {
-
-            Kolejnym celem będzie klasyfikacja cech podejrzanego (wieku, rasy, płci) na
-            podstawie:
-            \begin{itemize}
-                \item godzina zdarzenia
-                \item dzień tygodnia zdarzenia
-                \item odstęp między zgłoszeniem a zdarzeniem
-                \item czy doszło do skutku (CRM\_ATPT\_CPTD\_CD)
-                \item typ i waga przestępstwa
-                \item otoczenie zdarzenia
-                \item cechy ofiary
-            \end{itemize}
-            W przeciwieństwie do poprzedniego celu, tym razem klasyfikacja będzie miała
-            charakter wieloetykietowy, to znaczy klasyfikator będzie przypisywał
-            zdarzeniu kilka klas jednocześnie. Wykorzystane zostaną dedykowane
-            klasyfikatory, pozwalające przypisywać wiele klas do pojedynczego
-            przykładu, jak ML-KNN czy sieć neuronowa. Alternatywnie mogą zostać użyte
-            klasyfikatory dające jedną etykietę, jak klasyczny las losowy, a samo
-            zadanie klasyfikacji wieloetykietowej zostanie podzielone na wiele podzadań
-            klasyfikacji binarnych.
+            Wykorzystane zostaną modele przystosowane do zadań regresji, tak więc
+            przede wszystkim lasy losowe, ewentualnie klasyfikator liniowy, maszyny
+            wektorów nośnych czy wreszcie sieć neuronowa. Wykorzystane metody będą
+            dobierane odpowiednio w zależności od wyników otrzymywanych w trakcie
+            trwania eksperymentów i od napotkanych problemów. Dodatkowo planowane jest
+            wykorzystanie biblioteki \emph{XGBoost}.
         }
-
-        \subsection{Grupowanie przestępstw na podstawie podzbiorów cech}
-        \label{project_goal_3} {
+        
+        \subsection{Grupowanie przestępstw na podstawie podzbiorów cech} \label{project_goal_3} {
             W ramach tego celu przeprowadzone zostanie automatyczne grupowanie zdarzeń.
             Spośród cech podejrzanego i ofiary kilkakrotnie wybrany zostanie podzbiorów
             stanowiących przedmiot eksperymentu - etykietę. Dla każdej wybranej

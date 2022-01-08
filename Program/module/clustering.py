@@ -10,8 +10,8 @@ from module.Logger import Logger
 pd.options.mode.chained_assignment = None  # default='warn'
 
 experiments = {
-    'single': ['SUSP_SEX', 'VIC_RACE'],
-    'multi': [['SUSP_SEX', 'VIC_SEX'], ['SUSP_RACE', 'VIC_RACE']]
+    'single': ['VIC_RACE'],
+    'multi': [['SUSP_RACE', 'VIC_RACE']]
 }
 
 
@@ -32,6 +32,8 @@ def process_clustering(df: pd.DataFrame) -> None:
 def initial_processing_for_single_label(dataset: pd.DataFrame, label) -> pd.DataFrame:
     dataset = dataset.dropna()
     dataset = dataset.query(f'{label} != "OTHER"')
+    if 'RACE' in label:
+        dataset = dataset.query(f'{label} == "WHITE" | {label} == "BLACK"')
     cropped_data = pd.DataFrame(dataset.query(f'{label} != "OTHER"')).reset_index()
     actual_labels = dataset[label]
     print("Number of analised records for label: " + label + " " + str(len(dataset)))
@@ -48,6 +50,8 @@ def initial_processing_for_multi_label(dataset: pd.DataFrame, labels) -> pd.Data
 
     for label in labels:
         dataset = dataset.query(f'{label} != "OTHER"')
+        if 'RACE' in label:
+            dataset = dataset.query(f'{label} == "WHITE" | {label} == "BLACK"')
 
     dataset[mixed_label] = dataset[labels[0]] + "_" + dataset[labels[1]]
     actual_labels = dataset[mixed_label]

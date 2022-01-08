@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 PROCESSED_COLUMN_NAMES = [
     LawBreakingLabels.KEY_CODE,
     LawBreakingLabels.LAW_BREAKING_LEVEL,
-    DateTimeEventLabels.EVENT_START_TIMESTAMP,
+    # DateTimeEventLabels.EVENT_START_TIMESTAMP,
     # EventStatusLabels.EVENT_STATUS,
     # EventSurroundingsLabels.PLACE_TYPE,
     EventSurroundingsLabels.PLACE_TYPE_POSITION,
@@ -73,14 +73,16 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     print("Removing na...")
     data = remove_na(data)
 
-    print("Extracting hour and day...")
-    data = extract_hour_and_day(data)
-
-    for column in ['day_of_week_sin', 'day_of_week_cos', 'day_of_year_sin', 'day_of_year_cos']:
-        data = data[data[column].notna()]
+    # print("Extracting hour and day...")
+    # data = extract_hour_and_day(data)
+    #
+    # for column in ['day_of_week_sin', 'day_of_week_cos', 'day_of_year_sin', 'day_of_year_cos']:
+    #     data = data[data[column].notna()]
 
     data = transform_labels(data)
     print("Data rows count, after preprocessing: ", data.shape[0])
+
+    print("Columns: ", data.columns.values)
 
     return data
 
@@ -100,6 +102,15 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
     ] = df[VictimLabels.VICTIM_AGE_GROUP].value_counts().idxmax()
 
     print("Grouping RACE")
+    _grouping_single_race(df)
+    _grouping_race_on_race(df)
+
+    print("Grouping GENDER")
+    _grouping_single_gender(df)
+    _grouping_gender_on_gender(df)
+
+
+def _grouping_single_race(df: pd.DataFrame) -> None:
     df.loc[
         (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull())
         | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("HISPANIC", na=False)),
@@ -137,7 +148,12 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
     ] = "HISPANIC"
 
 
-    print("Grouping GENDER")
+def _grouping_race_on_race(df: pd.DataFrame) -> None:
+    df["race_on_race"] = df[SuspectLabels.SUSPECT_RACE].astype(str) + " on " + df[VictimLabels.VICTIM_RACE].astype(str)
+    df.drop(columns=[SuspectLabels.SUSPECT_RACE, VictimLabels.VICTIM_RACE])
+
+
+def _grouping_single_gender(df: pd.DataFrame) -> None:
     df.loc[df[SuspectLabels.SUSPECT_SEX] == "M", SuspectLabels.SUSPECT_SEX] = "MALE"
     df.loc[df[SuspectLabels.SUSPECT_SEX] == "F", SuspectLabels.SUSPECT_SEX] = "FEMALE"
 
@@ -152,6 +168,11 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
         ~df[VictimLabels.VICTIM_SEX].str.contains("F|M", na=False),
         VictimLabels.VICTIM_SEX
     ] = "OTHER"
+
+
+def _grouping_gender_on_gender(df: pd.DataFrame) -> None:
+    df["gender_on_gender"] = df[SuspectLabels.SUSPECT_SEX].astype(str) + " on " + df[VictimLabels.VICTIM_SEX].astype(str)
+    df.drop(columns=[SuspectLabels.SUSPECT_SEX, VictimLabels.VICTIM_SEX])
 
 
 def preprocess_place_type_position(df: pd.DataFrame) -> None:

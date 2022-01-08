@@ -25,7 +25,7 @@ def main() -> None:
     save_data = args.save
 
     logger.info("Loading dataset...")
-    df = pd.read_csv("../data/NYPD_Data_Preprocessed_v2-225533.csv", nrows=1000000)
+    df = pd.read_csv("../data/NYPD_Data_Preprocessed_v2-225533.csv")
     logger.info("Loading dataset finished")
     process_clustering(df)
     display_finish()
@@ -79,6 +79,8 @@ def preprocess_initial_dataframe(df: pd.DataFrame):
     data_to_access: pd.DataFrame = df.loc[:, ['LAW_CAT_CD', 'CMPLNT_FR_TM', 'SUSP_RACE', 'SUSP_SEX',
                                               'SUSP_AGE_GROUP', 'VIC_RACE', 'VIC_AGE_GROUP', 'VIC_SEX']].copy()
     data_to_access.dropna(inplace=True)
+    data_to_access = data_to_access.query('SUSP_SEX == "M" | SUSP_SEX == "F"')
+    data_to_access = data_to_access.query('VIC_SEX == "M" | VIC_SEX == "F"')
     data_to_access['LAW_CAT_CD'] = data_to_access['LAW_CAT_CD'].apply(lambda x: encode_crime_label(x))
     data_to_access['CMPLNT_FR_TM'] = data_to_access['CMPLNT_FR_TM'].apply(lambda x: encode_occurance_time(x))
     return data_to_access
@@ -198,7 +200,7 @@ def predict_outcome(actual_labels, results):
 def one_hot_experiment(df: pd.DataFrame):
     columns_to_one_hot = ['SUSP_RACE', 'SUSP_SEX', 'SUSP_AGE_GROUP', 'VIC_RACE', 'VIC_AGE_GROUP', 'VIC_SEX', 'CMPLNT_FR_TM']
     for column in columns_to_one_hot:
-        new_one_hot_columns = pd.get_dummies(df[column])
+        new_one_hot_columns = pd.get_dummies(df[column], prefix=column)
         df = pd.concat([df, new_one_hot_columns], axis=1)
         df = df.drop(column, axis=1)
     actual_labels = np.array(df['LAW_CAT_CD'])
@@ -208,9 +210,9 @@ def one_hot_experiment(df: pd.DataFrame):
     range_n_clusters = [3]
 
     for n_clusters in range_n_clusters:
-        cluster_labels, cluster_centers, values = find_important_weights(array_to_process, n_clusters, KMeans)
+        cluster_labels, cluster_centers, values, most_important_features = find_important_weights(array_to_process, n_clusters, KMeans)
         plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters)
-
+        print("Most important columns in PCA: " + str(data_with_removed_label.columns[most_important_features]))
         predict_outcome(actual_labels, cluster_labels)
 
     plt.show()
@@ -284,11 +286,14 @@ def find_important_weights(array, clusters_nr, clusterer):
     fig, ax = plt.subplots(2, 1)
     indices = np.arange(0, len(evecs[0]))
     ax[0].bar(indices, evecs[0])
+
+    most_important_features = np.where(evecs[0] > np.percentile(evecs[0], 90))
+
     plt.setp(ax[0], title="First and Second Component's Eigenvectors ", ylabel='Weight')
     ax[1].bar(indices, evecs[1])
     plt.setp(ax[1], xlabel='Features', ylabel='Weight')
     plt.show()
-    return results.labels_, results.cluster_centers_, Xred
+    return results.labels_, results.cluster_centers_, Xred, most_important_features
 
 
 def dim_red_pca(X, d=0, corr=False):

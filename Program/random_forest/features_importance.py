@@ -27,7 +27,7 @@ def _mean_decrease(forest: RandomForestClassifier, feature_names, processed_labe
 def _feature_permutation(forest: RandomForestClassifier, X_test: pd.DataFrame, y_test: pd.DataFrame, feature_names, processed_label: str) -> None:
     start_time = time.time()
     result = permutation_importance(
-        forest, X_test, y_test, n_repeats=10, random_state=42, n_jobs=2
+        forest, X_test, y_test, n_repeats=10, random_state=42, n_jobs=-1
     )
     elapsed_time = time.time() - start_time
     print(f"Elapsed time to compute the importances (feature_permutation): {elapsed_time:.3f} seconds")

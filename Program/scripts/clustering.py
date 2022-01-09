@@ -11,7 +11,6 @@ from module.utils import display_finish
 from kmodes.kmodes import KModes
 from datetime import datetime
 from sklearn.metrics import silhouette_samples, silhouette_score
-from sklearn.preprocessing import OneHotEncoder
 import matplotlib.cm as cm
 import prince
 import itertools
@@ -25,7 +24,7 @@ def main() -> None:
     save_data = args.save
 
     logger.info("Loading dataset...")
-    df = pd.read_csv("../data/NYPD_Data_Preprocessed_v2-225533.csv")
+    df = pd.read_csv("../data/NYPD_Data_Preprocessed_v2-225533.csv", low_memory=False)
     logger.info("Loading dataset finished")
     process_clustering(df)
     display_finish()
@@ -192,12 +191,21 @@ def predict_outcome(actual_labels, results):
     for index, l in enumerate(optimal_permutation):
         converted_results += str(CRIME_LABELS[optimal_permutation[index][0]]) + " - label: " + str(optimal_permutation[index][1]) + "\n"
 
+    for unique_label in unique_labels:
+        print("Number of elements for label " + str(CRIME_LABELS[unique_label]) + " in dataset: " + str(len(np.where(actual_labels == unique_label)[0])))
+
+    for index, unique_label in enumerate(unique_labels_from_clustering):
+        print("Number of elements for label " + str(CRIME_LABELS[optimal_permutation[index][0]]) + " in cluster: " + str(len(np.where(results == unique_label)[0])))
+
     print(
         "Top accuracy for permutation: \n" + str(converted_results) + str(
             np.amax(accuracies)))
 
 
 def one_hot_experiment(df: pd.DataFrame):
+    print("\n-----------------------------")
+    print("One hot encoding KMeans experiment")
+    print("-----------------------------")
     columns_to_one_hot = ['SUSP_RACE', 'SUSP_SEX', 'SUSP_AGE_GROUP', 'VIC_RACE', 'VIC_AGE_GROUP', 'VIC_SEX', 'CMPLNT_FR_TM']
     for column in columns_to_one_hot:
         new_one_hot_columns = pd.get_dummies(df[column], prefix=column)
@@ -219,6 +227,9 @@ def one_hot_experiment(df: pd.DataFrame):
 
 
 def kmode_experiment(df: pd.DataFrame):
+    print("\n-----------------------------")
+    print("KMode experiment")
+    print("-----------------------------")
     array_to_process = np.array(df)
     actual_labels = np.array(df['LAW_CAT_CD'])
     range_n_clusters = [3]

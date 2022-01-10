@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import scipy as sp
 
+from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
 from module.Logger import Logger
 from module.utils import display_finish
@@ -14,6 +15,8 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.cm as cm
 import prince
 import itertools
+import seaborn as sns
+
 pd.options.mode.chained_assignment = None  # default='warn'
 
 
@@ -24,7 +27,7 @@ def main() -> None:
     save_data = args.save
 
     logger.info("Loading dataset...")
-    df = pd.read_csv("../data/NYPD_Data_Preprocessed_v2-225533.csv", low_memory=False)
+    df = pd.read_csv("../data/NYPD_Data_Preprocessed_v2-225533.csv", nrows=10000, low_memory=False)
     logger.info("Loading dataset finished")
     process_clustering(df)
     display_finish()
@@ -71,6 +74,8 @@ def encode_occurance_time(label):
         return 'MIDNIGHT'
     else:
         return 'UNKNOWN'
+
+
 # endregion
 
 
@@ -189,13 +194,17 @@ def predict_outcome(actual_labels, results):
 
     converted_results = ""
     for index, l in enumerate(optimal_permutation):
-        converted_results += str(CRIME_LABELS[optimal_permutation[index][0]]) + " - label: " + str(optimal_permutation[index][1]) + "\n"
+        converted_results += str(CRIME_LABELS[optimal_permutation[index][0]]) + " - label: " + str(
+            optimal_permutation[index][1]) + "\n"
 
     for unique_label in unique_labels:
-        print("Number of elements for label " + str(CRIME_LABELS[unique_label]) + " in dataset: " + str(len(np.where(actual_labels == unique_label)[0])))
+        print("Number of elements for label " + str(CRIME_LABELS[unique_label]) + " in dataset: " + str(
+            len(np.where(actual_labels == unique_label)[0])))
 
     for index, unique_label in enumerate(unique_labels_from_clustering):
-        print("Number of elements for label " + str(CRIME_LABELS[optimal_permutation[index][0]]) + " in cluster: " + str(len(np.where(results == unique_label)[0])))
+        print(
+            "Number of elements for label " + str(CRIME_LABELS[optimal_permutation[index][0]]) + " in cluster: " + str(
+                len(np.where(results == unique_label)[0])))
 
     print(
         "Top accuracy for permutation: \n" + str(converted_results) + str(
@@ -206,7 +215,8 @@ def one_hot_experiment(df: pd.DataFrame):
     print("\n-----------------------------")
     print("One hot encoding KMeans experiment")
     print("-----------------------------")
-    columns_to_one_hot = ['SUSP_RACE', 'SUSP_SEX', 'SUSP_AGE_GROUP', 'VIC_RACE', 'VIC_AGE_GROUP', 'VIC_SEX', 'CMPLNT_FR_TM']
+    columns_to_one_hot = ['SUSP_RACE', 'SUSP_SEX', 'SUSP_AGE_GROUP', 'VIC_RACE', 'VIC_AGE_GROUP', 'VIC_SEX',
+                          'CMPLNT_FR_TM']
     for column in columns_to_one_hot:
         new_one_hot_columns = pd.get_dummies(df[column], prefix=column)
         df = pd.concat([df, new_one_hot_columns], axis=1)
@@ -218,7 +228,9 @@ def one_hot_experiment(df: pd.DataFrame):
     range_n_clusters = [3]
 
     for n_clusters in range_n_clusters:
-        cluster_labels, cluster_centers, values, most_important_features = find_important_weights(array_to_process, n_clusters, KMeans)
+        cluster_labels, cluster_centers, values, most_important_features = reduce_dimension_PCA(array_to_process,
+                                                                                                n_clusters, KMeans)
+        reduce_dimension_tsne(array_to_process, cluster_labels)
         plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters)
         print("Most important columns in PCA: " + str(data_with_removed_label.columns[most_important_features]))
         predict_outcome(actual_labels, cluster_labels)
@@ -244,7 +256,7 @@ def kmode_experiment(df: pd.DataFrame):
 
 
 def kmode_mca(array_to_process, n_clusters):
-    results = KModes(n_clusters=n_clusters, random_state=10).fit(array_to_process)
+    results = KModes(n_clusters=n_clusters, random_state=10, n_jobs=-1).fit(array_to_process)
     mca = prince.MCA().fit(array_to_process)
     Xred = np.array(mca.transform(array_to_process))
 
@@ -257,7 +269,7 @@ def kmode_mca(array_to_process, n_clusters):
         scatterHs.append(ax.scatter(Xred[results.labels_ == cluster, 0], Xred[results.labels_ == cluster, 1],
                                     color=clr[cluster], label='Cluster {}'.format(cluster)))
     plt.legend(handles=scatterHs, loc=4)
-    plt.setp(ax, title='KMode clustering after MCA transformation')
+    plt.setp(ax, title='KMode clustering results after MCA transformation')
 
     plt.show()
     return results.labels_, results.cluster_centroids_, Xred
@@ -271,7 +283,7 @@ def process_clustering(df: pd.DataFrame) -> None:
     kmode_experiment(temp_df)
 
 
-def find_important_weights(array, clusters_nr, clusterer):
+def reduce_dimension_PCA(array, clusters_nr, clusterer):
     results = clusterer(n_clusters=clusters_nr, random_state=10).fit(array)
 
     # cluster with 3 random initial clusters
@@ -362,6 +374,18 @@ def dim_red_pca(X, d=0, corr=False):
     # Map principal components to original data
     LIN = np.dot(d_e_vecs, np.dot(d_e_vecs.T, X_.T)).T
     return LIN[:, :d], e_values, e_vectors
+
+
+def reduce_dimension_tsne(data, labels):
+    X = data
+    Xtsne = TSNE(n_components=2).fit_transform(X)
+    dftsne = pd.DataFrame(Xtsne)
+    dftsne['cluster'] = labels
+    dftsne.columns = ['x1', 'x2', 'cluster']
+
+    sns.scatterplot(data=dftsne, x='x1', y='x2', hue='cluster', legend="full", alpha=0.5)
+    plt.title('KMeans clustering results after TSNE transformation')
+    plt.show()
 
 
 if __name__ == '__main__':

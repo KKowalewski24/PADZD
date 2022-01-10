@@ -6,6 +6,7 @@ import pandas as pd
 import scipy as sp
 
 from sklearn.manifold import TSNE
+from sklearn.metrics import confusion_matrix
 from sklearn.cluster import KMeans
 from module.Logger import Logger
 from module.utils import display_finish
@@ -16,6 +17,7 @@ import matplotlib.cm as cm
 import prince
 import itertools
 import seaborn as sns
+import disarray
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -76,6 +78,17 @@ def encode_occurance_time(label):
         return 'UNKNOWN'
 
 
+def encode_age_group(label):
+    if label == "<18" or label == "18-24":
+        return 0.25
+    if label == "25-44":
+        return 0.5
+    if label == "45-64":
+        return 0.75
+    else:
+        return 1
+
+
 # endregion
 
 
@@ -85,16 +98,19 @@ def preprocess_initial_dataframe(df: pd.DataFrame):
     data_to_access.dropna(inplace=True)
     data_to_access = data_to_access.query('SUSP_SEX == "M" | SUSP_SEX == "F"')
     data_to_access = data_to_access.query('VIC_SEX == "M" | VIC_SEX == "F"')
+    data_to_access = data_to_access.query('SUSP_AGE_GROUP != "UNKNOWN"')
+    data_to_access = data_to_access.query('VIC_AGE_GROUP != "UNKNOWN"')
     data_to_access['LAW_CAT_CD'] = data_to_access['LAW_CAT_CD'].apply(lambda x: encode_crime_label(x))
     data_to_access['CMPLNT_FR_TM'] = data_to_access['CMPLNT_FR_TM'].apply(lambda x: encode_occurance_time(x))
+    data_to_access['SUSP_AGE_GROUP'] = data_to_access['SUSP_AGE_GROUP'].apply(lambda x: encode_age_group(x))
+    data_to_access['VIC_AGE_GROUP'] = data_to_access['VIC_AGE_GROUP'].apply(lambda x: encode_age_group(x))
     return data_to_access
 
 
-def plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters):
+def plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters, actual_labels):
     # Create a subplot with 1 row and 2 columns
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    fig.set_size_inches(18, 7)
-
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, gridspec_kw={'height_ratios': [3, 2, 2]})
+    fig.set_size_inches(11.69, 20)
     # The 1st subplot is the silhouette plot
     # The silhouette coefficient can range from -1, 1 but in this example all
     # lie within [-0.1, 1]
@@ -167,12 +183,26 @@ def plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters):
     ax2.set_xlabel("Feature space for the 1st feature")
     ax2.set_ylabel("Feature space for the 2nd feature")
 
+    # 3rd Plot showing the actual clusters formed
+    actual_colors = cm.nipy_spectral(actual_labels.astype(float) / n_clusters)
+    ax3.scatter(
+        values[:, 0], values[:, 1], marker=".", s=30, lw=0, alpha=0.7, c=actual_colors, edgecolor="k"
+    )
+
+    # Labeling the clusters
+    centers = cluster_centers
+
+    ax3.set_title("The visualization of the actual data.")
+    ax3.set_xlabel("Feature space for the 1st feature")
+    ax3.set_ylabel("Feature space for the 2nd feature")
+
     plt.suptitle(
         "Silhouette analysis for results clustering on sample data with n_clusters = %d"
         % n_clusters,
         fontsize=14,
         fontweight="bold",
     )
+    plt.show()
 
 
 def predict_outcome(actual_labels, results):
@@ -188,6 +218,7 @@ def predict_outcome(actual_labels, results):
             for idx, record in enumerate(actual_labels):
                 if record == l[0] and results[idx] == l[1]:
                     accurate += 1
+        print(accurate)
         accuracies.append(accurate / len(actual_labels) * 100.0)
     index_of_highest_permutation = np.where(accuracies == np.amax(accuracies))[0][0]
     optimal_permutation = permutations[index_of_highest_permutation]
@@ -210,12 +241,22 @@ def predict_outcome(actual_labels, results):
         "Top accuracy for permutation: \n" + str(converted_results) + str(
             np.amax(accuracies)))
 
+    optimized_cluster_labels = []
+    for x in results:
+        for perm_index, l in enumerate(optimal_permutation):
+            if x == optimal_permutation[perm_index][1]:
+                optimized_cluster_labels.append(optimal_permutation[perm_index][0])
+
+    cm = confusion_matrix(actual_labels, optimized_cluster_labels)
+    df = pd.DataFrame(cm, index=['VIOLATION', 'MISDEMEANOR', 'FELONY'], columns=['VIOLATION', 'MISDEMEANOR', 'FELONY'], dtype=int)
+    print(df.da.export_metrics())
+
 
 def one_hot_experiment(df: pd.DataFrame):
     print("\n-----------------------------")
     print("One hot encoding KMeans experiment")
     print("-----------------------------")
-    columns_to_one_hot = ['SUSP_RACE', 'SUSP_SEX', 'SUSP_AGE_GROUP', 'VIC_RACE', 'VIC_AGE_GROUP', 'VIC_SEX',
+    columns_to_one_hot = ['SUSP_RACE', 'SUSP_SEX', 'VIC_RACE', 'VIC_SEX',
                           'CMPLNT_FR_TM']
     for column in columns_to_one_hot:
         new_one_hot_columns = pd.get_dummies(df[column], prefix=column)
@@ -230,9 +271,8 @@ def one_hot_experiment(df: pd.DataFrame):
     for n_clusters in range_n_clusters:
         cluster_labels, cluster_centers, values, most_important_features = reduce_dimension_PCA(array_to_process,
                                                                                                 n_clusters, KMeans)
-        reduce_dimension_tsne(array_to_process, cluster_labels)
-        plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters)
-        print("Most important columns in PCA: " + str(data_with_removed_label.columns[most_important_features]))
+        reduce_dimension_tsne(array_to_process, cluster_labels, actual_labels)
+        plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters, actual_labels)
         predict_outcome(actual_labels, cluster_labels)
 
     plt.show()
@@ -248,7 +288,7 @@ def kmode_experiment(df: pd.DataFrame):
 
     for n_clusters in range_n_clusters:
         cluster_labels, cluster_centers, values = kmode_mca(array_to_process, n_clusters)
-        plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters)
+        plot_silhouette_score(cluster_labels, cluster_centers, values, n_clusters, actual_labels)
 
         predict_outcome(actual_labels, cluster_labels)
 
@@ -376,7 +416,7 @@ def dim_red_pca(X, d=0, corr=False):
     return LIN[:, :d], e_values, e_vectors
 
 
-def reduce_dimension_tsne(data, labels):
+def reduce_dimension_tsne(data, labels, actual_labels):
     X = data
     Xtsne = TSNE(n_components=2).fit_transform(X)
     dftsne = pd.DataFrame(Xtsne)
@@ -385,6 +425,15 @@ def reduce_dimension_tsne(data, labels):
 
     sns.scatterplot(data=dftsne, x='x1', y='x2', hue='cluster', legend="full", alpha=0.5)
     plt.title('KMeans clustering results after TSNE transformation')
+    plt.show()
+
+    actual_labels_to_visualize = [CRIME_LABELS[x] for x in actual_labels]
+
+    dftsne['cluster'] = actual_labels_to_visualize
+    dftsne.columns = ['x1', 'x2', 'cluster']
+
+    sns.scatterplot(data=dftsne, x='x1', y='x2', hue='cluster', legend="full", alpha=0.5)
+    plt.title('Actual labels after TSNE transformation')
     plt.show()
 
 

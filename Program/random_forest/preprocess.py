@@ -264,6 +264,6 @@ def extract_hour_and_day(data: pd.DataFrame) -> pd.DataFrame:
         .map(lambda date: date.weekday())
     temp_df['day_of_year'] = pd.to_datetime(data[DateTimeEventLabels.EVENT_START_TIMESTAMP],  errors = 'coerce').dt.dayofyear
 
-    for column in ['day_of_week','day_of_year']:
+    for column in ['day_of_week', 'day_of_year']:
         temp_df = temp_df[temp_df[column].notna()]
     return transform_date_and_time(data.drop(columns=[DateTimeEventLabels.EVENT_START_TIMESTAMP]), temp_df)

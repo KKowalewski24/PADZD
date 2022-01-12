@@ -21,21 +21,19 @@ def main() -> None:
 def process_key_code(data_set: pd.DataFrame) -> None:
     print(LawBreakingLabels.KEY_CODE + " processing...")
     data_set = preprocess_data_to_classifer(data=data_set,
-                                 label_to_classifier=LawBreakingLabels.KEY_CODE)
+                                            label_to_classifier=LawBreakingLabels.KEY_CODE)
     decision_tree_classification(data_set=data_set,
-                             label_to_classifier=LawBreakingLabels.KEY_CODE,
-                             test_percentage=.2
-                             )
+                                 label_to_classifier=LawBreakingLabels.KEY_CODE,
+                                 test_percentage=.2)
 
 
 def process_law_breaking_level(data_set: pd.DataFrame) -> None:
     print(LawBreakingLabels.LAW_BREAKING_LEVEL + " processing...")
     data_set = preprocess_data_to_classifer(data=data_set,
-                                 label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL)
+                                            label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL)
     decision_tree_classification(data_set=data_set,
-                             label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL,
-                             test_percentage=.2
-                             )
+                                 label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL,
+                                 test_percentage=.2)
 
 
 def decision_tree_classification(data_set: pd.DataFrame,

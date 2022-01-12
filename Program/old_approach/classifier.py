@@ -57,8 +57,7 @@ def main() -> None:
     # for test_percentage in test_data_percentage_bayes:
     #     bayes_classification(df, test_percentage)
 
-
-    #FINAL
+    # FINAL
     # decision_tree_classification(data_set=df,
     #                                        label_to_classifier=LawBreakingLabels.LAW_BREAKING_LEVEL,
     #                                        test_percentage=0.3)
@@ -93,7 +92,7 @@ def bayes_classification(data_set: pd.DataFrame, test_percentage: float) -> None
         round(test_percentage * 100, 2)) + "% ,\t" + "accuracy: " + str(accuracy))
 
 
-def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier:str,
+def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier: str,
                                  test_percentage: float) -> None:
     print("Test data percentage: " + str(round(test_percentage * 100, 2)) + "%")
 
@@ -110,14 +109,14 @@ def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier:str
     x_test = test.drop(columns=[label_to_classifier])
 
     min_samples_leaf_range = [
-       10, 100, 1000, 10000
+        10, 100, 1000, 10000
     ]
     max_depth_range = [5, 10, 15, 25]
     n_estimators_range = [100, 1000]
     max_samples_range = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.8, 0.99]
 
-########################################################################################################################
-### min_samples_leaf_range
+    ########################################################################################################################
+    ### min_samples_leaf_range
     train_acc_history = []
     test_acc_history = []
     for min_samples_leaf in min_samples_leaf_range:
@@ -133,8 +132,8 @@ def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier:str
         "min_samples_leaf": min_samples_leaf_range[np.argmax(test_acc_history)]
     }
 
-########################################################################################################################
-### max_depth_range
+    ########################################################################################################################
+    ### max_depth_range
     train_acc_history = []
     test_acc_history = []
     for max_depth in max_depth_range:
@@ -152,8 +151,8 @@ def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier:str
         }
     print("best params for single tree:", best_params)
 
-########################################################################################################################
-### n_estimators_range
+    ########################################################################################################################
+    ### n_estimators_range
     train_acc_history = []
     test_acc_history = []
     for n_estimators in n_estimators_range:
@@ -169,8 +168,8 @@ def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier:str
     best_acc = np.max(test_acc_history)
     best_params['n_estimators'] = n_estimators_range[np.argmax(
         test_acc_history)]
-########################################################################################################################
-### max_samples_range
+    ########################################################################################################################
+    ### max_samples_range
     train_acc_history = []
     test_acc_history = []
     for max_samples in max_samples_range:
@@ -192,8 +191,9 @@ def decision_tree_classification(data_set: pd.DataFrame, label_to_classifier:str
 
 ########################################################################################################################
 ### Final test
-def decision_tree_classification_final(data_set: pd.DataFrame, label_to_classifier:str,
-                                       test_percentage: float, estimators:int, leaf:int, samples:float, depth:int) -> None:
+def decision_tree_classification_final(data_set: pd.DataFrame, label_to_classifier: str,
+                                       test_percentage: float, estimators: int, leaf: int,
+                                       samples: float, depth: int) -> None:
     train, test = train_test_split(data_set, test_size=test_percentage)
 
     y_train = train[label_to_classifier]
@@ -213,8 +213,6 @@ def decision_tree_classification_final(data_set: pd.DataFrame, label_to_classifi
     test_acc_history.append(forest.score(x_test, y_test))
     print("\ttrain_acc:",
           train_acc_history[-1], "\ttest_acc:", test_acc_history[-1])
-
-
 
     y_pred = forest.predict(x_test)
     y_proba = forest.predict_proba(x_test)
@@ -241,10 +239,8 @@ def decision_tree_classification_final(data_set: pd.DataFrame, label_to_classifi
     # rfc_disp = RocCurveDisplay.from_estimator(forest, x_test, y_test, ax=ax, alpha=0.8)
     # plt.show()
 
-    metrics = {"forest":results}
+    metrics = {"forest": results}
     save_metrics(metrics, "forest")
-
-
 
 
 def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
@@ -252,7 +248,7 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
     data = remove_na(data)
     data = extract_hour_and_day(data)
 
-    for column in ['day_of_week_sin','day_of_week_cos','day_of_year_sin','day_of_year_cos']:
+    for column in ['day_of_week_sin', 'day_of_week_cos', 'day_of_year_sin', 'day_of_year_cos']:
         data = data[data[column].notna()]
 
     data = transform_labels(data)
@@ -261,21 +257,22 @@ def preprocess_data(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def drop_unused_columns(data: pd.DataFrame) -> pd.DataFrame:
-    return data.drop(columns=[IdentifierLabels.ID,
-                              LawBreakingLabels.PD_CODE,
-                              EventLocationLabels.PRECINCT_CODE,
-                              EventLocationLabels.BOROUGH_NAME,
-                              EventLocationLabels.LATITUDE,
-                              EventLocationLabels.LONGITUDE,
-                              # SuspectLabels.SUSPECT_AGE_GROUP,
-                              # VictimLabels.VICTIM_AGE_GROUP,
-                              DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
-                              DateTimeEventLabels.EVENT_END_TIMESTAMP,
-                              "CMPLNT_FR_TM", "CMPLNT_TO_TM", "OFNS_DESC",
-                            'PD_DESC', 'JURIS_DESC', 'JURISDICTION_CODE',
-                              'PARKS_NM', 'HADEVELOPT', 'HOUSING_PSA', 'X_COORD_CD', 'Y_COORD_CD', 'TRANSIT_DISTRICT',
-                              'Lat_Lon', 'PATROL_BORO', 'STATION_NAME'
-                              ])
+    return data.drop(columns=[
+        IdentifierLabels.ID,
+        LawBreakingLabels.PD_CODE,
+        EventLocationLabels.PRECINCT_CODE,
+        EventLocationLabels.BOROUGH_NAME,
+        EventLocationLabels.LATITUDE,
+        EventLocationLabels.LONGITUDE,
+        # SuspectLabels.SUSPECT_AGE_GROUP,
+        # VictimLabels.VICTIM_AGE_GROUP,
+        DateTimeSubmissionLabels.SUBMISSION_TO_POLICE_TIMESTAMP,
+        DateTimeEventLabels.EVENT_END_TIMESTAMP,
+        "CMPLNT_FR_TM", "CMPLNT_TO_TM", "OFNS_DESC",
+        'PD_DESC', 'JURIS_DESC', 'JURISDICTION_CODE',
+        'PARKS_NM', 'HADEVELOPT', 'HOUSING_PSA', 'X_COORD_CD', 'Y_COORD_CD',
+        'TRANSIT_DISTRICT', 'Lat_Lon', 'PATROL_BORO', 'STATION_NAME'
+    ])
 
 
 def remove_na(data: pd.DataFrame) -> pd.DataFrame:
@@ -330,7 +327,7 @@ def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
         data[label] = OrdinalEncoder(categories=[categories]).fit_transform(data[[label]])
 
     # for column in rest_columns:
-        # data[column] = LabelEncoder.fit_transform(data[column])
+    # data[column] = LabelEncoder.fit_transform(data[column])
 
     encoder = LabelEncoder()
     for column in rest_columns:
@@ -361,8 +358,7 @@ def extract_hour_and_day(data: pd.DataFrame) -> pd.DataFrame:
     # temp_df['day_of_year'] = data[DateTimeEventLabels.EVENT_START_TIMESTAMP].dt.dayofyear
     # print(data[DateTimeEventLabels.EVENT_START_TIMESTAMP].to_string())
 
-
-    for column in ['day_of_week','day_of_year']:
+    for column in ['day_of_week', 'day_of_year']:
         temp_df = temp_df[temp_df[column].notna()]
 
     return transform_date_and_time(data.drop(columns=[DateTimeEventLabels.EVENT_START_TIMESTAMP]), temp_df)
@@ -391,16 +387,9 @@ def check_if_exists_in_args(arg: str) -> bool:
     return arg in sys.argv
 
 
-def display_finish() -> None:
-    display_and_log("------------------------------------------------------------------------")
-    display_and_log("FINISHED")
-    display_and_log("------------------------------------------------------------------------")
-
-
 def display_and_log(text: str) -> None:
     print(text)
     logging.info(text)
-
 
 
 def save_metrics(metrics, filename_prefix):

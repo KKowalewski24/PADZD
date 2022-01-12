@@ -8,7 +8,9 @@ from sklearn.inspection import permutation_importance
 
 RESULTS_DIR = "saved_plots/"
 
-def specify_features_importances(forest: RandomForestClassifier, x_test: pd.DataFrame, y_test: pd.DataFrame, processed_label: str) -> None:
+
+def specify_features_importances(forest: RandomForestClassifier, x_test: pd.DataFrame,
+                                 y_test: pd.DataFrame, processed_label: str) -> None:
     _mean_decrease(forest, feature_names=x_test.columns, processed_label=processed_label)
     _feature_permutation(forest, x_test, y_test, feature_names=x_test.columns, processed_label=processed_label)
 
@@ -25,7 +27,8 @@ def _mean_decrease(forest: RandomForestClassifier, feature_names, processed_labe
     _draw_plot_bar(forest_importances, std, "Feature importances using MDI", "Mean decrease in impurity", processed_label)
 
 
-def _feature_permutation(forest: RandomForestClassifier, X_test: pd.DataFrame, y_test: pd.DataFrame, feature_names, processed_label: str) -> None:
+def _feature_permutation(forest: RandomForestClassifier, X_test: pd.DataFrame,
+                         y_test: pd.DataFrame, feature_names, processed_label: str) -> None:
     start_time = time.time()
     result = permutation_importance(
         forest, X_test, y_test, n_repeats=10, random_state=42, n_jobs=-1

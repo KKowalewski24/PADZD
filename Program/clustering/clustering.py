@@ -8,8 +8,8 @@ import scipy as sp
 from sklearn.manifold import TSNE
 from sklearn.metrics import confusion_matrix
 from sklearn.cluster import KMeans
-from module.Logger import Logger
-from module.utils import display_finish
+from shared.Logger import Logger
+from shared.utils import display_finish
 from kmodes.kmodes import KModes
 from datetime import datetime
 from sklearn.metrics import silhouette_samples, silhouette_score

@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, OrdinalEncoder
 import pandas as pd
-from module.label_names_mapper import *
+from shared.label_names_mapper import *
 from typing import Dict, List, Tuple
 
 PROCESSED_COLUMN_NAMES = [

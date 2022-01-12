@@ -6,7 +6,7 @@ import sys
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from typing import Dict, List, Tuple
-from module.utils import display_finish, run_main
+from shared.utils import display_finish, run_main
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -22,8 +22,8 @@ import calendar
 
 import pandas as pd
 
-from module.label_names_mapper import *
-from module.LatexGenerator import LatexGenerator
+from shared.label_names_mapper import *
+from shared.LatexGenerator import LatexGenerator
 
 """
 How to run:

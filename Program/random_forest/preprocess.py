@@ -17,8 +17,8 @@ PROCESSED_COLUMN_NAMES = [
     VictimLabels.VICTIM_AGE_GROUP,
     VictimLabels.VICTIM_RACE,
     VictimLabels.VICTIM_SEX,
-    'race_on_race',
-    'gender_on_gender',
+    # 'race_on_race',
+    # 'gender_on_gender',
     # EventLocationLabels.LONGITUDE,
     # EventLocationLabels.LATITUDE
 ]
@@ -57,7 +57,8 @@ PROCESSED_COLUMN_NAMES = [
 def preprocess_data_to_classifer(data: pd.DataFrame, label_to_classifier: str) -> pd.DataFrame:
     if label_to_classifier == LawBreakingLabels.KEY_CODE:
         data = data[data[LawBreakingLabels.KEY_CODE].notna()]
-        data.drop(LawBreakingLabels.LAW_BREAKING_LEVEL, axis=1, inplace=True)
+        data = data[data[LawBreakingLabels.LAW_BREAKING_LEVEL].notna()]
+        # data.drop(LawBreakingLabels.LAW_BREAKING_LEVEL, axis=1, inplace=True)
     else:
         data = data[data[LawBreakingLabels.LAW_BREAKING_LEVEL].notna()]
         data.drop(LawBreakingLabels.KEY_CODE, axis=1, inplace=True)
@@ -105,31 +106,46 @@ def preprocess_age_and_sex(df: pd.DataFrame) -> None:
 
     print("Grouping RACE")
     _grouping_single_race(df)
-    _grouping_race_on_race(df)
+    # _grouping_race_on_race(df)
 
     print("Grouping GENDER")
     _grouping_single_gender(df)
-    _grouping_gender_on_gender(df)
+    # _grouping_gender_on_gender(df)
 
 
 def _grouping_single_race(df: pd.DataFrame) -> None:
+    # df.loc[
+    #     (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN")
+    #     | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("HISPANIC", na=False)),
+    #     SuspectLabels.SUSPECT_RACE
+    # ] = "OTHER"
+    # _race_equals(df, SuspectLabels.SUSPECT_RACE, "WHITE")
+    # _race_equals(df, SuspectLabels.SUSPECT_RACE, "BLACK")
+    # _race_contains(df, SuspectLabels.SUSPECT_RACE, "HISPANIC")
+    #
+    # df.loc[
+    #     (df[VictimLabels.VICTIM_RACE] == "UNKNOWN")
+    #     | (~df[VictimLabels.VICTIM_RACE].str.contains("WHITE", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("BLACK", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("HISPANIC", na=False)),
+    #     VictimLabels.VICTIM_RACE
+    # ] = "OTHER"
+    # _race_equals(df, VictimLabels.VICTIM_RACE, "WHITE")
+    # _race_equals(df, VictimLabels.VICTIM_RACE, "BLACK")
+    # _race_contains(df, VictimLabels.VICTIM_RACE, "HISPANIC")
     df.loc[
-        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN") | (df[SuspectLabels.SUSPECT_RACE].isnull())
-        | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("HISPANIC", na=False)),
+        (df[SuspectLabels.SUSPECT_RACE] == "UNKNOWN")
+        | (~df[SuspectLabels.SUSPECT_RACE].str.contains("WHITE", na=False) & ~df[SuspectLabels.SUSPECT_RACE].str.contains("BLACK", na=False)),
         SuspectLabels.SUSPECT_RACE
     ] = "OTHER"
-    _race_equals(df, SuspectLabels.SUSPECT_RACE, "WHITE")
-    _race_equals(df, SuspectLabels.SUSPECT_RACE, "BLACK")
-    _race_contains(df, SuspectLabels.SUSPECT_RACE, "HISPANIC")
+    _race_contains(df, SuspectLabels.SUSPECT_RACE, "WHITE")
+    _race_contains(df, SuspectLabels.SUSPECT_RACE, "BLACK")
 
     df.loc[
-        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN") | (df[VictimLabels.VICTIM_RACE].isnull())
-        | (~df[VictimLabels.VICTIM_RACE].str.contains("WHITE", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("BLACK", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("HISPANIC", na=False)),
+        (df[VictimLabels.VICTIM_RACE] == "UNKNOWN")
+        | (~df[VictimLabels.VICTIM_RACE].str.contains("WHITE", na=False) & ~df[VictimLabels.VICTIM_RACE].str.contains("BLACK", na=False)),
         VictimLabels.VICTIM_RACE
     ] = "OTHER"
-    _race_equals(df, VictimLabels.VICTIM_RACE, "WHITE")
-    _race_equals(df, VictimLabels.VICTIM_RACE, "BLACK")
-    _race_contains(df, VictimLabels.VICTIM_RACE, "HISPANIC")
+    _race_contains(df, VictimLabels.VICTIM_RACE, "WHITE")
+    _race_contains(df, VictimLabels.VICTIM_RACE, "BLACK")
 
 
 def _race_contains(df: pd.DataFrame, label: str, race: str) -> None:
@@ -148,7 +164,7 @@ def _race_equals(df: pd.DataFrame, label: str, race: str) -> None:
 
 def _grouping_race_on_race(df: pd.DataFrame) -> None:
     df["race_on_race"] = df[SuspectLabels.SUSPECT_RACE].astype(str) + "_on_" + df[VictimLabels.VICTIM_RACE].astype(str)
-    df = df.drop(columns=[SuspectLabels.SUSPECT_RACE, VictimLabels.VICTIM_RACE])
+    df.drop(columns=[SuspectLabels.SUSPECT_RACE, VictimLabels.VICTIM_RACE])
 
 
 def _grouping_single_gender(df: pd.DataFrame) -> None:
@@ -170,7 +186,7 @@ def _grouping_single_gender(df: pd.DataFrame) -> None:
 
 def _grouping_gender_on_gender(df: pd.DataFrame) -> None:
     df["gender_on_gender"] = df[SuspectLabels.SUSPECT_SEX].astype(str) + "_on_" + df[VictimLabels.VICTIM_SEX].astype(str)
-    df = df.drop(columns=[SuspectLabels.SUSPECT_SEX, VictimLabels.VICTIM_SEX])
+    df.drop(columns=[SuspectLabels.SUSPECT_SEX, VictimLabels.VICTIM_SEX])
 
 
 def preprocess_place_type_position(df: pd.DataFrame) -> None:
@@ -200,17 +216,17 @@ def remove_na(data: pd.DataFrame) -> pd.DataFrame:
 def transform_labels(data: pd.DataFrame) -> pd.DataFrame:
     one_hot_columns = [
         # EventStatusLabels.EVENT_STATUS,
-        # VictimLabels.VICTIM_RACE,
-        # VictimLabels.VICTIM_SEX,
-        # SuspectLabels.SUSPECT_RACE,
-        # SuspectLabels.SUSPECT_SEX,
-        "race_on_race",
-        "gender_on_gender",
+        VictimLabels.VICTIM_RACE,
+        VictimLabels.VICTIM_SEX,
+        SuspectLabels.SUSPECT_RACE,
+        SuspectLabels.SUSPECT_SEX,
+        # "race_on_race",
+        # "gender_on_gender",
         # EventSurroundingsLabels.PLACE_TYPE,
         # EventSurroundingsLabels.PLACE_TYPE_POSITION
     ]
     ordinal_columns: List[Tuple[str, List]] = [
-        # (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
+        (LawBreakingLabels.LAW_BREAKING_LEVEL, ["VIOLATION", "MISDEMEANOR", "FELONY"]),
         (VictimLabels.VICTIM_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
         (SuspectLabels.SUSPECT_AGE_GROUP, ["<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN"]),
     ]

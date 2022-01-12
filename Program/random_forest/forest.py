@@ -1,9 +1,8 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
-from random_forest.preprocess import *
 from random_forest.features_importance import specify_features_importances
-import matplotlib.pyplot as plt
+from random_forest.preprocess import *
 
 
 def main() -> None:

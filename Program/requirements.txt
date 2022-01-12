@@ -1,3 +1,7 @@
+prince
+kmodes
+seaborn
+scipy
 numpy
 scikit-learn
 matplotlib

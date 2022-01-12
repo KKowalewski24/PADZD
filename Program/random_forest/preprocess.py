@@ -1,8 +1,10 @@
+from typing import List, Tuple
+
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, OrdinalEncoder
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
+
 from shared.label_names_mapper import *
-from typing import Dict, List, Tuple
 
 PROCESSED_COLUMN_NAMES = [
     LawBreakingLabels.KEY_CODE,

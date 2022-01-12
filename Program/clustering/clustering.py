@@ -1,23 +1,21 @@
+import itertools
 from argparse import ArgumentParser, Namespace
+from datetime import datetime
 
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import prince
 import scipy as sp
-
-from sklearn.manifold import TSNE
-from sklearn.metrics import confusion_matrix
+import seaborn as sns
+from kmodes.kmodes import KModes
 from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
+from sklearn.metrics import confusion_matrix, silhouette_samples, silhouette_score
+
 from shared.Logger import Logger
 from shared.utils import display_finish
-from kmodes.kmodes import KModes
-from datetime import datetime
-from sklearn.metrics import silhouette_samples, silhouette_score
-import matplotlib.cm as cm
-import prince
-import itertools
-import seaborn as sns
-import disarray
 
 pd.options.mode.chained_assignment = None  # default='warn'
 

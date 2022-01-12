@@ -1,29 +1,22 @@
-import json
 import logging
 import os
 import subprocess
 import sys
 from argparse import ArgumentParser, Namespace
-from datetime import datetime
-from typing import Dict, List, Tuple
-from shared.utils import display_finish, run_main
-import matplotlib.pyplot as plt
+from typing import List, Tuple
 
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import train_test_split
-from sklearn import metrics, naive_bayes
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, OrdinalEncoder
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, \
-    roc_curve, RocCurveDisplay
-from sklearn.model_selection import learning_curve
-import calendar
-
 import pandas as pd
+from sklearn import metrics, naive_bayes
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
+from sklearn.tree import DecisionTreeClassifier
 
-from shared.label_names_mapper import *
 from shared.LatexGenerator import LatexGenerator
+from shared.label_names_mapper import *
+from shared.utils import display_finish
 
 """
 How to run:

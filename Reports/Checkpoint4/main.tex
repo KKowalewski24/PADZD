@@ -57,14 +57,20 @@
             \item Szymon Gruda - Realizacja celu "Klasyfikacja rodzaju lub poziomu przestępstwa"
             \item Jan Karwowski - Realizacja celu "Regresja godziny wystąpienia zdarzenia"
             \item Michał Kidawa - Realizacja celu "Grupowanie przestępstw na podstawie podzbiorów cech"
-            \item Kamil Kowalewski - Przygotowywanie preprocessingu, miejsca oraz infrastruktury do realizacji celów badawczych. Pomoc programistyczna oraz techniczna dla pozostałych członków zespołu w badaniach
+            \item Kamil Kowalewski - Przygotowywanie preprocessingu, miejsca oraz
+            infrastruktury do realizacji celów badawczych. Pomoc programistyczna
+            oraz techniczna dla pozostałych członków zespołu w badaniach
         \end{itemize}
     }
 
     \section{Charakterystyka zbioru danych} {
 
         \subsection{Przegląd pierwotnie dostępnych kolumn} {
-            Zbiór danych zawiera ponad 7 mln. (7375993) wierszy i 35 kolumn różnego typu, głównie dane kategorialne. Poniżej wypisane zostały wszystkie dostępne kolumny, pogrupowane tematycznie, wraz z informacją kolejno o liczbie unikalnych wartości (włącznie z NaN) i brakujących wartości (NaN) w danej kolumnie.
+            Zbiór danych zawiera ponad 7 mln. (7375993) wierszy i 35 kolumn różnego
+            typu, głównie dane kategorialne. Poniżej wypisane zostały wszystkie
+            dostępne kolumny, pogrupowane tematycznie, wraz z informacją kolejno o
+            liczbie unikalnych wartości (włącznie z NaN) i brakujących wartości (NaN) w
+            danej kolumnie.
         % @formatter:off
             \begin{enumerate}
                 \item Identyfikator
@@ -134,12 +140,24 @@
         }
 
         \subsection{Szczegółowa charakterystyka wybranych kolumn} {
-            
-            Poniżej przedstawiona została bardziej szczegółowa charakterystyka wybranych kolumn ze zbioru danych, zwłaszcza rozkłady dostępnych w nich wartości (histogramy). Omówione również zostały możliwości wstępnego oczyszczenia i przetwarzania danych, przed właściwą analizą (szczegółowy preprocessing jest omówiony osobno dla każdego celu). Wspomniane zostały także kolumny, które wydają się być nieprzydatne i nie zostały wykorzystane w dalszej analizie.
+
+            Poniżej przedstawiona została bardziej szczegółowa charakterystyka
+            wybranych kolumn ze zbioru danych, zwłaszcza rozkłady dostępnych w nich
+            wartości (histogramy). Omówione również zostały możliwości wstępnego
+            oczyszczenia i przetwarzania danych, przed właściwą analizą (szczegółowy
+            preprocessing jest omówiony osobno dla każdego celu). Wspomniane zostały
+            także kolumny, które wydają się być nieprzydatne i nie zostały wykorzystane
+            w dalszej analizie.
 
             \subsubsection{Data oraz czas zdarzenia i zgłoszenia} {
-                
-                Jako, że data i czas zdarzenia co do swojej oryginalnej wartości nie niosą praktycznie żadnej przydatnej informacji, niezbędne jest dla tych kolumn przeprowadzenie prostej ekstrakcji cech. Podstawowymi cechami, które można wyekstrahować z daty i czasu wystąpienia zdarzenia jest pora dnia, dzień tygodnia czy pora roku. Dla rekordów, dla których znany jest czas zakończenia zdarzenia, można wyekstrahować również czas trwania zdarzenia.
+
+                Jako, że data i czas zdarzenia co do swojej oryginalnej wartości nie
+                niosą praktycznie żadnej przydatnej informacji, niezbędne jest dla tych
+                kolumn przeprowadzenie prostej ekstrakcji cech. Podstawowymi cechami,
+                które można wyekstrahować z daty i czasu wystąpienia zdarzenia jest
+                pora dnia, dzień tygodnia czy pora roku. Dla rekordów, dla których
+                znany jest czas zakończenia zdarzenia, można wyekstrahować również czas
+                trwania zdarzenia.
                 
                 \begin{figure}[!htbp]
                     \centering
@@ -157,7 +175,8 @@
 
                 Na podstawie rysunku \ref{hist_hours} można zaobserwować, że największa
                 liczba przestępstw/wykroczeń miała miejsce w godzinach popołudniowych,
-                natomiast najmniejsza w godzinach wczesnoporonnych tzn godzina 5 i 6 rano. Na podstawie rysunku \ref{hist_months} można zaobserwować, że wyniki
+                natomiast najmniejsza w godzinach wczesnoporonnych tzn godzina 5 i 6
+                rano. Na podstawie rysunku \ref{hist_months} można zaobserwować, że wyniki
                 liczby przestępstw/wykroczeń są do siebie zbliżone natomiast większa
                 liczba była w czasie miesięcy letnich.
                 
@@ -171,20 +190,37 @@
                     \item centyl 80 = 11h
                     \item centyl 90 = 40h
                 \end{itemize}
-                Jak widać rozkład ten jest bardzo nierównomierny i zwłaszcza próba estymacji tej wartości może okazać się trudna. Data zgłoszenia zdarzenia na policję nie niesie szczególnie istotnej wartości i nie jest wykorzystywana w dalszej analizie.
+                Jak widać rozkład ten jest bardzo nierównomierny i zwłaszcza próba
+                estymacji tej wartości może okazać się trudna. Data zgłoszenia
+                zdarzenia na policję nie niesie szczególnie istotnej wartości i nie
+                jest wykorzystywana w dalszej analizie.
             }
 
             \subsubsection{Typ i opis zdarzenia} {
                 Na podstawie rysunku \ref{hist_law_breaking_level} można zaobserwować,
                 że największy odsetek stanowiły wykroczenia, na drugim miejscu
                 uplasowały się przestępstwa natomiast najmniej było występków(jest to
-                pośredni czyli między wykroczeniem a przestępstwem). Rysunki \ref{hist_ky_cd} oraz \ref{hist_pd_cd} pokazują, że zdecydowana większość zdarzeń mieści się w zaledwie kilku pierwszych (z kilkudziesięciu) kodów klasyfikacji zdarzenia.
-                
-                Kolumny zawierające słowne opisy przestępstwa odpowiadają praktycznie zawsze danem kodowi, tak więc na potrzeby działania algorytmu są zupełnie redundantne i nie będą wykorzystywane.
-                
-                Należy wspomnieć, że występuje bardzo silne powiązanie (reguła asocjacyjna) między kolejno PD\_CD -> KY\_CD oraz KY\_CD -> LAW\_CAT\_CD. Nie mają one 100\% pokrycia tak więc istnieją takie przestępstwa (KY\_CD), które występują we wszystkich trzech rodzajach. Jednakże pokrycie wspomnianych zależności jest bardzo duże i nie ma sensu przeprowadzać klasyfikacji LAW\_CAT\_CD w oparciu o KY\_CD.
-                
-                Wspomniane kolumny mają charakter kategorialny dlatego podczas ich wykorzystanie niezbędne będzie zastosowanie techniki \emph{one hot encoding}. Prawdopodobnie nie ma również sensu wykorzystywać wszystkich trzech informacji, zwłaszcza, że jak opisano wyżej, są one zależne jedna od drugiej.
+                pośredni czyli między wykroczeniem a przestępstwem). Rysunki
+                \ref{hist_ky_cd} oraz \ref{hist_pd_cd} pokazują, że zdecydowana
+                większość zdarzeń mieści się w zaledwie kilku pierwszych (z
+                kilkudziesięciu) kodów klasyfikacji zdarzenia.
+
+                Kolumny zawierające słowne opisy przestępstwa odpowiadają praktycznie
+                zawsze danem kodowi, tak więc na potrzeby działania algorytmu są
+                zupełnie redundantne i nie będą wykorzystywane.
+
+                Należy wspomnieć, że występuje bardzo silne powiązanie (reguła
+                asocjacyjna) między kolejno PD\_CD -> KY\_CD oraz KY\_CD ->
+                LAW\_CAT\_CD. Nie mają one 100\% pokrycia tak więc istnieją takie
+                przestępstwa (KY\_CD), które występują we wszystkich trzech rodzajach.
+                Jednakże pokrycie wspomnianych zależności jest bardzo duże i nie ma
+                sensu przeprowadzać klasyfikacji LAW\_CAT\_CD w oparciu o KY\_CD.
+
+                Wspomniane kolumny mają charakter kategorialny dlatego podczas ich
+                wykorzystanie niezbędne będzie zastosowanie techniki \emph{one hot
+                encoding}. Prawdopodobnie nie ma również sensu wykorzystywać wszystkich
+                trzech informacji, zwłaszcza, że jak opisano wyżej, są one zależne
+                jedna od drugiej.
                 
                 \begin{figure}[!htbp]
                     \centering
@@ -217,9 +253,11 @@
                 \FloatBarrier
                 Na podstawie rysunku \ref{hist_is_completed} można zaobserwować, że
                 praktycznie wszystkie przestępstwa/wykroczenia zostały dokonane a
-                naprawdę niewielki odsetek został udaremniony. Rozkład wartości w tej kolumnie jest więc silnie niezbalansowany.
-                
-                Wartość ta może zostać zakodowana w postaci pojedynczej kolumny z wartościami binarnymi.
+                naprawdę niewielki odsetek został udaremniony. Rozkład wartości w tej
+                kolumnie jest więc silnie niezbalansowany.
+
+                Wartość ta może zostać zakodowana w postaci pojedynczej kolumny z
+                wartościami binarnymi.
             }
 
             \subsubsection{Otoczenie zdarzenia} {
@@ -236,12 +274,24 @@
                     \label{hist_loc_prem}
                 \end{figure}
                 \FloatBarrier
-                
-                Na rysunku \ref{hist_prem} widać, że zdecydowana większość zdarzeń ma miejsce na ulicy i w domach. Z kolei rysunek \ref{hist_loc_prem} pokazuje, że najwięcej zdarzeń dzieje się wewnątrz jakiegoś miejsca. Jak widać rozkłady tych wartości znowu są silnie niezbalansowane. Typ danych pozostaje kategorialny i wymaga stosowania \emph{one hot encodingu}.
+
+                Na rysunku \ref{hist_prem} widać, że zdecydowana większość zdarzeń ma
+                miejsce na ulicy i w domach. Z kolei rysunek \ref{hist_loc_prem}
+                pokazuje, że najwięcej zdarzeń dzieje się wewnątrz jakiegoś miejsca.
+                Jak widać rozkłady tych wartości znowu są silnie niezbalansowane. Typ
+                danych pozostaje kategorialny i wymaga stosowania \emph{one hot
+                encodingu}.
             }
 
             \subsubsection{Lokalizacja zdarzenia} {
-                Informacje o dokładnej lokalizacji zdarzenia, w przeciwieństwie do wszystkich pozostałych informacji na temat zdarzenia dostępnych w tym zbiorze, nie mają charakteru uniwersalnego. Wykorzystanie ich oznaczałoby uzależnienie się od kontekstu miasta Noweg Jorku, z którego dane pochodzą. Dodatkowo dane te są redundantne, i w większości nie niosą żadnych przydatnych informacji dotyczących czy to rodzaju, czy też chwili popełnionego przestępstwa. Żadna z kolumn z tej grupy nie została wykorzystana w dalszej analizie.
+                Informacje o dokładnej lokalizacji zdarzenia, w przeciwieństwie do
+                wszystkich pozostałych informacji na temat zdarzenia dostępnych w tym
+                zbiorze, nie mają charakteru uniwersalnego. Wykorzystanie ich
+                oznaczałoby uzależnienie się od kontekstu miasta Noweg Jorku, z którego
+                dane pochodzą. Dodatkowo dane te są redundantne, i w większości nie
+                niosą żadnych przydatnych informacji dotyczących czy to rodzaju, czy
+                też chwili popełnionego przestępstwa. Żadna z kolumn z tej grupy nie
+                została wykorzystana w dalszej analizie.
             }
 
             \subsubsection{Cechy podejrzanego} {
@@ -264,7 +314,19 @@
                     \label{hist_susp_sex}
                 \end{figure}
                 \FloatBarrier
-                Na cechy podejrzanego składają się trzy wartości: grupa wiekowa, rasa oraz płeć. Grupa wiekowa jest silnie zanieczyszczona różnymi losowymi wartościami liczbowymi. Najprostszą metodą, stosowaną w większości przypadków, będzie ograniczenie liczby wartości do tych poprawnych (<18, 18-24, 25-44, 45-64, 65+) oraz wartości nieznanej (NaN). Rysunek \ref{hist_susp_age_group} przedstawia rozkład wieku podejrzanych po takim oczyszczeniu tych danych. Wynika z niego, że większość ludzi uwikłanych w różnego rodzaju przestępstwa i występki mają między 20 a 40 lat. Jest to również najliczniejsza grupa w społeczeństwie, stąd też przede wszystkim wynika ten rozkład (rozkład normalny). Kolejnym spostrzeżeniem, tym razem z rysunków \ref{hist_susp_race} i \ref{hist_susp_sex} jest fakt, że większość podejrzanych stanowią czarni mężczyźni.
+                Na cechy podejrzanego składają się trzy wartości: grupa wiekowa, rasa
+                oraz płeć. Grupa wiekowa jest silnie zanieczyszczona różnymi losowymi
+                wartościami liczbowymi. Najprostszą metodą, stosowaną w większości
+                przypadków, będzie ograniczenie liczby wartości do tych poprawnych
+                (<18, 18-24, 25-44, 45-64, 65+) oraz wartości nieznanej (NaN). Rysunek
+                \ref{hist_susp_age_group} przedstawia rozkład wieku podejrzanych po
+                takim oczyszczeniu tych danych. Wynika z niego, że większość ludzi
+                uwikłanych w różnego rodzaju przestępstwa i występki mają między 20 a
+                40 lat. Jest to również najliczniejsza grupa w społeczeństwie, stąd też
+                przede wszystkim wynika ten rozkład (rozkład normalny). Kolejnym
+                spostrzeżeniem, tym razem z rysunków \ref{hist_susp_race} i
+                \ref{hist_susp_sex} jest fakt, że większość podejrzanych stanowią
+                czarni mężczyźni.
             }
 
             \subsubsection{Cechy ofiary} {
@@ -287,20 +349,31 @@
                     \label{hist_vic_sex}
                 \end{figure}
                 \FloatBarrier
-                W przypadku cech ofiary/poszkodowanego sytuacja z grupami wiekowymi jest taka sama jak w przypadku cech podejrzanego. Rysunek \ref{hist_vic_age_group} pokazuje rozkład wieku ofiar po wstępnym oczyszczeniu zbioru. Również tutaj widać wyraźnie rozkład normalny. Rysunku \ref{hist_vic_race} oraz \ref{hist_vic_sex} pokazują, że wśród poszkodowanych najwięcej jest kobiet nieznanej rasy. Mamy tutaj do czynienia z dodatkowymi wartościami w kolumnie płci, które oznaczają grupy ludzi: instytucję lub państwo. Z powodu, że taki może być charakter poszkodowanych większość zdarzeń nie ma określonej płci poszkodowanego.
+                W przypadku cech ofiary/poszkodowanego sytuacja z grupami wiekowymi
+                jest taka sama jak w przypadku cech podejrzanego. Rysunek
+                \ref{hist_vic_age_group} pokazuje rozkład wieku ofiar po wstępnym
+                oczyszczeniu zbioru. Również tutaj widać wyraźnie rozkład normalny.
+                Rysunku \ref{hist_vic_race} oraz \ref{hist_vic_sex} pokazują, że wśród
+                poszkodowanych najwięcej jest kobiet nieznanej rasy. Mamy tutaj do
+                czynienia z dodatkowymi wartościami w kolumnie płci, które oznaczają
+                grupy ludzi: instytucję lub państwo. Z powodu, że taki może być
+                charakter poszkodowanych większość zdarzeń nie ma określonej płci
+                poszkodowanego.
             }
 
             \subsubsection{Zależności między podejrzanym a ofiarą} {
                 \begin{figure}[!htbp]
                     \centering
                     \includegraphics[width=0.75\textwidth]{img/3.2.8/Race#piechart-084518.png}
-                    \caption{Wykres przedstawiający zależność pomiędzy podejrzanym a ofiarą, na podstawie ich rasy (uwzględnione zostały tylko dwie).}
+                    \caption{Wykres przedstawiający zależność pomiędzy podejrzanym a ofiarą,
+                    na podstawie ich rasy (uwzględnione zostały tylko dwie).}
                     \label{pie_chart_race}
                 \end{figure}
                 \begin{figure}[!htbp]
                     \centering
                     \includegraphics[width=0.75\textwidth]{img/3.2.8/Sex#piechart-084518.png}
-                    \caption{Wykres przedstawiający zależność pomiędzy podejrzanym a ofiarą, na podstawie ich płci (uwzględnione zostały tylko dwie).}
+                    \caption{Wykres przedstawiający zależność pomiędzy podejrzanym a ofiarą,
+                    na podstawie ich płci (uwzględnione zostały tylko dwie).}
                     \label{pie_chart_sex}
                 \end{figure}
                 \FloatBarrier
@@ -344,8 +417,10 @@
 
             \subsubsection{Opis} {
                 W ramach tego etapu przeprowadzony został szereg eksperymentów mających
-                na celu stworzenie klasyfikatora typu przestępstwa (KY\_CD). W ramach porównania dokonano klasyfikacji poziomu wykroczenia,
-                stanowiącego bardziej ogólną informacje. Podczas realizacji tego celu, pod uwagę zostały wzięte kolumny, przechowujące następujące informacje:
+                na celu stworzenie klasyfikatora typu przestępstwa (KY\_CD). W ramach
+                porównania dokonano klasyfikacji poziomu wykroczenia,
+                stanowiącego bardziej ogólną informacje. Podczas realizacji tego celu,
+                pod uwagę zostały wzięte kolumny, przechowujące następujące informacje:
                 \begin{itemize}
                     \item godzina zdarzenia
                     \item dzień tygodnia zdarzenia
@@ -358,20 +433,26 @@
                 \end{itemize}
 
                 Wybrane cechy uległy drobnym modyfikacjom w trakcie trwania
-                eksperymentów. 
-                Z powodu małej liczby danych z dostępnymi informacjami o czasie trwania przestępstwa, pomysł wykorzystania tej danej został zarzucony.
+                eksperymentów.
+                Z powodu małej liczby danych z dostępnymi informacjami o czasie trwania
+                przestępstwa, pomysł wykorzystania tej danej został zarzucony.
 
                 Informacja o dokładnej lokalizacji zdarzenia nie jest wykorzystana ze
-narzędzia                względu na chęć stworzenia uniwersalnego narzędzia.
+                narzędzia względu na chęć stworzenia uniwersalnego narzędzia.
 
                 Aby zrealizować zaproponowany cel wykorzystane zostały następujące metody:
                 metody imputacji brakujących danych, prosta ekstrakcja cech (zwłaszcza z
-                daty), naiwny klasyfikator Bayesa (ze względu na uzyskiwane wyniki w czasie trwania projektu, został porzucony) i lasy losowe (ze względu na uzyskiwane wyniki w czasie trwania projektu, metoda ta została potraktowana priorytetowo).
+                daty), naiwny klasyfikator Bayesa (ze względu na uzyskiwane wyniki w
+                czasie trwania projektu, został porzucony) i lasy losowe (ze względu na
+                uzyskiwane wyniki w czasie trwania projektu, metoda ta została
+                potraktowana priorytetowo).
 
             }
 
             \subsubsection{Przygotowanie danych} {
-                Bazując na założeniach celu oraz wiedzy, wyciągniętej z poprzednich checkpoint'ów, pod uwagę w czasie eksperymentów zostały brane pod uwagę następujące kolumny:
+                Bazując na założeniach celu oraz wiedzy, wyciągniętej z poprzednich
+                checkpoint'ów, pod uwagę w czasie eksperymentów zostały brane pod uwagę
+                następujące kolumny:
                 \begin{itemize}
                     \item KY\_CD - kod popełnionego przestępstwa;
                     \item LAW\_CAT\_CD - poziom popełnionego przestępstwa;
@@ -384,27 +465,72 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \item VIC\_RACE - Rasa ofiary
                     \item VIC\_SEX - Płeć ofiary
                 \end{itemize}
-                Powodem odrzucenia kolumny CRM\_ATPT\_CPTD\_CD było ogromne niezbalansowanie zawartych w niej danych. Dane poddano obróbce (preprocessing'owi), na którą składały się operacje różne w zależności od specyfiki przeprowadzanego eksperymentu. W celu redukcji wymiarów oraz ograniczenia liczby potencjalnych wartości, a co za tym idzie zmniejszenie liczby danych etykiet do kodowania (przetwarzanie dużego zbioru zakodowanych danych jest bardzo wymagającym wydajnościowo procesem, przy małym wpływie na jakość potencjalnych wyników) przeprowadzono następujące operacje grupowania:
+
+                Powodem odrzucenia kolumny CRM\_ATPT\_CPTD\_CD było ogromne
+                niezbalansowanie zawartych w niej danych. Dane poddano obróbce
+                (preprocessing'owi), na którą składały się operacje różne w zależności
+                od specyfiki przeprowadzanego eksperymentu. W celu redukcji wymiarów
+                oraz ograniczenia liczby potencjalnych wartości, a co za tym idzie
+                zmniejszenie liczby danych etykiet do kodowania (przetwarzanie dużego
+                zbioru zakodowanych danych jest bardzo wymagającym wydajnościowo
+                procesem, przy małym wpływie na jakość potencjalnych wyników)
+                przeprowadzono następujące operacje grupowania:
                 \begin{itemize}
-                    \item grup wiekowych, tak aby można było nadać im odpowiednią etykietę ("<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN") oraz jej ewentualna imputacja  najczęściej występującą wartością;
-                    \item rasy (podejrzanego i ofiary), tak aby można było nadać im odpowiednią etykietę (zależną od eksperymentu) - ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"], lub ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"]
-                    \item (podejrzanego i ofiary), tak aby można było nadać im odpowiednią etykietę  - ["MALE", "FEMALE", "OTHER"];
-                    \item pozycji otoczenia zdarzenia, tak aby można było nadać im odpowiednią etykietę  - ["UNKNOWN", "FRONT OF", "INSIDE", "OTHER"];
+                    \item grup wiekowych, tak aby można było nadać im odpowiednią
+                    etykietę ("<18", "18-24", "25-44", "45-64", "65+", "UNKNOWN")
+                    oraz jej ewentualna imputacja najczęściej występującą wartością;
+                    \item rasy (podejrzanego i ofiary), tak aby można było nadać im
+                    odpowiednią etykietę (zależną od eksperymentu) - ["WHITE",
+                    "BLACK", "HISPANIC", "UNKNOWN", "OTHER"], lub ["WHITE",
+                    "BLACK", "HISPANIC", "UNKNOWN", "OTHER"]
+                    \item (podejrzanego i ofiary), tak aby można było nadać im
+                    odpowiednią etykietę - ["MALE", "FEMALE", "OTHER"];
+                    \item pozycji otoczenia zdarzenia, tak aby można było nadać im
+                    odpowiednią etykietę - ["UNKNOWN", "FRONT OF", "INSIDE", "OTHER"];
                 \end{itemize}
-                Po dokonaniu grupowania, ze zbioru zostały usunięte te wiersze, dla których wykorzystywane w eksperymentach wartości były puste. Następnie (w przypadku eksperymentów, w których było to badane) obróbce poddana została informacja o dacie zgłoszenia przestępstwa. W pierwszym kroku wyekstrahowano z tej kolumny informacje o dniu tygodnia i dniu roku. Następnie, aby nie stracić potencjalnie przydatnej informacji, jaką niesie cykliczność dni tygodnia, czy też roku, obie te wartości zostały zapisane przy pomocy odpowiadających sobie wartości funkcji trygonometrycznych sinus i cosinus.
-                Ostatnim krokiem przygotowania danych było odpowiednie zakodowanie danych kolumn, w zależności od tego jaki typ danych prezentowały.
+                Po dokonaniu grupowania, ze zbioru zostały usunięte te wiersze, dla
+                których wykorzystywane w eksperymentach wartości były puste. Następnie
+                (w przypadku eksperymentów, w których było to badane) obróbce poddana
+                została informacja o dacie zgłoszenia przestępstwa. W pierwszym kroku
+                wyekstrahowano z tej kolumny informacje o dniu tygodnia i dniu roku.
+                Następnie, aby nie stracić potencjalnie przydatnej informacji, jaką
+                niesie cykliczność dni tygodnia, czy też roku, obie te wartości zostały
+                zapisane przy pomocy odpowiadających sobie wartości funkcji
+                trygonometrycznych sinus i cosinus.
+                Ostatnim krokiem przygotowania danych było odpowiednie zakodowanie
+                danych kolumn, w zależności od tego jaki typ danych prezentowały.
             }
 
             \subsubsection{Przetwarzanie i analiza danych} {
-                Na wstępie przeprowadzono serię eksperymentów, w trakcie których określano najoptymalniejszy dobór cech do klasyfikacji w oparciu o dokładność klasyfikacji oraz wskazania ważności cech (ang. \textit{feature importance}). W tym celu wykorzystano dwie przeciwstawne metody, dzięki czemu można było uzyskać pełniejszy obraz (zmniejszone zostało prawdopodobieństwo podatności któreś metody, na np. dane kategorialne), wykorzystano:
+                Na wstępie przeprowadzono serię eksperymentów, w trakcie których
+                określano najoptymalniejszy dobór cech do klasyfikacji w oparciu o
+                dokładność klasyfikacji oraz wskazania ważności cech (ang.
+                \textit{feature importance}). W tym celu wykorzystano dwie
+                przeciwstawne metody, dzięki czemu można było uzyskać pełniejszy obraz
+                (zmniejszone zostało prawdopodobieństwo podatności któreś metody, na np
+                . dane kategorialne), wykorzystano:
                 \begin{itemize}
                     \item metodę opartą o \textit{mean decrease in impurity};
                     \item metodę opartą o \textit{feature permutation}
                 \end{itemize}
-                
-                Eksperymenty, mające na celu wyodrębnienie najważniejszych cel, zostały przeprowadzone na wycinku zbioru danych - dla 100000 wierszy danych. W tych eksperymentach były generowane pary wykresów (rezultaty działania dwóch wspomnianych metod badania ważności cech) dla klasyfikacji kodu przestępstwa (\textit{key-code}) oraz poziomu wykroczenia (\textit{law-breaking-level}), natomiast zamieszczano je w komplecie, tylko w sytuacji gdy różniły się od siebie w sposób znaczący i warty analizy, w przeciwnym razie zostały one w sprawozdaniu pominięte. Dodatkowo zaprezentowane zostaną tabelę z informacją o dokładności klasyfikacji, wraz z porównaniem do ostatnio przeprowadzonego eksperymentu.
+
+                Eksperymenty, mające na celu wyodrębnienie najważniejszych cel, zostały
+                przeprowadzone na wycinku zbioru danych - dla 100000 wierszy danych. W
+                tych eksperymentach były generowane pary wykresów (rezultaty działania
+                dwóch wspomnianych metod badania ważności cech) dla klasyfikacji kodu
+                przestępstwa (\textit{key-code}) oraz poziomu wykroczenia
+                (\textit{law-breaking-level}), natomiast zamieszczano je w komplecie,
+                tylko w sytuacji gdy różniły się od siebie w sposób znaczący i warty
+                analizy, w przeciwnym razie zostały one w sprawozdaniu pominięte.
+                Dodatkowo zaprezentowane zostaną tabelę z informacją o dokładności
+                klasyfikacji, wraz z porównaniem do ostatnio przeprowadzonego
+                eksperymentu.
+
                 \paragraph{Eksperyment nr 1}{
-                    W tym eksperymencie pogrupowano rasy pogrupowano zgodnie z kategoriami ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"] oraz wykorzystano dzień tygodnia i dzień roku (w postaci par wartości funkcji sinus i cosinus).
+                    W tym eksperymencie pogrupowano rasy pogrupowano zgodnie z
+                    kategoriami ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"] oraz
+                    wykorzystano dzień tygodnia i dzień roku (w postaci par wartości
+                    funkcji sinus i cosinus).
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=0.9\textwidth]{img/5.1.3/1/Feature importances using MDI for KY_CD.png}
@@ -431,11 +557,18 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \label{goal_1_exp_1_results}
                      \end{table}
                      \FloatBarrier
-                     
-                     Warto zwrócić uwagę na dużą rozbieżność dotyczącą przydatności cech według algorytmów (wykresy \ref{goal_1_exp_1_imp_mdi_key} i \ref{goal_1_exp_1_imp_perm_key}), w kontekście daty zgłoszenia zdarzenia, zostało to uwzględnione w kolejnym eksperymencie.
+
+                    Warto zwrócić uwagę na dużą rozbieżność dotyczącą przydatności cech
+                    według algorytmów (wykresy \ref{goal_1_exp_1_imp_mdi_key} i
+                    \ref{goal_1_exp_1_imp_perm_key}), w kontekście daty zgłoszenia
+                    zdarzenia, zostało to uwzględnione w kolejnym eksperymencie.
                 }
+
                 \paragraph{Eksperyment nr 2}{
-                    W tym eksperymencie pogrupowano rasy pogrupowano zgodnie z kategoriami ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"], natomiast nie wykorzystano dnia tygodnia i dnia roku.
+                    W tym eksperymencie pogrupowano rasy pogrupowano zgodnie z
+                    kategoriami ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"],
+                    natomiast nie wykorzystano dnia tygodnia i dnia roku.
+
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=0.9\textwidth]{img/5.1.3/2/Feature importances using MDI for KY_CD.png}
@@ -462,11 +595,18 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \label{goal_1_exp_2_results}
                      \end{table}
                      \FloatBarrier
-                     
-                     Na podstawie wzrostów dokładności klasyfikacji dla obu cech, widocznych w tabeli \ref{goal_1_exp_2_results}, decyzję o nie wykorzystaniu daty należy uznać za korzystną. Po analizie danych na wykresach \ref{goal_1_exp_2_imp_mdi_key} i \ref{goal_1_exp_2_imp_perm_key} zmienione zostaną etykiety ras, tak aby nie wykorzystywać jednej z obecnych - "HISPANIC".
+
+                    Na podstawie wzrostów dokładności klasyfikacji dla obu cech,
+                    widocznych w tabeli \ref{goal_1_exp_2_results}, decyzję o nie
+                    wykorzystaniu daty należy uznać za korzystną. Po analizie danych na
+                    wykresach \ref{goal_1_exp_2_imp_mdi_key} i
+                    \ref{goal_1_exp_2_imp_perm_key} zmienione zostaną etykiety ras, tak
+                    aby nie wykorzystywać jednej z obecnych - "HISPANIC".
                 }
+
                 \paragraph{Eksperyment nr 3}{
-                    W tym eksperymencie pogrupowano rasy pogrupowano zgodnie z kategoriami ["WHITE", "BLACK", "UNKNOWN", "OTHER"].
+                    W tym eksperymencie pogrupowano rasy pogrupowano zgodnie z
+                    kategoriami ["WHITE", "BLACK", "UNKNOWN", "OTHER"].
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=0.9\textwidth]{img/5.1.3/3/Feature importances using MDI for KY_CD.png}
@@ -493,10 +633,16 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \label{goal_1_exp_3_results}
                      \end{table}
                      \FloatBarrier
-                     Na podstawie wzrostów dokładności klasyfikacji dla obu cech, widocznych w tabeli \ref{goal_1_exp_3_results}, decyzję o zmianie sposobu grupowania ras należy uznać za korzystną.
+                    Na podstawie wzrostów dokładności klasyfikacji dla obu cech,
+                    widocznych w tabeli \ref{goal_1_exp_3_results}, decyzję o zmianie
+                    sposobu grupowania ras należy uznać za korzystną.
                 }
+
                 \paragraph{Eksperyment nr 4}{
-                    W tym eksperymencie, w oparciu o poprzednie eksperymenty zmieniono podejście do przechowywania informacji o rasie podejrzanego i ofiary. Postanowiono wykorzystać zależność pomiędzy ofiarą a podejrzanym, zaprezentowaną na wykresie \ref{pie_chart_race}.
+                    W tym eksperymencie, w oparciu o poprzednie eksperymenty zmieniono
+                    podejście do przechowywania informacji o rasie podejrzanego i
+                    ofiary. Postanowiono wykorzystać zależność pomiędzy ofiarą a
+                    podejrzanym, zaprezentowaną na wykresie \ref{pie_chart_race}.
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=0.9\textwidth]{img/5.1.3/4/Feature importances using MDI for KY_CD.png}
@@ -537,10 +683,20 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \label{goal_1_exp_4_results}
                      \end{table}
                      \FloatBarrier
-                     Na podstawie spadków dokładności klasyfikacji dla obu cech, widocznych w tabeli \ref{goal_1_exp_4_results}, decyzję o zmianie sposobu grupowania ras należy uznać za niekorzystną. Jednak wykresy \ref{goal_1_exp_4_imp_mdi_key}, \ref{goal_1_exp_4_imp_mdi_law}, \ref{goal_1_exp_4_imp_perm_key}, \ref{goal_1_exp_4_imp_perm_law}, skłaniają do pomysłu aby podobnej modyfikacji poddać płeć.
+                    Na podstawie spadków dokładności klasyfikacji dla obu cech,
+                    widocznych w tabeli \ref{goal_1_exp_4_results}, decyzję o zmianie
+                    sposobu grupowania ras należy uznać za niekorzystną. Jednak wykresy
+                    \ref{goal_1_exp_4_imp_mdi_key}, \ref{goal_1_exp_4_imp_mdi_law},
+                    \ref{goal_1_exp_4_imp_perm_key}, \ref{goal_1_exp_4_imp_perm_law},
+                    skłaniają do pomysłu aby podobnej modyfikacji poddać płeć.
                 }
+
                 \paragraph{Eksperyment nr 5}{
-                    W tym eksperymencie, postanowiono nie modyfikować sposobu przechowywanie informacji o rasie podejrzanego i ofiary. Wykorzystano natomiast zależność pomiędzy ofiarą a podejrzanym, zaprezentowaną na wykresie \ref{pie_chart_sex} i zmieniomo sposób przechowywania płci.
+                    W tym eksperymencie, postanowiono nie modyfikować sposobu
+                    przechowywanie informacji o rasie podejrzanego i ofiary.
+                    Wykorzystano natomiast zależność pomiędzy ofiarą a podejrzanym,
+                    zaprezentowaną na wykresie \ref{pie_chart_sex} i zmieniomo sposób
+                    przechowywania płci.
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=\textwidth]{img/5.1.3/5/Feature importances using MDI for KY_CD.png}
@@ -583,8 +739,10 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                      \FloatBarrier
                 }
             
-                    \paragraph{Eksperyment nr 6}{
-                    W tym eksperymencie, postanowiono sprawdzić zachowanie klasyfikacji przy zmienionym sposobie przechowywania informacji zarówno o rasie jak i o płci.
+                \paragraph{Eksperyment nr 6}{
+                        W tym eksperymencie, postanowiono sprawdzić zachowanie
+                        klasyfikacji przy zmienionym sposobie przechowywania informacji
+                        zarówno o rasie jak i o płci.
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=\textwidth]{img/5.1.3/6/Feature importances using MDI for KY_CD.png}
@@ -625,10 +783,18 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \label{goal_1_exp_6_results}
                      \end{table}
                      \FloatBarrier
-                     Na podstawie spadków dokładności klasyfikacji dla obu cech, widocznych w tabelach \ref{goal_1_exp_4_results}, \ref{goal_1_exp_5_results} i \ref{goal_1_exp_6_results}, biorąc pod uwagę wpływ na wydajność rozwiązania, jaki ma tak duże rozwinięcie zbioru kolumn, pomysł przedstawiony w eksperymentach 4, 5 i 6 nie będzie dalej badany.
+                    Na podstawie spadków dokładności klasyfikacji dla obu cech,
+                    widocznych w tabelach \ref{goal_1_exp_4_results},
+                    \ref{goal_1_exp_5_results} i \ref{goal_1_exp_6_results}, biorąc pod
+                    uwagę wpływ na wydajność rozwiązania, jaki ma tak duże rozwinięcie
+                    zbioru kolumn, pomysł przedstawiony w eksperymentach 4, 5 i 6 nie
+                    będzie dalej badany.
                 }
+
                 \paragraph{Eksperyment nr 7}{
-                    W tym eksperymencie, postanowiono sprawdzić zachowanie klasyfikacji key-code przy dodaniu do zbioru cech, w oparciu o które jest dokonywana klasyfikacja kolumny law-breaking-level
+                    W tym eksperymencie, postanowiono sprawdzić zachowanie klasyfikacji
+                    key-code przy dodaniu do zbioru cech, w oparciu o które jest
+                    dokonywana klasyfikacja kolumny law-breaking-level
                     \begin{figure}[!htbp]
                         \centering
                         \includegraphics[width=0.9\textwidth]{img/5.1.3/7/Feature importances using MDI for KY_CD.png}
@@ -654,11 +820,23 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \label{goal_1_exp_7_results}
                      \end{table}
                      \FloatBarrier
-                     Na podstawie wzrostu dokładności klasyfikacji, widocznej w tabeli \ref{goal_1_exp_7_results} oraz wykresów \ref{goal_1_exp_7_imp_mdi_key} i \ref{goal_1_exp_7_imp_perm_key} pomysł aby dodać dodatkową cechę należy uznać za bardzo korzystny.
+                    Na podstawie wzrostu dokładności klasyfikacji, widocznej w tabeli
+                    \ref{goal_1_exp_7_results} oraz wykresów
+                    \ref{goal_1_exp_7_imp_mdi_key} i \ref{goal_1_exp_7_imp_perm_key}
+                    pomysł aby dodać dodatkową cechę należy uznać za bardzo korzystny.
                 }
+
                 \paragraph{Eksperyment końcowy} {
-                    W oparciu o przeprowadzone eksperymenty wyodrębniono zbiór cech, dla których klasyfikacja zostanie sprawdzona na całym zbiorze danych, wraz z doborem odpowiednich parametrów. Postanowiono skonfrontować to z wynikami na pełnym zbiorze, niepoddanym imputacji grup wiekowych. Jako parametry inne niż domyślnie dostarczane przez algorytm wybrano te uzyskane we wcześniejszej fazie projektu, tj. podczas eksperymentów z checkpointu nr 3, zostały one przedstawione w tabeli \ref{goal_1_exp_final_params}.
-                    Wspomniany zbiór cech, wykorzystany w końcowej klasyfikacji składał się z: 
+                    W oparciu o przeprowadzone eksperymenty wyodrębniono zbiór cech,
+                    dla których klasyfikacja zostanie sprawdzona na całym zbiorze
+                    danych, wraz z doborem odpowiednich parametrów. Postanowiono
+                    skonfrontować to z wynikami na pełnym zbiorze, niepoddanym
+                    imputacji grup wiekowych. Jako parametry inne niż domyślnie
+                    dostarczane przez algorytm wybrano te uzyskane we wcześniejszej
+                    fazie projektu, tj. podczas eksperymentów z checkpointu nr 3,
+                    zostały one przedstawione w tabeli \ref{goal_1_exp_final_params}.
+                    Wspomniany zbiór cech, wykorzystany w końcowej klasyfikacji składał
+                    się z:
                     \begin{itemize}
                         \item LAW\_CAT\_CD - poziom popełnionego przestępstwa - tylko przy klasyfikacji key-code;
                         \item LOC\_OF\_OCCUR\_DESC - opis otoczenia zdarzenia;
@@ -669,7 +847,9 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \item VIC\_RACE - Rasa ofiary
                         \item VIC\_SEX - Płeć ofiary
                     \end{itemize}
-                    Sposób grupowania tych cech został opisany w odpowiedniej podsekcji, warto wspomnieć, że rasy zostały pogrupowane zgodnie ze zbiorem ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"].
+                    Sposób grupowania tych cech został opisany w odpowiedniej
+                    podsekcji, warto wspomnieć, że rasy zostały pogrupowane zgodnie ze
+                    zbiorem ["WHITE", "BLACK", "HISPANIC", "UNKNOWN", "OTHER"].
                     
                     \begin{table}
                     \small
@@ -703,9 +883,15 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \end{tabular}
                         \caption{Wyniki klasyfikacji}
                         \label{goal_1_exp_final_results}
-                     \end{table}  
-                     
-                     Dodatkowo dla scenariuszy z największą dokładnością klasyfikacji, spośród tych wykorzystujących niedomyślne parametry, tj. scenariusz nr 6 i 8, przygotowano macierze pomyłek, zamieszczone w tabelach \ref{goal_1_exp_final_results_matrix_1} i \ref{goal_1_exp_final_results_matrix_2}. Przygotowano je tylko dla klasyfikacji poziomu wykroczenia, ponieważ tutaj klasyfikowana jest mała liczba klas, dzięki czemu statystyka ta jest bardziej czytelna.
+                     \end{table}
+
+                    Dodatkowo dla scenariuszy z największą dokładnością klasyfikacji,
+                    spośród tych wykorzystujących niedomyślne parametry, tj. scenariusz
+                    nr 6 i 8, przygotowano macierze pomyłek, zamieszczone w tabelach
+                    \ref{goal_1_exp_final_results_matrix_1} i
+                    \ref{goal_1_exp_final_results_matrix_2}. Przygotowano je tylko dla
+                    klasyfikacji poziomu wykroczenia, ponieważ tutaj klasyfikowana jest
+                    mała liczba klas, dzięki czemu statystyka ta jest bardziej czytelna.
                      
                      \begin{table}
                      \small
@@ -740,7 +926,20 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
             }
             
             \subsubsection{Dyskusja i wnioski} {
-                Analizując wyniki końcowe przedstawione w tabeli \ref{goal_1_exp_final_results}, można zauważyć, że ustawienie parametrów klasyfikatora, wartościami wybranymi w checkpoincie nr 3, nie wpłynęło w sposób znaczący na wyniki, może to być spowodowane zbyt małym zbiorem testowym, na podstawie którego były ustalane wartości parametrów klasyfikatora. Warto zauważyć, że imputacja grup wiekowych poprzez przypisanie najczęściej występującej wartości, wpływa na wzrost dokładności klasyfikacji poziomu wykroczenia w sposób korzystny, natomiast wyniki klasyfikacji kodu przestępstwa, przy zastosowaniu tej metody jest niższy. Najwyższe wyniki dokładności jakie udało się uzyskać podczas klasyfikacji to kolejno dla klasyfikacji kodu przestępstwa i poziomu wykroczenia: ~60\% i ~58\%. Aby odpowiedzieć na pytanie czy to dużo, postanowiono zobrazować rozkład danych klasyfikowanych na dwóch wykresach.\\
+                Analizując wyniki końcowe przedstawione w tabeli
+                \ref{goal_1_exp_final_results}, można zauważyć, że ustawienie
+                parametrów klasyfikatora, wartościami wybranymi w checkpoincie nr 3,
+                nie wpłynęło w sposób znaczący na wyniki, może to być spowodowane zbyt
+                małym zbiorem testowym, na podstawie którego były ustalane wartości
+                parametrów klasyfikatora. Warto zauważyć, że imputacja grup wiekowych
+                poprzez przypisanie najczęściej występującej wartości, wpływa na wzrost
+                dokładności klasyfikacji poziomu wykroczenia w sposób korzystny,
+                natomiast wyniki klasyfikacji kodu przestępstwa, przy zastosowaniu tej
+                metody jest niższy. Najwyższe wyniki dokładności jakie udało się
+                uzyskać podczas klasyfikacji to kolejno dla klasyfikacji kodu
+                przestępstwa i poziomu wykroczenia: ~60\% i ~58\%. Aby odpowiedzieć na
+                pytanie czy to dużo, postanowiono zobrazować rozkład danych
+                klasyfikowanych na dwóch wykresach.\\
                 
                 \begin{figure}[!htbp]
                     \centering
@@ -756,9 +955,19 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \label{goal_1_results_crimesTypes}
                 \end{figure}
                 \FloatBarrier
-                                
-                Na wykresie \ref{goal_1_results_offenseLevel} można zaobserwować, że najczęściej występującym zdarzeniem jest 'violation', które stanowi 53,5\% przypadków, klasyfikator osiągnął dokładność na poziomie ~58\%, można zatem stwierdzić, że nie klasyfikuje on w sposób losowy, a jego dokładność jest wyższa niż w przypadku, gdyby przyporządkowywał do każdego klasyfikowanego przypadku najczęściej występujący poziom.
-                Z wykresu \ref{goal_1_results_crimesTypes} można wywnioskować, że kod 341 jest najczęściej występującym kodem przestępstwa, dodatkowe obliczenia pozwoliły wskazać, że występuje on w 16,87\% przypadków, na podstawie dokładności klasyfikacji na poziomie ~60\%, można uznać uzyskane wyniki klasyfikacji za bardzo dobre, gdyż nie zawężają się one do klasyfikacji tylko jednego kodu przestępstwa.
+
+                Na wykresie \ref{goal_1_results_offenseLevel} można zaobserwować, że
+                najczęściej występującym zdarzeniem jest 'violation', które stanowi 53,
+                5\% przypadków, klasyfikator osiągnął dokładność na poziomie ~58\%,
+                można zatem stwierdzić, że nie klasyfikuje on w sposób losowy, a jego
+                dokładność jest wyższa niż w przypadku, gdyby przyporządkowywał do
+                każdego klasyfikowanego przypadku najczęściej występujący poziom.
+                Z wykresu \ref{goal_1_results_crimesTypes} można wywnioskować, że kod
+                341 jest najczęściej występującym kodem przestępstwa, dodatkowe
+                obliczenia pozwoliły wskazać, że występuje on w 16,87\% przypadków, na
+                podstawie dokładności klasyfikacji na poziomie ~60\%, można uznać
+                uzyskane wyniki klasyfikacji za bardzo dobre, gdyż nie zawężają się one
+                do klasyfikacji tylko jednego kodu przestępstwa.
             }
         }
         \clearpage
@@ -766,15 +975,31 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
         \subsection{Regresja godziny wystąpienia zdarzenia} \label{project_goal_2} {
         
             \subsubsection{Opis} {
-                Regresja godziny wystąpienia zdarzenia jest zadaniem regresji i sprowadza się do przewidywania, w której sekundzie dnia wydarzyło się przestępstwo, na podstawie takich danych jak cechy podejrzanego i ofiary, otoczenia zdarzenia czy też pory roku i dnia tygodnia.
+                Regresja godziny wystąpienia zdarzenia jest zadaniem regresji i
+                sprowadza się do przewidywania, w której sekundzie dnia wydarzyło się
+                przestępstwo, na podstawie takich danych jak cechy podejrzanego i
+                ofiary, otoczenia zdarzenia czy też pory roku i dnia tygodnia.
 
-                Oryginalnie drugim celem była regresja czasu trwania przestępstwa, jednakże ze względu na bardzo nierównomierny rozkład (patrz charakterystyka zbioru) tej wartości, okazało się to zbyt trudne. Aby pozostać w temacie regresji oraz informacji na temat chwili wystąpienia zdarzenia, cel ten został przeformułowany do obecnej postaci. 
+                Oryginalnie drugim celem była regresja czasu trwania przestępstwa,
+                jednakże ze względu na bardzo nierównomierny rozkład (patrz
+                charakterystyka zbioru) tej wartości, okazało się to zbyt trudne. Aby
+                pozostać w temacie regresji oraz informacji na temat chwili wystąpienia
+                zdarzenia, cel ten został przeformułowany do obecnej postaci.
 
-                Aby zrealizować ten cel wykorzystane zostaną algorytmy/modele przystosowane do zadania regresji. Głównie są to drzewa i lasy losowe zaimplementowane w popularnej bibliotece XGBoost. Wykonane zostało również wstępne przetwarzanie danych w oparciu o wcześniejszą analizę statystyczną. Wykorzystano takie metody jak redukcja wymiarów poprzez selekcję i ekstrakcję cech, oraz podstawowe techniki imputacji danych.
+                Aby zrealizować ten cel wykorzystane zostaną algorytmy/modele
+                przystosowane do zadania regresji. Głównie są to drzewa i lasy losowe
+                zaimplementowane w popularnej bibliotece XGBoost. Wykonane zostało
+                również wstępne przetwarzanie danych w oparciu o wcześniejszą analizę
+                statystyczną. Wykorzystano takie metody jak redukcja wymiarów poprzez
+                selekcję i ekstrakcję cech, oraz podstawowe techniki imputacji danych.
             }
 
             \subsubsection{Przygotowanie danych} {
-                Wstępne przetwarzanie danych dla tego celu składa się z dwóch etapów. Pierwszy z nich dotyczy czyszczenia zbioru (m. in. imputacji) odrzucenia zbędnych danych, selekcji i ekstrakcji cech. Drugi dotyczy kodowania kolumn. Pierwszy etap można opisać w kontekście poszczególnych grup kolumn:
+                Wstępne przetwarzanie danych dla tego celu składa się z dwóch etapów.
+                Pierwszy z nich dotyczy czyszczenia zbioru (m. in. imputacji)
+                odrzucenia zbędnych danych, selekcji i ekstrakcji cech. Drugi dotyczy
+                kodowania kolumn. Pierwszy etap można opisać w kontekście
+                poszczególnych grup kolumn:
                 \begin{enumerate}
                     \item Identyfikator
                     \begin{itemize}
@@ -783,7 +1008,8 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \item Typ zdarzenia
                     \begin{itemize}
                         \item Opisy słowne zostały odrzucone jako redundantne
-                        \item Kod klasyfikacji wewnętrznej (PD\_CD) został odrzucony ze względu na zbyt dużą liczbę unikalnych wartości
+                        \item Kod klasyfikacji wewnętrznej (PD\_CD) został odrzucony ze
+                        względu na zbyt dużą liczbę unikalnych wartości
                     \end{itemize}
                     \item Czy się udało
                     \begin{itemize}
@@ -791,7 +1017,8 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \end{itemize}
                     \item Data i czas zdarzenia
                     \begin{itemize}
-                        \item Odrzucenie daty i czasu końca zdarzenia - dużo braków i nie wydaje się sensowne w kontekście estymacji godziny początku zdarzenia
+                        \item Odrzucenie daty i czasu końca zdarzenia - dużo braków i nie wydaje
+                        się sensowne w kontekście estymacji godziny początku zdarzenia
                         \item Wyekstrahowanie dnia roku i dnia tygodnia oraz imputacja średnią
                         \item Wyekstrahowanie sekundy dnia i imputacja średnią
                     \end{itemize}
@@ -815,9 +1042,15 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                         \item Płcie są ograniczone do wartości: F (kobieta), M (mężczyzna), NaN (nieznane)
                     \end{itemize}
                 \end{enumerate}
-                Niezastosowanie imputacji i pozostawienie wartości NaN w niektórych kolumnach, jako ,,nieznane'' zostało wykonane ze względu na charakterystykę wykorzystanego algorytmu (XGBoost), który potrafi ,,radzić'' sobie z brakującymi wartościami. Zastosowanie prostej imputacji (np. wartość najczęstsza) w przypadku silnie wybrakowanych danych mogłoby znacząco obciążyć zbiór.
-                
-                Po drugim etapie wstępnego przetwarzania danych zbiór składa się z następujących kolumn, zakodowanych w następujący sposób:
+                Niezastosowanie imputacji i pozostawienie wartości NaN w niektórych
+                kolumnach, jako ,,nieznane'' zostało wykonane ze względu na
+                charakterystykę wykorzystanego algorytmu (XGBoost), który potrafi ,,
+                radzić'' sobie z brakującymi wartościami. Zastosowanie prostej
+                imputacji (np. wartość najczęstsza) w przypadku silnie wybrakowanych
+                danych mogłoby znacząco obciążyć zbiór.
+
+                Po drugim etapie wstępnego przetwarzania danych zbiór składa się z
+                następujących kolumn, zakodowanych w następujący sposób:
                 \begin{itemize}
                     \item CMPLNT\_DAY\_OF\_YEAR - wartość całkowita
                     \item CMPLNT\_DAY\_OF\_WEEK - wartość całkowita
@@ -838,9 +1071,18 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
             }
 
             \subsubsection{Przetwarzanie i analiza danych} {
-                Przetwarzanie i analiza danych została przeprowadzona z wykorzystaniem biblioteki XGBoost i algorytmów Gradient Boosted Tree oraz Gradient Boosted Random Forest. W celu optymalizacji hiperparametrów wykorzytano bibliotekę ,,optuna'', która przeszukuje określoną przestrzeń hiperparametrów z wykorzystaniem specjalizowanych algorytmów, w celu minimalizacji zadanej wartości.
-                
-                Przeprowadzonych zostało kilka eksperymentów, gdzie każdy jest pojedynczym uruchomieniem algorytmu ,,optuna'' w celu znalezienia optymalnych wartości hiperparametrów dla modelu Gradient Boosted Tree (Forest) z biblioteki XGBoost. Przeszukiwane zakresy hiperparametrów za każdym razem są następujące:
+                Przetwarzanie i analiza danych została przeprowadzona z wykorzystaniem
+                biblioteki XGBoost i algorytmów Gradient Boosted Tree oraz Gradient
+                Boosted Random Forest. W celu optymalizacji hiperparametrów wykorzytano
+                bibliotekę ,,optuna'', która przeszukuje określoną przestrzeń
+                hiperparametrów z wykorzystaniem specjalizowanych algorytmów, w celu
+                minimalizacji zadanej wartości.
+
+                Przeprowadzonych zostało kilka eksperymentów, gdzie każdy jest
+                pojedynczym uruchomieniem algorytmu ,,optuna'' w celu znalezienia
+                optymalnych wartości hiperparametrów dla modelu Gradient Boosted Tree
+                (Forest) z biblioteki XGBoost. Przeszukiwane zakresy hiperparametrów za
+                każdym razem są następujące:
                 \begin{itemize}
                     \item eta - [0.1 - 1]
                     \item max\_depth - [3, 10]
@@ -857,11 +1099,14 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \item num\_boost\_rounds - 100
                     \item early\_stopping\_rounds - 10
                 \end{itemize}
-                Optymalizowaną metryką przez bibliotekę ,,optuna'' jest MAE na zbiorze testowym (pełniącego w tym przypadku rolę zbioru walidacyjnego).
+                Optymalizowaną metryką przez bibliotekę ,,optuna'' jest MAE na zbiorze
+                testowym (pełniącego w tym przypadku rolę zbioru walidacyjnego).
+
+                Eksperymenty różnią się między sobą jedynie odrzuceniem niektórych ze
+                zdefiniowanego w poprzedniej sekcji zbioru kolumn.
                 
-                Eksperymenty różnią się między sobą jedynie odrzuceniem niektórych ze zdefiniowanego w poprzedniej sekcji zbioru kolumn.
-                
-                \paragraph{Eksperyment 1.} W tym przypadku wykorzystane zostały wszystkie dostępne kolumny. Znalezione optymalne wartości parametrów:
+                \paragraph{Eksperyment 1.} W tym przypadku wykorzystane zostały wszystkie
+                dostępne kolumny. Znalezione optymalne wartości parametrów:
                 \begin{itemize}
                     \item eta - 0.79
                     \item max\_depth - 10
@@ -885,7 +1130,8 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                 \end{figure}
                 \FloatBarrier
                 
-                \paragraph{Eksperyment 2.} W tym eksperymencie nie wykorzystano informacji na temat typu zdarzenia. Znalezione optymalne wartości parametrów:
+                \paragraph{Eksperyment 2.} W tym eksperymencie nie wykorzystano informacji
+                na temat typu zdarzenia. Znalezione optymalne wartości parametrów:
                 \begin{itemize}
                     \item eta - 0.57
                     \item max\_depth - 10
@@ -911,15 +1157,55 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
             }
 
             \subsubsection{Dyskusja i wnioski} {
-                W eksperymencie 1. wykorzystane zostały wszystkie dostępne dane, które wydają się przydatne dla tego zadani, zakodowane w optymalny sposób tak, aby nie stracić żadnej informacji. Podsumowując dostępne cechy można opisać realizowane zadanie, jako regresja godziny zdarzenia na podstawie cech jego typu, cech jego uczestników, otoczenia i pory roku oraz dnia tygodnia.
-                
-                Po przeprowadzeniu wszystkich niezbędnych obliczeń znalezione zostały optymalne hiperparametry, dla których model osiągnął wartość średniego błędu bezwzględnego równą 18887 sekund, na zbiorze testowym oraz 18647 sekund na zbiorze uczącym. Pierwszym spostrzeżeniem jest, że wartości te bardzo są do siebie zbliżone (obie wynoszą trochę ponad 5 godzin), co oznacza, że model ma niską wariancję i nie został przetrenowany. Z drugiej strony oznacza to, że najprawdopodobniej można osiągnąć jeszcze trochę lepsze wyniki, zbliżając się do momentu, w którym dojdzie do przetrenowania. Być może potrzebny jest dłuższy trening. Obserwując nieprzedstawione tu metryki podczas uczenia widać jednak, że wartości te zmieniają się po 100 rundach już bardzo nieznacznie.
-                
-                Jeżeli chodzi o interpretację wartości średniego błędu bezwzględnego, to oznacza on, że średnio udaje się przewidzieć godzinę zdarzenia z dokładnością do około 5 godzin. Innymi słowy, można ocenić porę dnia - czy jest ranek, popołudnie, wieczór czy noc. Wydaje się, że informacja ta może być jak najbardziej przydatna. Z jednej strony trzeba jednak przyznać, że nie jest to bardzo spektakularny wynik i gdyby udało się estymować z dokładnością do godziny byłoby to znacznie ciekawsze osiągnięcie. Z drugiej strony natomiast, osiągnięcie tak dużej dokładności przy takim zbiorze dostępnych cech może okazać się zupełnie niemożliwe.
-                
-                Rysunek \ref{importance_1} pokazuje znaczenie poszczególnych cech dla wyuczonego modelu. Widać tutaj, że najbardziej istotna jest pora roku i pora tygodnia, oraz cechy podejrzanego i ofiary. Zwłaszcza pora roku wydaje się być logiczna, ponieważ zależnie od pory roku o danej porze dnia jest już ciemno lub jeszcze nie. Duże znaczenie ma też czy zdarzenie miało miejsce na zewnątrz czy wewnątrz np. budynku.
-                
-                Drugi przeprowadzony eksperyment daje bardzo nieznacznie gorsze wyniki. Tym razem dla zbioru testowego MAE 19282 sekund a dla zbioru uczącego 18993. Ponownie nie mamy tu do czynienia z przetrenowaniem i ponownie jakość regresji praktycznie przestała się poprawiać. Okazuje się więc, że rezygnacja z nawet mniej znaczących kolumn pogarsza jakość regresji i sytuacja taka miałaby miejsce prawdopodobnie dla dowolnych innych cech. Wynika to z faktu, że wyuczony model znajduje bardzo złożone i subtelne zależności, tak więc praktycznie każda cecha może okazać się przydatna. Dodatkowo należy zwrócić uwagę, że algorytmy lasu losowego nie są tak bardzo podatne na obecność nadmiarowych i nieprzydatnych kolumn. Na rysunku \ref{importance_2} te same cechy okazują się być istotne, jak w przypadku pierwszego eksperymentu.
+                W eksperymencie 1. wykorzystane zostały wszystkie dostępne dane, które
+                wydają się przydatne dla tego zadani, zakodowane w optymalny sposób
+                tak, aby nie stracić żadnej informacji. Podsumowując dostępne cechy
+                można opisać realizowane zadanie, jako regresja godziny zdarzenia na
+                podstawie cech jego typu, cech jego uczestników, otoczenia i pory roku
+                oraz dnia tygodnia.
+
+                Po przeprowadzeniu wszystkich niezbędnych obliczeń znalezione zostały
+                optymalne hiperparametry, dla których model osiągnął wartość średniego
+                błędu bezwzględnego równą 18887 sekund, na zbiorze testowym oraz 18647
+                sekund na zbiorze uczącym. Pierwszym spostrzeżeniem jest, że wartości
+                te bardzo są do siebie zbliżone (obie wynoszą trochę ponad 5 godzin),
+                co oznacza, że model ma niską wariancję i nie został przetrenowany. Z
+                drugiej strony oznacza to, że najprawdopodobniej można osiągnąć jeszcze
+                trochę lepsze wyniki, zbliżając się do momentu, w którym dojdzie do
+                przetrenowania. Być może potrzebny jest dłuższy trening. Obserwując
+                nieprzedstawione tu metryki podczas uczenia widać jednak, że wartości
+                te zmieniają się po 100 rundach już bardzo nieznacznie.
+
+                Jeżeli chodzi o interpretację wartości średniego błędu bezwzględnego,
+                to oznacza on, że średnio udaje się przewidzieć godzinę zdarzenia z
+                dokładnością do około 5 godzin. Innymi słowy, można ocenić porę dnia -
+                czy jest ranek, popołudnie, wieczór czy noc. Wydaje się, że informacja
+                ta może być jak najbardziej przydatna. Z jednej strony trzeba jednak
+                przyznać, że nie jest to bardzo spektakularny wynik i gdyby udało się
+                estymować z dokładnością do godziny byłoby to znacznie ciekawsze
+                osiągnięcie. Z drugiej strony natomiast, osiągnięcie tak dużej
+                dokładności przy takim zbiorze dostępnych cech może okazać się zupełnie
+                niemożliwe.
+
+                Rysunek \ref{importance_1} pokazuje znaczenie poszczególnych cech dla
+                wyuczonego modelu. Widać tutaj, że najbardziej istotna jest pora roku i
+                pora tygodnia, oraz cechy podejrzanego i ofiary. Zwłaszcza pora roku
+                wydaje się być logiczna, ponieważ zależnie od pory roku o danej porze
+                dnia jest już ciemno lub jeszcze nie. Duże znaczenie ma też czy
+                zdarzenie miało miejsce na zewnątrz czy wewnątrz np. budynku.
+
+                Drugi przeprowadzony eksperyment daje bardzo nieznacznie gorsze wyniki.
+                Tym razem dla zbioru testowego MAE 19282 sekund a dla zbioru uczącego
+                18993. Ponownie nie mamy tu do czynienia z przetrenowaniem i ponownie
+                jakość regresji praktycznie przestała się poprawiać. Okazuje się więc,
+                że rezygnacja z nawet mniej znaczących kolumn pogarsza jakość regresji
+                i sytuacja taka miałaby miejsce prawdopodobnie dla dowolnych innych
+                cech. Wynika to z faktu, że wyuczony model znajduje bardzo złożone i
+                subtelne zależności, tak więc praktycznie każda cecha może okazać się
+                przydatna. Dodatkowo należy zwrócić uwagę, że algorytmy lasu losowego
+                nie są tak bardzo podatne na obecność nadmiarowych i nieprzydatnych
+                kolumn. Na rysunku \ref{importance_2} te same cechy okazują się być
+                istotne, jak w przypadku pierwszego eksperymentu.
                 
                 \paragraph{Wnioski} z przeprowadzonych badań są następujące:
                 \begin{itemize}
@@ -935,18 +1221,25 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
         \subsection{Grupowanie przestępstw na podstawie podzbiorów cech}
         \label{project_goal_3} {
             \subsubsection{Opis} {
-                Oryginalnie spośród cech podejrzanego i ofiary miał zostać wybrany kilkakrotnie  podzbiorów podzbiór cech, które utworzą
-                przedmiot eksperymentu - etykietę, a dla każdej z 
+                Oryginalnie spośród cech podejrzanego i ofiary miał zostać wybrany
+                kilkakrotnie podzbiorów podzbiór cech, które utworzą
+                przedmiot eksperymentu - etykietę, a dla każdej z
                 nich (która może być złożeniem kilku atrybutów) miała być przeprowadzona
                 seria eksperymentów, mająca na celu automatyczne pogrupowanie zdarzeń
                 zgodnie z tą etykietą, wykorzystując wszystkie pozostałe atrybuty (poza
-                tworzącymi etykietę). Koncept ten został porzucony ze względu na wysoką złożoność obliczeniową przy wyborze permutacji najlepszego zestawu przetworzonych danych.
-                
-                W ramach tego celu zostało przeprowadzone grupowanie zdarzeń na podstawie etykiety związanej z poziomem przestępstwa. Zostały do tego wykorzystane cechy osoby podejrzanej, poszkodowanej oraz informacje o czasie wystąpienia danego zdarzenia.
-                
+                tworzącymi etykietę). Koncept ten został porzucony ze względu na wysoką
+                złożoność obliczeniową przy wyborze permutacji najlepszego zestawu
+                przetworzonych danych.
+
+                W ramach tego celu zostało przeprowadzone grupowanie zdarzeń na
+                podstawie etykiety związanej z poziomem przestępstwa. Zostały do tego
+                wykorzystane cechy osoby podejrzanej, poszkodowanej oraz informacje o
+                czasie wystąpienia danego zdarzenia.
+
                 Po przeprowadzeniu grupowania z wykorzystaniem kilku
                 różnych algorytmów (kmeans oraz kmodes), zmierzona
-                została jakość grupowania za pomocą metryk, a same dane zwizualizowano, aby ocenić jakość klasteryzacji.
+                została jakość grupowania za pomocą metryk, a same dane zwizualizowano,
+                aby ocenić jakość klasteryzacji.
                 
                 \begin{figure}[!htbp]
                     \centering
@@ -958,7 +1251,11 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
             }
 
             \subsubsection{Przygotowanie danych} {
-                Przez rozpoczęciem eksperymentów z pełnego zestawu kolumn zostały wybrane te opisujące zarówno podejrzanego, jak i ofiarę, które składały się z informacji o płci, grupie wiekowej, oraz rasie. Informacje o grupie wiekowej zostały zmodyfikowane, aby reprezentowały dane z przedziału 0 do 1.
+                Przez rozpoczęciem eksperymentów z pełnego zestawu kolumn zostały
+                wybrane te opisujące zarówno podejrzanego, jak i ofiarę, które składały
+                się z informacji o płci, grupie wiekowej, oraz rasie. Informacje o
+                grupie wiekowej zostały zmodyfikowane, aby reprezentowały dane z
+                przedziału 0 do 1.
                 
                 \begin{table}[!htbp]
                     \small
@@ -976,8 +1273,10 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \label{trans_age}
                 \end{table}
                 \FloatBarrier
-                
-                Ponadto, w analizie brana była pod uwagę pora dnia zdarzenia, która została wyekstrahowana z godziny zgłoszenia, a następnie zamieniona na dane kategoryczne.
+
+                Ponadto, w analizie brana była pod uwagę pora dnia zdarzenia, która
+                została wyekstrahowana z godziny zgłoszenia, a następnie zamieniona na
+                dane kategoryczne.
                 
                 \begin{table}[!htbp]
                     \small
@@ -996,14 +1295,26 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \label{trans_occurance}
                 \end{table}
                 \FloatBarrier
-                
-                W celu przeprowadzenia eksperymentów wzięte pod uwagę rekordy, nie mogły posiadać wybrakowanych danych w ramach opisanych kolumn. Dodatkowo, brane pod uwagę były wyłącznie rekordu w których wartość płci oznaczała kobietę, lub mężczyznę. Pozwoliło to na wyszczególnienie \textbf{2301826} rekordów, które zostały poddane analizie. Usunięta została również kolumna zawierając kod przestępstwa, gdyż stanowiła ona etykiety do późniejszej weryfikacji. 
+
+                W celu przeprowadzenia eksperymentów wzięte pod uwagę rekordy, nie
+                mogły posiadać wybrakowanych danych w ramach opisanych kolumn.
+                Dodatkowo, brane pod uwagę były wyłącznie rekordu w których wartość
+                płci oznaczała kobietę, lub mężczyznę. Pozwoliło to na wyszczególnienie
+                \textbf{2301826} rekordów, które zostały poddane analizie. Usunięta
+                została również kolumna zawierając kod przestępstwa, gdyż stanowiła ona
+                etykiety do późniejszej weryfikacji.
             }
 
             \subsubsection{Przetwarzanie i analiza danych} {
-                Każdy z algorytmów wymagał dodatkowego przetworzenia rekordów, które będą stanowiły dane eksperymentu. W przypadku algorytmu KMeans dane kategorialne zostały poddane operacji one hot encodingu, aby poprawnie przeprowadzić klasteryzację. Liczba klastrów została ustawiona zgodnie z liczbą etykiet poziomów przestępstw na 3.
-                
-                Po uzyskanych wynikach klasteryzacji rozpatrywany był każdy przepadek dopasowania danej etykiety do klastra, a następnie wybrany został wariant z największą wartością accuracy.
+                Każdy z algorytmów wymagał dodatkowego przetworzenia rekordów, które
+                będą stanowiły dane eksperymentu. W przypadku algorytmu KMeans dane
+                kategorialne zostały poddane operacji one hot encodingu, aby poprawnie
+                przeprowadzić klasteryzację. Liczba klastrów została ustawiona zgodnie
+                z liczbą etykiet poziomów przestępstw na 3.
+
+                Po uzyskanych wynikach klasteryzacji rozpatrywany był każdy przepadek
+                dopasowania danej etykiety do klastra, a następnie wybrany został
+                wariant z największą wartością accuracy.
                 
                 \begin{table}[!htbp]
                 \centering
@@ -1045,8 +1356,10 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                 \caption{Wartości poszczególnych metryk dla uzyskanych klastrów - KMeans}
                 \label{tab:kmeans_metrics}
                 \end{table}
-                
-                W celu wizualizacji otrzymanych klastrów w wyniku algorytmu KMeans została zastosowana metoda redukcji wymiarów PCA (\textit{Principal component analysis}), której wynikiem były dane dwuwymiarowe. 
+
+                W celu wizualizacji otrzymanych klastrów w wyniku algorytmu KMeans
+                została zastosowana metoda redukcji wymiarów PCA (\textit{Principal
+                component analysis}), której wynikiem były dane dwuwymiarowe.
                 
                 
                 \begin{figure}[!htbp]
@@ -1064,13 +1377,15 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \label{clust_pca_weights}
                 \end{figure}
                 \FloatBarrier
-                
-                Ponadto została wyznaczona średnia wartość silhouette score, które w przypadku eksperymentu KMeans wynosiła \textbf{0.61}
+
+                Ponadto została wyznaczona średnia wartość silhouette score, które w
+                przypadku eksperymentu KMeans wynosiła \textbf{0.61}
                 
                  \begin{figure}[!htbp]
                     \centering
                     \includegraphics[width=1\textwidth]{img/clustering/kmeans_silh_crime_codes.png}
-                    \caption{Silhouette score poszczególnych próbek oraz porównanie wizualne danych z etykietą po klastrowaniu oraz faktyczną dla algorytmu KMeans}
+                    \caption{Silhouette score poszczególnych próbek oraz porównanie wizualne
+                    danych z etykietą po klastrowaniu oraz faktyczną dla algorytmu KMeans}
                     \label{silh_kmeans}
                 \end{figure}
                 \FloatBarrier
@@ -1090,10 +1405,14 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \label{tsne_actual}
                 \end{figure}
                 \FloatBarrier
-                
-                \textbf{Drugi eksperyment} przeprowadzono z wykorzystaniem algorytmu KModes, który jest silnie nastawiony na wykorzystanie danych kategorialnych i wydawał się w przypadku analizowanego zbioru obiecującym wyborem.
-                
-                Ponieważ algorytm ten bazuje na danych kategorialnych kolumny nie musiały zostać poddane one-hot encodingowi.
+
+                \textbf{Drugi eksperyment} przeprowadzono z wykorzystaniem algorytmu
+                KModes, który jest silnie nastawiony na wykorzystanie danych
+                kategorialnych i wydawał się w przypadku analizowanego zbioru
+                obiecującym wyborem.
+
+                Ponieważ algorytm ten bazuje na danych kategorialnych kolumny nie
+                musiały zostać poddane one-hot encodingowi.
                 
                 \begin{table}[!htbp]
                 \centering
@@ -1135,8 +1454,11 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                 \caption{Wartości poszczególnych metryk dla uzyskanych klastrów - KModes}
                 \label{tab:kmodes_metrics}
                 \end{table}
-                
-                Również w tym przypadku wizualizacja danych wymagała redukcji wymiarowości. Zamiana danych na zgodne z PCA jest błędne, dlatego zastosowana została metoda MCA (ang. \textit{Multiple correspondence analysis}) przystosowana do danych kategorialnych.
+
+                Również w tym przypadku wizualizacja danych wymagała redukcji
+                wymiarowości. Zamiana danych na zgodne z PCA jest błędne, dlatego
+                zastosowana została metoda MCA (ang. \textit{Multiple correspondence
+                analysis}) przystosowana do danych kategorialnych.
                 
                  \begin{figure}[!htbp]
                     \centering
@@ -1145,26 +1467,46 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
                     \label{clust_mca}
                 \end{figure}
                 \FloatBarrier
-                
-               Dla eksperymentu z algorytmem KModes również wyznaczono wartość silhouette score, które wynosiła \textbf{0.07}.
+
+                Dla eksperymentu z algorytmem KModes również wyznaczono wartość
+                silhouette score, które wynosiła \textbf{0.07}.
                 
                  \begin{figure}[!htbp]
                     \centering
                     \includegraphics[width=1\textwidth]{img/clustering/kmodes_silhouette.png}
-                    \caption{Silhouette score poszczególnych próbek oraz porównanie wizualne danych z etykietą po klastrowaniu oraz faktyczną dla algorytmu Kmodes}
+                    \caption{Silhouette score poszczególnych próbek oraz porównanie wizualne
+                    danych z etykietą po klastrowaniu oraz faktyczną dla algorytmu Kmodes}
                     \label{silh_kmodes}
                 \end{figure}
                 \FloatBarrier
             }
 
             \subsubsection{Dyskusja i wnioski} {
-                 W przypadku algorytmu KMeans można zauważyć w tabeli \ref{tab:kmeans_metrics} niższą wartość accuracy dla algorytmu KModes. Przeprowadzenie redukcji wymiarów za pomocą metody PCA zwróciło wartość wariancji oscylującą około 15\%, co jest dalekie od optymalnych wartości referencyjnych 70\% - 80\%. Rozkład liczby próbek uzyskanej przez klastrowanie nie odpowiada wartościom występującym w faktycznym zbiorze danych. Ponadto, w przypadku każdej z etykiet miary precision oraz recall nie przekroczyły 50\% próbek, a większość oscylowała wokół 35\%.
-                 
-                 Algorytm KModes poradził sobie lepiej w przypadku rozważanego problemu. Accuracy otrzymane dla tego eksperymentu przekroczyło 50\%. Wyniki MCA pozwalają też na zaobserwowanie ułożenia danych, które są bardziej skupione i łatwiejsze do klasteryzacji. Metoda utworzyła klastry, z których jeden zawsze był znacznie większy. Przy założeniu, że ten klaster otrzymałby etykietę najliczniejszej grupy danych (MISDEMEANOR) przełożyłoby się to na wysokie wartości metryk precision oraz recall kosztem jakości klasteryzacji dla najmniejszego klastra (w tym przypadku FELONY).
+                W przypadku algorytmu KMeans można zauważyć w tabeli
+                \ref{tab:kmeans_metrics} niższą wartość accuracy dla algorytmu KModes.
+                Przeprowadzenie redukcji wymiarów za pomocą metody PCA zwróciło wartość
+                wariancji oscylującą około 15\%, co jest dalekie od optymalnych
+                wartości referencyjnych 70\% - 80\%. Rozkład liczby próbek uzyskanej
+                przez klastrowanie nie odpowiada wartościom występującym w faktycznym
+                zbiorze danych. Ponadto, w przypadku każdej z etykiet miary precision
+                oraz recall nie przekroczyły 50\% próbek, a większość oscylowała wokół
+                35\%.
+
+                Algorytm KModes poradził sobie lepiej w przypadku rozważanego problemu.
+                Accuracy otrzymane dla tego eksperymentu przekroczyło 50\%. Wyniki MCA
+                pozwalają też na zaobserwowanie ułożenia danych, które są bardziej
+                skupione i łatwiejsze do klasteryzacji. Metoda utworzyła klastry, z
+                których jeden zawsze był znacznie większy. Przy założeniu, że ten
+                klaster otrzymałby etykietę najliczniejszej grupy danych (MISDEMEANOR)
+                przełożyłoby się to na wysokie wartości metryk precision oraz recall
+                kosztem jakości klasteryzacji dla najmniejszego klastra (w tym
+                przypadku FELONY).
                  
                  \textbf{Wnioski}:
                  \begin{itemize}
-                     \item Zastosowanie algorytmu KMeans bez odpowiedniego przygotowania danych za pomocą one-hot encodingu prowadzi do uzyskania losowych wyników (najczęściej accuracy 1/n)
+                     \item Zastosowanie algorytmu KMeans bez odpowiedniego przygotowania
+                     danych za pomocą one-hot encodingu prowadzi do uzyskania
+                     losowych wyników (najczęściej accuracy 1/n)
                      \item Algorytm KMeans nie pozwala na uzyskanie stabilnych wyników w przypadku danych kategorialnych
                      \item Algorytm KModes oferuje lepsze wyniki dla danych kategorialnych
                  \end{itemize}
@@ -1174,13 +1516,39 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
     }
     
     \section{Ewolucja projektu} {
-        Od momentu kiedy rozpoczęte zostały prace nad tym projektem nastąpiło bardzo wiele zmian dotyczących zarówno realizowanych celów, sposobów ich realizacji jak również zmian związanych ze świadomością i wiedzą uczestników projektu.
-        
-        Pierwszym znaczącym błędem, który został popełniony, było niedokładne przeanalizowanie danych pod kątem statystycznym. Należało dokładnie zbadać jaki jest rozkład wartości we wszystkich kolumnach i gdzie to tylko możliwe dokonać wizualizacji, które zawsze pomagają zrozumieć dane ludzkiemu odbiorcy. W ten sposób znacznie łatwiej byłoby sformułować sensowne cele. Ponieważ zabrakło tej analizy od samego początku, dwa cele zostały sformułowane nie do końca rozsądnie i uległy modyfikacjom.
-        
-        Drugim ważnym krokiem, który został podjęty w trakcie realizacji projektu a nie został zrealizowany wcześniej było skupienie się na temacie wstępnego przetwarzania danych: ich oczyszczania, imputacji, kodowania, selekcji i ekstrakcji cech, itp. W przypadku danych tabelarycznych, z jakimi mamy tu do czynienia, często najbardziej istotnym etapem jest właśnie ten, kiedy wybiera się które kolumny zostaną użyte i w jakiej formie zostaną podane do algorytmu. Zabrakło nie tylko poświęcenie większej ilości czasu temu zagadnieniu ale również wiedzy i świadomości uczestników projektu. Należało na ile to możliwe zapoznać się lub przypomnieć sobie dokładnie możliwe podejścia do tego tematu. Z powodu, że aspekt ten nie był wzięty pod uwagę od samego początku wiele pierwszych eksperymentów okazało się zupełnie zbędnych.
-        
-        Ostatnim tematem, który ulegał istotnym zmianom jest sposób organizacji pracy z kodem źródłowym i etapami przetwarzania danych. Na początku zespół próbował uwspólnić ile tylko możliwe etapów pracy i fragmentów kodu. Zwłaszcza dotyczyło to wstępnego przetwarzania danych. Okazało się to jednak problematyczne i prowadziło do zamieszania, ponieważ na potrzeby każdego z celów inne cechy były wykorzystywane. Dodatkowo sposób kodowania i podejście do imputacji danych jest silnie zależne od wykorzystywanych algorytmów. Z tego powodu, najprostszym rozwiązaniem okazało się zrezygnowanie z nadmiernej generalizacji i rozdzielenie wstępnego przetwarzania danych dla każdego celu z osobna.
+        Od momentu kiedy rozpoczęte zostały prace nad tym projektem nastąpiło bardzo
+        wiele zmian dotyczących zarówno realizowanych celów, sposobów ich realizacji
+        jak również zmian związanych ze świadomością i wiedzą uczestników projektu.
+
+        Pierwszym znaczącym błędem, który został popełniony, było niedokładne
+        przeanalizowanie danych pod kątem statystycznym. Należało dokładnie zbadać jaki
+        jest rozkład wartości we wszystkich kolumnach i gdzie to tylko możliwe dokonać
+        wizualizacji, które zawsze pomagają zrozumieć dane ludzkiemu odbiorcy. W ten
+        sposób znacznie łatwiej byłoby sformułować sensowne cele. Ponieważ zabrakło tej
+        analizy od samego początku, dwa cele zostały sformułowane nie do końca
+        rozsądnie i uległy modyfikacjom.
+
+        Drugim ważnym krokiem, który został podjęty w trakcie realizacji projektu a nie
+        został zrealizowany wcześniej było skupienie się na temacie wstępnego
+        przetwarzania danych: ich oczyszczania, imputacji, kodowania, selekcji i
+        ekstrakcji cech, itp. W przypadku danych tabelarycznych, z jakimi mamy tu do
+        czynienia, często najbardziej istotnym etapem jest właśnie ten, kiedy wybiera
+        się które kolumny zostaną użyte i w jakiej formie zostaną podane do algorytmu.
+        Zabrakło nie tylko poświęcenie większej ilości czasu temu zagadnieniu ale
+        również wiedzy i świadomości uczestników projektu. Należało na ile to możliwe
+        zapoznać się lub przypomnieć sobie dokładnie możliwe podejścia do tego tematu.
+        Z powodu, że aspekt ten nie był wzięty pod uwagę od samego początku wiele
+        pierwszych eksperymentów okazało się zupełnie zbędnych.
+
+        Ostatnim tematem, który ulegał istotnym zmianom jest sposób organizacji pracy z
+        kodem źródłowym i etapami przetwarzania danych. Na początku zespół próbował
+        uwspólnić ile tylko możliwe etapów pracy i fragmentów kodu. Zwłaszcza dotyczyło
+        to wstępnego przetwarzania danych. Okazało się to jednak problematyczne i
+        prowadziło do zamieszania, ponieważ na potrzeby każdego z celów inne cechy były
+        wykorzystywane. Dodatkowo sposób kodowania i podejście do imputacji danych jest
+        silnie zależne od wykorzystywanych algorytmów. Z tego powodu, najprostszym
+        rozwiązaniem okazało się zrezygnowanie z nadmiernej generalizacji i
+        rozdzielenie wstępnego przetwarzania danych dla każdego celu z osobna.
     }
 
     \section{Opis kodu źródłowego} {
@@ -1194,7 +1562,13 @@ narzędzia                względu na chęć stworzenia uniwersalnego narzędzia
         W przypadku ostatniego checkpointa zdecydowaliśmy się na nieskomplikowane
         założenie a mianowicie każdy cel to osobny zbiór plików, które zawierają kod w
         języku Python.
-        W przypadku celu nr 1 jest to katalog "random\_forest", dla celu nr 2 został stworzony katalog "clustering" natomiast kod odpowiedzialny za cel nr 3 jest umieszczony w katalogu "time\_regression". Pliki w tych 3 katalogach wykorzystują kod znajdujący się w "shared". Co więcej naszę nieudane podejścia do analizy danych zostały umieszczone w "old\_approach" natomiast dodatkowe skrypty do statystycznej analizy danych, który były wykorzystywane w ramach Checkpoint 1 są umieszczone w "scripts".
+        W przypadku celu nr 1 jest to katalog "random\_forest", dla celu nr 2 został
+        stworzony katalog "clustering" natomiast kod odpowiedzialny za cel nr 3 jest
+        umieszczony w katalogu "time\_regression". Pliki w tych 3 katalogach
+        wykorzystują kod znajdujący się w "shared". Co więcej naszę nieudane podejścia
+        do analizy danych zostały umieszczone w "old\_approach" natomiast dodatkowe
+        skrypty do statystycznej analizy danych, który były wykorzystywane w ramach
+        Checkpoint 1 są umieszczone w "scripts".
     }
     
 

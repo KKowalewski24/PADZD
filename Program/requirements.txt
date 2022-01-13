@@ -1,3 +1,4 @@
+xgboost
 prince
 kmodes
 seaborn

@@ -1,5 +1,5 @@
-import xgboost as xgb
 import matplotlib.pyplot as plt
+import xgboost as xgb
 
 bst = xgb.Booster()
 bst.load_model("./best_model.model")

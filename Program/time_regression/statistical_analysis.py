@@ -1,14 +1,14 @@
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
+
 
 def basic_stats(series):
     print("Number of unique values:", len(series.unique()))
     print("Number of NA:", np.count_nonzero(series.isna()))
     series.value_counts().plot(kind='bar')
 
-data = pd.read_csv("./NYPD_Complaint_Data_Historic.csv")
 
+data = pd.read_csv("./NYPD_Complaint_Data_Historic.csv")
 
 ###########################################################################
 # INDEX
@@ -42,12 +42,15 @@ for pd, desc in desc_per_pd:
 # descriptions to the same code/pd) - descriptions are generally redundant
 
 # association between KY_CD and PD_CD
-ky_per_pd  = data[["PD_CD", "KY_CD"]].groupby("PD_CD")
+ky_per_pd = data[["PD_CD", "KY_CD"]].groupby("PD_CD")
 for pd, ky in ky_per_pd:
     print("=====================================")
     print(pd)
     print(ky["KY_CD"].value_counts())
-# almost one to many, there are some outliers-like incosistencies, there is also a couple of pd_cd which matches two or more different ky_cd and don't look like errors - because of these couple examples, storing ky_cd with pd_cd should be informative and ky_cd seems not to be redundant
+# almost one to many, there are some outliers-like incosistencies, there is also a couple
+# of pd_cd which matches two or more different ky_cd and don't look like errors - because of
+# these couple examples, storing ky_cd with pd_cd should be informative and ky_cd
+# seems not to be redundant
 
 # association between LAW_CAT_CD and KY_CD
 cat_per_key = data[["KY_CD", "LAW_CAT_CD"]].groupby("KY_CD")
@@ -55,7 +58,9 @@ for key, cat in cat_per_key:
     print("=====================================")
     print(key)
     print(cat["LAW_CAT_CD"].value_counts())
-# it's also almost one to many, but there is a few keys, which contains numerous samples for two or three categories - because of these samples, storing law_cat_cd with ky_cd should be infomative
+# it's also almost one to many, but there is a few keys, which contains numerous
+# samples for two or three categories - because of these samples,
+# storing law_cat_cd with ky_cd should be infomative
 ###########################################################################
 
 

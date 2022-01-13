@@ -29,13 +29,13 @@ data = one_hot_encode(data, "VIC_RACE", drop=[np.nan])
 data = one_hot_encode(data, "SUSP_RACE", drop=[np.nan])
 data["VIC_AGE_GROUP"] = (
     data["VIC_AGE_GROUP"]
-    .map({"<18": 0, "18-24": 1, "25-44": 2, "46-64": 3, "65+": 4})
-    .astype(np.float16)
+        .map({"<18": 0, "18-24": 1, "25-44": 2, "46-64": 3, "65+": 4})
+        .astype(np.float16)
 )
 data["SUSP_AGE_GROUP"] = (
     data["VIC_AGE_GROUP"]
-    .map({"<18": 0, "18-24": 1, "25-44": 2, "46-64": 3, "65+": 4})
-    .astype(np.float16)
+        .map({"<18": 0, "18-24": 1, "25-44": 2, "46-64": 3, "65+": 4})
+        .astype(np.float16)
 )
 
 # train/test split

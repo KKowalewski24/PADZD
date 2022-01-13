@@ -3,18 +3,15 @@ import pandas as pd
 
 data = pd.read_csv("./NYPD_Complaint_Data_Historic.csv")
 
-
 # INDEX
 # - not used at all
 data.drop("CMPLNT_NUM", axis=1, inplace=True)
 
-
-# TYPE 
+# TYPE
 # - descriptions are redundant
 data.drop(["OFNS_DESC", "PD_DESC"], axis=1, inplace=True)
 # - do not use PD_CD because there is too much unique values
 data.drop("PD_CD", axis=1, inplace=True)
-
 
 # SUCCEED
 # - just use it and imputate missing values
@@ -47,7 +44,11 @@ data.drop("RPT_DT", axis=1, inplace=True)
 
 # LOCALIZATION
 # - no sense to use it
-data.drop(["ADDR_PCT_CD", "BORO_NM", "JURIS_DESC", "JURISDICTION_CODE", "JURISDICTION_CODE", "PARKS_NM", "HADEVELOPT", "HOUSING_PSA", "X_COORD_CD", "Y_COORD_CD", "TRANSIT_DISTRICT", "Latitude", "Longitude", "Lat_Lon", "PATROL_BORO", "STATION_NAME"], axis=1, inplace=True)
+data.drop([
+    "ADDR_PCT_CD", "BORO_NM", "JURIS_DESC", "JURISDICTION_CODE", "JURISDICTION_CODE", "PARKS_NM",
+    "HADEVELOPT", "HOUSING_PSA", "X_COORD_CD", "Y_COORD_CD", "TRANSIT_DISTRICT", "Latitude",
+    "Longitude", "Lat_Lon", "PATROL_BORO", "STATION_NAME"
+], axis=1, inplace=True)
 
 # SUSP/VIC
 # - do not impute missing values (unkown) and mark other/unkown as NaN for representation constistency
@@ -61,6 +62,5 @@ data.loc[(data["VIC_RACE"] == "UNKNOWN") | (data["VIC_RACE"] == "OTHER"), "VIC_R
 # - fix sex
 data.loc[(data["SUSP_SEX"] != "F") & (data["SUSP_SEX"] != "M"), "SUSP_SEX"] = np.nan
 data.loc[(data["VIC_SEX"] != "F") & (data["VIC_SEX"] != "M"), "VIC_SEX"] = np.nan
-
 
 data.to_csv("./NYPD_Complaint_Data_Historic_preprocessed.csv")

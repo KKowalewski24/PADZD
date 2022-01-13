@@ -1,5 +1,5 @@
-import xgboost as xgb
 import optuna
+import xgboost as xgb
 
 print("Loading data from disk to DMatrix...")
 test_data = xgb.DMatrix("test_data.buffer")

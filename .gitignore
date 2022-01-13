@@ -1,0 +1,7 @@
+.idea
+
+Program/data/NYPD_Complaint_Data_Historic.csv
+
+*.csv
+
+Program/random_forest/saved_plots/
